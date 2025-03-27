@@ -25,6 +25,7 @@ export interface ServiceProvider {
   services: string[];
   rating: number;
   reviewCount: number;
+  phone: string; // Added the phone property
 }
 
 export class CarService {
