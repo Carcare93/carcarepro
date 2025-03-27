@@ -1,14 +1,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Car, User, MapPin, Calendar } from 'lucide-react';
+import { Menu, X, Car, User, MapPin, Calendar, LogIn, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { isAuthenticated, user, logout } = useAuth();
 
   // Navigation links
   const navLinks = [
@@ -31,6 +33,11 @@ const Header = () => {
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
+
+  const handleLogout = () => {
+    logout();
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <header
@@ -81,21 +88,43 @@ const Header = () => {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link to="/profile">
-              <Button variant="ghost" size="sm" className="gap-2">
-                <User className="h-4 w-4" />
-                Account
-              </Button>
-            </Link>
-            <Link to="/signup">
-              <Button 
-                className="relative overflow-hidden group"
-                size="sm"
-              >
-                <span className="relative z-10">Get Started</span>
-                <span className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
-              </Button>
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <Link to="/profile">
+                  <Button variant="ghost" size="sm" className="gap-2">
+                    <User className="h-4 w-4" />
+                    {user?.name}
+                  </Button>
+                </Link>
+                <Button 
+                  onClick={handleLogout}
+                  variant="outline" 
+                  size="sm"
+                  className="gap-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="ghost" size="sm" className="gap-2">
+                    <LogIn className="h-4 w-4" />
+                    Sign in
+                  </Button>
+                </Link>
+                <Link to="/signup">
+                  <Button 
+                    className="relative overflow-hidden group"
+                    size="sm"
+                  >
+                    <span className="relative z-10">Sign up</span>
+                    <span className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -165,18 +194,41 @@ const Header = () => {
           </div>
           
           <div className="mt-auto pt-6 border-t border-gray-200">
-            <Link 
-              to="/profile"
-              className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-foreground"
-            >
-              <div className="mr-3 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <User className="h-4 w-4 text-primary" />
-              </div>
-              Account
-            </Link>
-            <Link to="/signup" className="block mt-4">
-              <Button className="w-full">Get Started</Button>
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <Link 
+                  to="/profile"
+                  className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-foreground"
+                >
+                  <div className="mr-3 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <User className="h-4 w-4 text-primary" />
+                  </div>
+                  {user?.name}
+                </Link>
+                <Button 
+                  onClick={handleLogout}
+                  className="w-full mt-4 flex items-center justify-center"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link 
+                  to="/login"
+                  className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-foreground"
+                >
+                  <div className="mr-3 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <LogIn className="h-4 w-4 text-primary" />
+                  </div>
+                  Sign in
+                </Link>
+                <Link to="/signup" className="block mt-4">
+                  <Button className="w-full">Sign up</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
