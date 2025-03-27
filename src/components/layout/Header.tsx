@@ -1,237 +1,163 @@
-
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Car, User, MapPin, Calendar, LogIn, LogOut } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import React, { useState } from 'react';
+import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import { Button } from "@/components/ui/button"
+import { Menu } from "lucide-react"
 
 const Header = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const location = useLocation();
-  const { isAuthenticated, user, logout } = useAuth();
-
-  // Navigation links
-  const navLinks = [
-    { name: 'Discover', path: '/discover', icon: <MapPin className="h-4 w-4 mr-1" /> },
-    { name: 'Services', path: '/services', icon: <Car className="h-4 w-4 mr-1" /> },
-    { name: 'Bookings', path: '/bookings', icon: <Calendar className="h-4 w-4 mr-1" /> },
-  ];
-
-  // Update header style based on scroll position
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Close mobile menu when navigating
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location.pathname]);
-
-  const handleLogout = () => {
-    logout();
+  const { isAuthenticated, logout } = useAuth();
+  const { toast } = useToast();
+  
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+  
+  const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
   };
+  
+  const handleLogout = () => {
+    logout();
+    closeMobileMenu();
+    toast({
+      title: "Logged out",
+      description: "You've been successfully logged out.",
+    });
+  };
 
+  const getLinkClass = ({ isActive }: { isActive: boolean }) => {
+    return `block py-2 px-4 rounded-md transition-colors duration-200 ${
+      isActive ? 'bg-secondary text-foreground' : 'hover:bg-secondary/50'
+    }`;
+  };
+  
   return (
-    <header
-      className={cn(
-        'fixed top-0 inset-x-0 z-50 transition-all duration-300 ease-in-out',
-        isScrolled
-          ? 'bg-white/90 backdrop-blur-md shadow-sm py-3'
-          : 'bg-transparent py-5'
-      )}
-    >
+    <header className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-md z-50 border-b border-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link 
-            to="/" 
-            className="flex items-center gap-2"
-            aria-label="CarCare Home"
-          >
-            <div className="relative">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Car className="h-5 w-5 text-primary" />
-              </div>
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full animate-pulse" />
-            </div>
-            <span className="text-xl font-semibold tracking-tight">
-              Car<span className="text-primary">Care</span>
-            </span>
+          <Link to="/" className="text-lg font-semibold">
+            CarCare
           </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={cn(
-                  'px-3 py-2 rounded-md text-sm font-medium transition-all flex items-center',
-                  location.pathname === link.path
-                    ? 'text-primary bg-primary/5'
-                    : 'text-foreground/80 hover:text-primary hover:bg-primary/5'
-                )}
-              >
-                {link.icon}
-                {link.name}
-              </Link>
-            ))}
+          
+          {/* Main Navigation - Desktop */}
+          <nav className="hidden md:flex space-x-8">
+            <NavLink to="/" className={getLinkClass}>Home</NavLink>
+            <NavLink to="/discover" className={getLinkClass}>Discover</NavLink>
+            <NavLink to="/marketplace" className={getLinkClass}>Marketplace</NavLink>
+            <NavLink to="/bookings" className={getLinkClass}>Bookings</NavLink>
           </nav>
-
-          {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
+          
+          {/* User section */}
+          <div className="flex items-center space-x-4">
             {isAuthenticated ? (
               <>
-                <Link to="/profile">
-                  <Button variant="ghost" size="sm" className="gap-2">
-                    <User className="h-4 w-4" />
-                    {user?.name}
-                  </Button>
+                <Link to="/profile" className="hidden md:block py-2 px-4 rounded-md hover:bg-secondary/50 transition-colors duration-200">
+                  Profile
                 </Link>
-                <Button 
-                  onClick={handleLogout}
-                  variant="outline" 
-                  size="sm"
-                  className="gap-2"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Logout
+                <Button variant="outline" size="sm" className="hidden md:block" onClick={handleLogout}>
+                  Log Out
                 </Button>
               </>
             ) : (
               <>
-                <Link to="/login">
-                  <Button variant="ghost" size="sm" className="gap-2">
-                    <LogIn className="h-4 w-4" />
-                    Sign in
-                  </Button>
+                <Link to="/login" className="hidden md:block py-2 px-4 rounded-md hover:bg-secondary/50 transition-colors duration-200">
+                  Log In
                 </Link>
-                <Link to="/signup">
-                  <Button 
-                    className="relative overflow-hidden group"
-                    size="sm"
-                  >
-                    <span className="relative z-10">Sign up</span>
-                    <span className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
-                  </Button>
+                <Link to="/signup" className="hidden md:block py-2 px-4 rounded-md bg-primary text-white hover:bg-primary/90 transition-colors duration-200">
+                  Sign Up
                 </Link>
               </>
             )}
           </div>
-
-          {/* Mobile menu button */}
-          <button
-            type="button"
-            className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-foreground hover:bg-gray-100"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-expanded={isMobileMenuOpen}
-          >
-            <span className="sr-only">
-              {isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-            </span>
-            {isMobileMenuOpen ? (
-              <X className="h-6 w-6" aria-hidden="true" />
-            ) : (
-              <Menu className="h-6 w-6" aria-hidden="true" />
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile menu */}
-      <div
-        className={cn(
-          'md:hidden fixed inset-0 z-40 bg-white transform transition-transform ease-in-out duration-300',
-          isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-        )}
-      >
-        <div className="p-4 h-full flex flex-col">
-          <div className="flex items-center justify-between mb-8">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Car className="h-5 w-5 text-primary" />
-              </div>
-              <span className="text-xl font-semibold">
-                Car<span className="text-primary">Care</span>
-              </span>
-            </Link>
-            <button
-              type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-foreground hover:bg-gray-100"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <span className="sr-only">Close menu</span>
-              <X className="h-6 w-6" aria-hidden="true" />
-            </button>
-          </div>
           
-          <div className="flex flex-col space-y-4 flex-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={cn(
-                  'px-4 py-3 rounded-lg text-base font-medium flex items-center',
-                  location.pathname === link.path
-                    ? 'text-primary bg-primary/5'
-                    : 'text-foreground hover:text-primary hover:bg-primary/5'
+          {/* Mobile Menu Toggle */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" onClick={toggleMobileMenu} className="md:hidden">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="sm:max-w-sm">
+              <SheetHeader>
+                <SheetTitle>CarCare</SheetTitle>
+                <SheetDescription>
+                  Explore our services and manage your car with ease.
+                </SheetDescription>
+              </SheetHeader>
+              <nav className="grid gap-4 text-lg font-medium">
+                <Link to="/" className="hover:text-secondary" onClick={closeMobileMenu}>
+                  Home
+                </Link>
+                <Link to="/discover" className="hover:text-secondary" onClick={closeMobileMenu}>
+                  Discover
+                </Link>
+                 <Link to="/marketplace" className="hover:text-secondary" onClick={closeMobileMenu}>
+                  Marketplace
+                </Link>
+                <Link to="/bookings" className="hover:text-secondary" onClick={closeMobileMenu}>
+                  Bookings
+                </Link>
+                {isAuthenticated ? (
+                  <>
+                    <Link to="/profile" className="hover:text-secondary" onClick={closeMobileMenu}>
+                      Profile
+                    </Link>
+                    <Button variant="outline" size="sm" className="w-full" onClick={handleLogout}>
+                      Log Out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/login" className="hover:text-secondary" onClick={closeMobileMenu}>
+                      Log In
+                    </Link>
+                    <Link to="/signup" className="bg-primary text-white text-center py-2 rounded-md hover:bg-primary/90 transition-colors duration-200" onClick={closeMobileMenu}>
+                      Sign Up
+                    </Link>
+                  </>
                 )}
-              >
-                <div className="mr-3 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  {React.cloneElement(link.icon, { className: 'h-4 w-4 text-primary' })}
-                </div>
-                {link.name}
-              </Link>
-            ))}
-          </div>
-          
-          <div className="mt-auto pt-6 border-t border-gray-200">
-            {isAuthenticated ? (
-              <>
-                <Link 
-                  to="/profile"
-                  className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-foreground"
-                >
-                  <div className="mr-3 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <User className="h-4 w-4 text-primary" />
-                  </div>
-                  {user?.name}
-                </Link>
-                <Button 
-                  onClick={handleLogout}
-                  className="w-full mt-4 flex items-center justify-center"
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </Button>
-              </>
-            ) : (
-              <>
-                <Link 
-                  to="/login"
-                  className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-foreground"
-                >
-                  <div className="mr-3 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <LogIn className="h-4 w-4 text-primary" />
-                  </div>
-                  Sign in
-                </Link>
-                <Link to="/signup" className="block mt-4">
-                  <Button className="w-full">Sign up</Button>
-                </Link>
-              </>
-            )}
-          </div>
+              </nav>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
+      
+      {/* Mobile Navigation */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-background border-b border-border">
+          <div className="container mx-auto px-4 py-3">
+            <nav className="flex flex-col space-y-3">
+              <NavLink to="/" className={getLinkClass} onClick={closeMobileMenu}>Home</NavLink>
+              <NavLink to="/discover" className={getLinkClass} onClick={closeMobileMenu}>Discover</NavLink>
+              <NavLink to="/marketplace" className={getLinkClass} onClick={closeMobileMenu}>Marketplace</NavLink>
+              <NavLink to="/bookings" className={getLinkClass} onClick={closeMobileMenu}>Bookings</NavLink>
+              
+              {isAuthenticated ? (
+                <>
+                  <NavLink to="/profile" className={getLinkClass} onClick={closeMobileMenu}>Profile</NavLink>
+                  <Button variant="outline" size="sm" className="w-full" onClick={handleLogout}>Log Out</Button>
+                </>
+              ) : (
+                <>
+                  <NavLink to="/login" className={getLinkClass} onClick={closeMobileMenu}>Log In</NavLink>
+                  <NavLink to="/signup" className="bg-primary text-white text-center py-2 rounded-md hover:bg-primary/90 transition-colors duration-200" onClick={closeMobileMenu}>Sign Up</NavLink>
+                </>
+              )}
+            </nav>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

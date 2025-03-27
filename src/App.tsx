@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Discover from "./pages/Discover";
+import ServiceMarketplace from "./pages/ServiceMarketplace";
 import Profile from "./pages/Profile";
 import Bookings from "./pages/Bookings";
 import Login from "./pages/Login";
@@ -25,6 +26,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/discover" element={<Discover />} />
+            <Route path="/marketplace" element={<ServiceMarketplace />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/bookings" element={<Bookings />} />
             <Route path="/login" element={<Login />} />
