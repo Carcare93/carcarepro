@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,7 +12,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
-import { Menu } from "lucide-react"
+import { Menu, Car } from "lucide-react"
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -46,8 +47,13 @@ const Header = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="text-lg font-semibold">
-            CarCare
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <Car className="h-5 w-5 text-primary" />
+            </div>
+            <span className="text-lg font-semibold tracking-tight">
+              Car<span className="text-primary">Care</span>
+            </span>
           </Link>
           
           {/* Main Navigation - Desktop */}
@@ -90,12 +96,19 @@ const Header = () => {
             </SheetTrigger>
             <SheetContent side="left" className="sm:max-w-sm">
               <SheetHeader>
-                <SheetTitle>CarCare</SheetTitle>
+                <SheetTitle>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Car className="h-4 w-4 text-primary" />
+                    </div>
+                    <span>Car<span className="text-primary">Care</span></span>
+                  </div>
+                </SheetTitle>
                 <SheetDescription>
                   Explore our services and manage your car with ease.
                 </SheetDescription>
               </SheetHeader>
-              <nav className="grid gap-4 text-lg font-medium">
+              <nav className="grid gap-4 text-lg font-medium mt-4">
                 <Link to="/" className="hover:text-secondary" onClick={closeMobileMenu}>
                   Home
                 </Link>
