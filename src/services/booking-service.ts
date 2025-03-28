@@ -1,11 +1,16 @@
 
-import { Booking } from '@/types/booking';
+import { Booking, BookingStatus } from '@/types/booking';
 import { v4 as uuidv4 } from 'uuid';
+import { authService, User } from './auth-service';
 
 // Function to generate mock bookings data
 export const fetchMockBookings = async (): Promise<Booking[]> => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 800));
+  
+  // Check if current user is a provider to return provider-specific bookings
+  const currentUser = authService.getCurrentUser();
+  const isProvider = currentUser?.accountType === 'provider';
   
   return [
     {
@@ -145,3 +150,50 @@ export const bookAppointment = async (bookingData: Omit<Booking, 'id'>): Promise
     ...bookingData
   };
 };
+
+// Functions for provider operations
+export const updateBookingStatus = async (bookingId: string, status: BookingStatus): Promise<Booking> => {
+  // This would call an API endpoint in a real application
+  await new Promise(resolve => setTimeout(resolve, 800));
+  
+  // Mock implementation - in a real app, this would update the booking in the database
+  const bookings = await fetchMockBookings();
+  const booking = bookings.find(b => b.id === bookingId);
+  
+  if (!booking) {
+    throw new Error('Booking not found');
+  }
+  
+  // In a real app, we would verify the provider is authorized to update this booking
+  booking.status = status;
+  
+  return booking;
+};
+
+class BookingService {
+  async getProviderBookings(): Promise<Booking[]> {
+    // In a real app, this would fetch bookings for the current provider
+    const currentUser = authService.getCurrentUser();
+    
+    if (!currentUser || currentUser.accountType !== 'provider') {
+      throw new Error('Not authenticated as a provider');
+    }
+    
+    // For now, we'll just return the mock bookings
+    return fetchMockBookings();
+  }
+  
+  async acceptBooking(bookingId: string): Promise<Booking> {
+    return updateBookingStatus(bookingId, 'confirmed');
+  }
+  
+  async declineBooking(bookingId: string): Promise<Booking> {
+    return updateBookingStatus(bookingId, 'cancelled');
+  }
+  
+  async completeBooking(bookingId: string): Promise<Booking> {
+    return updateBookingStatus(bookingId, 'completed');
+  }
+}
+
+export const bookingService = new BookingService();

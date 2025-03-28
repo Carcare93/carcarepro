@@ -15,6 +15,7 @@ import SignUp from "./pages/SignUp";
 import NotFound from "./pages/NotFound";
 import Vehicles from "./pages/Vehicles";
 import VehicleInvoices from "./pages/VehicleInvoices";
+import ProviderDashboard from "./pages/ProviderDashboard";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/vehicles/:vehicleId/invoices" element={<VehicleInvoices />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/provider" element={<ProviderDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

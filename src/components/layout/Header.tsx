@@ -16,8 +16,10 @@ import { Menu } from "lucide-react"
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const { toast } = useToast();
+  
+  const isProvider = user?.accountType === 'provider';
   
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -67,6 +69,11 @@ const Header = () => {
           <div className="flex items-center space-x-4">
             {isAuthenticated ? (
               <>
+                {isProvider && (
+                  <Link to="/provider" className="hidden md:block py-2 px-4 rounded-md hover:bg-secondary/50 transition-colors duration-200">
+                    Provider Dashboard
+                  </Link>
+                )}
                 <Link to="/profile" className="hidden md:block py-2 px-4 rounded-md hover:bg-secondary/50 transition-colors duration-200">
                   Profile
                 </Link>
@@ -123,6 +130,11 @@ const Header = () => {
                 </Link>
                 {isAuthenticated ? (
                   <>
+                    {isProvider && (
+                      <Link to="/provider" className="hover:text-secondary" onClick={closeMobileMenu}>
+                        Provider Dashboard
+                      </Link>
+                    )}
                     <Link to="/profile" className="hover:text-secondary" onClick={closeMobileMenu}>
                       Profile
                     </Link>
@@ -158,6 +170,9 @@ const Header = () => {
               
               {isAuthenticated ? (
                 <>
+                  {isProvider && (
+                    <NavLink to="/provider" className={getLinkClass} onClick={closeMobileMenu}>Provider Dashboard</NavLink>
+                  )}
                   <NavLink to="/profile" className={getLinkClass} onClick={closeMobileMenu}>Profile</NavLink>
                   <Button variant="outline" size="sm" className="w-full" onClick={handleLogout}>Log Out</Button>
                 </>
