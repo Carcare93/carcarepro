@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -14,7 +13,7 @@ import { Separator } from '@/components/ui/separator';
 import { Calendar, Edit, Check, X, Clock, List, ListCheck } from 'lucide-react';
 import { fetchMockBookings } from '@/services/booking-service';
 import BookingStatusBadge from '@/components/bookings/BookingStatusBadge';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { bookingService } from '@/services/booking-service';
@@ -23,6 +22,7 @@ const ProviderDashboard = () => {
   const { user, logout } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   
   // Initialize state variables outside of any conditions
   const [isEditing, setIsEditing] = useState(false);
@@ -36,9 +36,9 @@ const ProviderDashboard = () => {
   const [newService, setNewService] = useState('');
   
   // Fetch bookings using useQuery
-  const { data: bookings = [], isLoading: isLoadingBookings } = useQuery({
+  const { data: bookings = [], isLoading: isLoadingBookings, refetch: refetchBookings } = useQuery({
     queryKey: ['providerBookings'],
-    queryFn: fetchMockBookings,
+    queryFn: bookingService.getProviderBookings.bind(bookingService),
   });
   
   // Use useEffect for redirecting and initializing data
@@ -112,6 +112,60 @@ const ProviderDashboard = () => {
       ...profileData,
       services: profileData.services?.filter(s => s !== service) || []
     });
+  };
+
+  const handleAcceptBooking = async (bookingId: string) => {
+    try {
+      await bookingService.acceptBooking(bookingId);
+      await refetchBookings();
+      toast({
+        title: "Booking accepted",
+        description: "The booking has been confirmed successfully.",
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Action failed",
+        description: "Failed to accept booking. Please try again.",
+      });
+    }
+  };
+
+  const handleDeclineBooking = async (bookingId: string) => {
+    try {
+      await bookingService.declineBooking(bookingId);
+      await refetchBookings();
+      toast({
+        title: "Booking declined",
+        description: "The booking has been declined.",
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Action failed",
+        description: "Failed to decline booking. Please try again.",
+      });
+    }
+  };
+
+  const handleCompleteBooking = async (bookingId: string) => {
+    try {
+      await bookingService.completeBooking(bookingId);
+      await refetchBookings();
+      toast({
+        title: "Booking completed",
+        description: "The service has been marked as completed.",
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Action failed",
+        description: "Failed to complete booking. Please try again.",
+      });
+    }
   };
   
   return (
@@ -223,12 +277,30 @@ const ProviderDashboard = () => {
                             <div className="flex space-x-2">
                               {booking.status === 'pending' && (
                                 <>
-                                  <Button size="sm" variant="default">Accept</Button>
-                                  <Button size="sm" variant="outline">Decline</Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="default"
+                                    onClick={() => handleAcceptBooking(booking.id)}
+                                  >
+                                    Accept
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => handleDeclineBooking(booking.id)}
+                                  >
+                                    Decline
+                                  </Button>
                                 </>
                               )}
                               {booking.status === 'confirmed' && (
-                                <Button size="sm" variant="default">Complete</Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="default"
+                                  onClick={() => handleCompleteBooking(booking.id)}
+                                >
+                                  Complete
+                                </Button>
                               )}
                               <Button size="sm" variant="outline">Details</Button>
                             </div>
