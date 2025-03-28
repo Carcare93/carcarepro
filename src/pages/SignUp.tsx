@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -38,9 +39,11 @@ const SignUp = () => {
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
     try {
-      // Add accountType to the data being submitted
+      // Pass the validated form data, ensuring all required fields are non-optional
       await register({
-        ...data,
+        name: data.name,
+        email: data.email,
+        password: data.password,
         accountType: 'customer', // Default to customer account type
       });
       
