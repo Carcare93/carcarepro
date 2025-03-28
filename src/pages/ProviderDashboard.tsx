@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { authService, ProviderProfile } from '@/services/auth-service';
@@ -24,31 +24,49 @@ const ProviderDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  // Redirect non-provider users
-  if (!user || user.accountType !== 'provider') {
-    navigate('/');
-    return null;
-  }
-  
-  const providerProfile = user.providerProfile;
-  if (!providerProfile) {
-    navigate('/');
-    return null;
-  }
-  
+  // Initialize state variables outside of any conditions
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState<Partial<ProviderProfile>>({
-    businessName: providerProfile.businessName,
-    description: providerProfile.description || '',
-    phone: providerProfile.phone || '',
-    services: [...providerProfile.services],
-    location: { ...providerProfile.location },
+    businessName: '',
+    description: '',
+    phone: '',
+    services: [],
+    location: { address: '', city: '', state: '', zipCode: '' },
   });
+  const [newService, setNewService] = useState('');
   
+  // Fetch bookings using useQuery
   const { data: bookings = [], isLoading: isLoadingBookings } = useQuery({
     queryKey: ['providerBookings'],
     queryFn: fetchMockBookings,
   });
+  
+  // Use useEffect for redirecting and initializing data
+  useEffect(() => {
+    // Redirect non-provider users
+    if (!user || user.accountType !== 'provider') {
+      navigate('/');
+      return;
+    }
+    
+    // Initialize provider profile data if user is a provider
+    if (user.providerProfile) {
+      setProfileData({
+        businessName: user.providerProfile.businessName,
+        description: user.providerProfile.description || '',
+        phone: user.providerProfile.phone || '',
+        services: [...user.providerProfile.services],
+        location: { ...user.providerProfile.location },
+      });
+    }
+  }, [user, navigate]);
+  
+  // Don't render anything if user is not a provider
+  if (!user || user.accountType !== 'provider' || !user.providerProfile) {
+    return null;
+  }
+  
+  const providerProfile = user.providerProfile;
   
   const handleProfileUpdate = () => {
     try {
@@ -78,9 +96,6 @@ const ProviderDashboard = () => {
     });
     setIsEditing(false);
   };
-  
-  // New service input handling
-  const [newService, setNewService] = useState('');
   
   const addService = () => {
     if (newService.trim() && !profileData.services?.includes(newService.trim())) {
