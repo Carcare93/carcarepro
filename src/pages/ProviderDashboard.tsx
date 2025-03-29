@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -17,6 +18,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { bookingService } from '@/services/booking-service';
+import { Booking } from '@/types/booking';
 
 const ProviderDashboard = () => {
   const { user, logout } = useAuth();
@@ -35,8 +37,8 @@ const ProviderDashboard = () => {
   });
   const [newService, setNewService] = useState('');
   
-  // Fetch bookings using useQuery
-  const { data: bookings = [], isLoading: isLoadingBookings, refetch: refetchBookings } = useQuery({
+  // Fetch bookings using useQuery with proper typing
+  const { data: bookings = [], isLoading: isLoadingBookings, refetch: refetchBookings } = useQuery<Booking[]>({
     queryKey: ['providerBookings'],
     queryFn: bookingService.getProviderBookings.bind(bookingService),
   });
