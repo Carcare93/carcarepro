@@ -60,9 +60,13 @@ const Header = () => {
           {/* Main Navigation - Desktop */}
           <nav className="hidden md:flex space-x-8">
             <NavLink to="/" className={getLinkClass}>Home</NavLink>
-            <NavLink to="/discover" className={getLinkClass}>Discover</NavLink>
-            <NavLink to="/marketplace" className={getLinkClass}>Marketplace</NavLink>
-            <NavLink to="/bookings" className={getLinkClass}>Bookings</NavLink>
+            {!isProvider && (
+              <>
+                <NavLink to="/discover" className={getLinkClass}>Discover</NavLink>
+                <NavLink to="/marketplace" className={getLinkClass}>Marketplace</NavLink>
+                <NavLink to="/bookings" className={getLinkClass}>Bookings</NavLink>
+              </>
+            )}
           </nav>
           
           {/* User section */}
@@ -119,15 +123,19 @@ const Header = () => {
                 <Link to="/" className="hover:text-secondary" onClick={closeMobileMenu}>
                   Home
                 </Link>
-                <Link to="/discover" className="hover:text-secondary" onClick={closeMobileMenu}>
-                  Discover
-                </Link>
-                 <Link to="/marketplace" className="hover:text-secondary" onClick={closeMobileMenu}>
-                  Marketplace
-                </Link>
-                <Link to="/bookings" className="hover:text-secondary" onClick={closeMobileMenu}>
-                  Bookings
-                </Link>
+                {!isProvider && (
+                  <>
+                    <Link to="/discover" className="hover:text-secondary" onClick={closeMobileMenu}>
+                      Discover
+                    </Link>
+                    <Link to="/marketplace" className="hover:text-secondary" onClick={closeMobileMenu}>
+                      Marketplace
+                    </Link>
+                    <Link to="/bookings" className="hover:text-secondary" onClick={closeMobileMenu}>
+                      Bookings
+                    </Link>
+                  </>
+                )}
                 {isAuthenticated ? (
                   <>
                     {isProvider && (
@@ -164,9 +172,13 @@ const Header = () => {
           <div className="container mx-auto px-4 py-3">
             <nav className="flex flex-col space-y-3">
               <NavLink to="/" className={getLinkClass} onClick={closeMobileMenu}>Home</NavLink>
-              <NavLink to="/discover" className={getLinkClass} onClick={closeMobileMenu}>Discover</NavLink>
-              <NavLink to="/marketplace" className={getLinkClass} onClick={closeMobileMenu}>Marketplace</NavLink>
-              <NavLink to="/bookings" className={getLinkClass} onClick={closeMobileMenu}>Bookings</NavLink>
+              {!isProvider && (
+                <>
+                  <NavLink to="/discover" className={getLinkClass} onClick={closeMobileMenu}>Discover</NavLink>
+                  <NavLink to="/marketplace" className={getLinkClass} onClick={closeMobileMenu}>Marketplace</NavLink>
+                  <NavLink to="/bookings" className={getLinkClass} onClick={closeMobileMenu}>Bookings</NavLink>
+                </>
+              )}
               
               {isAuthenticated ? (
                 <>

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,7 +17,16 @@ import {
 } from '@/components/ui/form';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import { Mail, Lock, LogIn } from 'lucide-react';
+import { Mail, Lock, LogIn, Eye, EyeOff } from 'lucide-react';
+import { 
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle 
+} from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -29,6 +38,7 @@ type FormValues = z.infer<typeof formSchema>;
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -48,6 +58,20 @@ const Login = () => {
     } catch (error) {
       console.error('Login failed:', error);
     }
+  };
+
+  const fillCustomerCredentials = () => {
+    form.setValue('email', 'test.customer@example.com');
+    form.setValue('password', 'password123');
+  };
+
+  const fillProviderCredentials = () => {
+    form.setValue('email', 'test.provider@example.com');
+    form.setValue('password', 'password123');
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -98,7 +122,25 @@ const Login = () => {
                       <FormControl>
                         <div className="relative">
                           <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input type="password" placeholder="********" className="pl-10" {...field} />
+                          <Input 
+                            type={showPassword ? "text" : "password"} 
+                            placeholder="********" 
+                            className="pl-10 pr-10" 
+                            {...field} 
+                          />
+                          <Button 
+                            type="button"
+                            variant="ghost" 
+                            size="sm" 
+                            className="absolute right-1 top-1 h-8 w-8 p-0"
+                            onClick={togglePasswordVisibility}
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4 text-muted-foreground" />
+                            ) : (
+                              <Eye className="h-4 w-4 text-muted-foreground" />
+                            )}
+                          </Button>
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -123,9 +165,50 @@ const Login = () => {
             </div>
           </div>
           
-          <div className="px-4 py-2 bg-muted/50 rounded-lg text-center text-sm text-muted-foreground">
-            <p>For testing, use email containing "test" (e.g., test@example.com)</p>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Test Accounts</CardTitle>
+              <CardDescription>Use these accounts for testing the application</CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+              <Tabs defaultValue="customer">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="customer">Customer</TabsTrigger>
+                  <TabsTrigger value="provider">Provider</TabsTrigger>
+                </TabsList>
+                <TabsContent value="customer" className="p-4">
+                  <p className="text-sm mb-2"><strong>Email:</strong> test.customer@example.com</p>
+                  <p className="text-sm mb-4"><strong>Password:</strong> any password will work</p>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full" 
+                    onClick={fillCustomerCredentials}
+                  >
+                    Fill Customer Credentials
+                  </Button>
+                </TabsContent>
+                <TabsContent value="provider" className="p-4">
+                  <p className="text-sm mb-2"><strong>Email:</strong> test.provider@example.com</p>
+                  <p className="text-sm mb-4"><strong>Password:</strong> any password will work</p>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full" 
+                    onClick={fillProviderCredentials}
+                  >
+                    Fill Provider Credentials
+                  </Button>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+            <CardFooter className="bg-muted/50 text-xs text-muted-foreground p-3">
+              <p className="w-full text-center">
+                Note: Any email containing "test" will work with any password.
+                Include "provider" in the email to login as a service provider.
+              </p>
+            </CardFooter>
+          </Card>
         </div>
       </main>
       <Footer />
