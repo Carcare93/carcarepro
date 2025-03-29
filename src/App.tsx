@@ -12,6 +12,7 @@ import Profile from "./pages/Profile";
 import Bookings from "./pages/Bookings";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import VerifyEmail from "./pages/VerifyEmail";
 import NotFound from "./pages/NotFound";
 import Vehicles from "./pages/Vehicles";
 import VehicleInvoices from "./pages/VehicleInvoices";
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/vehicles/:vehicleId/invoices" element={<VehicleInvoices />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/provider" element={<ProviderDashboard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

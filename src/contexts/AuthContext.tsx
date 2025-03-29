@@ -1,14 +1,17 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authService, User, LoginData, RegisterData } from '@/services/auth-service';
+import { authService, User, LoginData, RegisterData, VerificationStatus } from '@/services/auth-service';
 import { useToast } from '@/hooks/use-toast';
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isEmailVerified: boolean;
   login: (data: LoginData) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
+  verifyEmail: (email: string, code: string) => Promise<VerificationStatus>;
+  resendVerificationCode: (email: string) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -54,7 +57,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
       setUser(user);
       toast({
         title: "Account created!",
-        description: "Your account has been successfully created.",
+        description: "Your account has been created. Please verify your email.",
       });
     } catch (error) {
       toast({
@@ -65,6 +68,43 @@ export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
       throw error;
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const verifyEmail = async (email: string, code: string): Promise<VerificationStatus> => {
+    try {
+      setIsLoading(true);
+      const result = await authService.verifyEmail(email, code);
+      
+      if (result.verified) {
+        // Update the user state to reflect the verified status
+        const updatedUser = authService.getCurrentUser();
+        setUser(updatedUser);
+      }
+      
+      return result;
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Verification failed",
+        description: error instanceof Error ? error.message : "Could not verify email. Please try again.",
+      });
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const resendVerificationCode = async (email: string): Promise<boolean> => {
+    try {
+      return await authService.resendVerificationCode(email);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Failed to resend code",
+        description: error instanceof Error ? error.message : "Could not resend verification code. Please try again.",
+      });
+      return false;
     }
   };
 
@@ -83,8 +123,11 @@ export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
         user,
         isLoading,
         isAuthenticated: !!user,
+        isEmailVerified: !!user?.isEmailVerified,
         login,
         register,
+        verifyEmail,
+        resendVerificationCode,
         logout,
       }}
     >

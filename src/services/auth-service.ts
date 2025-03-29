@@ -1,4 +1,3 @@
-
 import { ApiService, apiService } from './api';
 
 export interface User {
@@ -8,6 +7,7 @@ export interface User {
   createdAt: string;
   accountType: 'customer' | 'provider';
   providerProfile?: ProviderProfile;
+  isEmailVerified?: boolean;
 }
 
 export interface ProviderProfile {
@@ -54,26 +54,30 @@ export interface LoginData {
   password: string;
 }
 
+export interface VerificationStatus {
+  verified: boolean;
+  message: string;
+}
+
 export class AuthService {
   private api: ApiService;
   private storageKey = 'car_care_user';
+  private verificationCodeKey = 'verification_code';
   
   constructor(api: ApiService = apiService) {
     this.api = api;
   }
   
   async register(data: RegisterData | ProviderRegisterData): Promise<User> {
-    // In a real app, this would call the API to register the user
-    // For now, we'll simulate a successful registration
     const user: User = {
       id: `user-${Math.random().toString(36).substring(2, 9)}`,
       email: data.email,
       name: data.name,
       createdAt: new Date().toISOString(),
       accountType: data.accountType || 'customer',
+      isEmailVerified: false,
     };
     
-    // If registering as provider, add provider profile data
     if (data.accountType === 'provider' && 'businessName' in data) {
       const providerData = data as ProviderRegisterData;
       user.providerProfile = {
@@ -87,20 +91,60 @@ export class AuthService {
       };
     }
     
-    // Store user in localStorage to simulate authentication
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    localStorage.setItem(this.verificationCodeKey + '_' + user.email, verificationCode);
+    
     localStorage.setItem(this.storageKey, JSON.stringify(user));
+    
+    console.log(`Verification code for ${user.email}: ${verificationCode}`);
     
     return user;
   }
   
+  async verifyEmail(email: string, code: string): Promise<VerificationStatus> {
+    const storedCode = localStorage.getItem(this.verificationCodeKey + '_' + email);
+    
+    if (!storedCode) {
+      return { verified: false, message: 'Verification code not found. Please register again.' };
+    }
+    
+    if (storedCode !== code) {
+      return { verified: false, message: 'Invalid verification code. Please try again.' };
+    }
+    
+    const userData = localStorage.getItem(this.storageKey);
+    if (!userData) {
+      return { verified: false, message: 'User not found. Please register again.' };
+    }
+    
+    const user = JSON.parse(userData) as User;
+    user.isEmailVerified = true;
+    localStorage.setItem(this.storageKey, JSON.stringify(user));
+    
+    localStorage.removeItem(this.verificationCodeKey + '_' + email);
+    
+    return { verified: true, message: 'Email successfully verified!' };
+  }
+  
+  async resendVerificationCode(email: string): Promise<boolean> {
+    const user = this.getCurrentUser();
+    if (!user || user.email !== email) {
+      return false;
+    }
+    
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    localStorage.setItem(this.verificationCodeKey + '_' + email, verificationCode);
+    
+    console.log(`New verification code for ${email}: ${verificationCode}`);
+    
+    return true;
+  }
+  
   async login(data: LoginData): Promise<User> {
-    // In a real app, this would call the API to authenticate the user
-    // For now, we'll simulate a successful login if email contains "test"
     if (!data.email.includes('test')) {
       throw new Error('Invalid credentials');
     }
     
-    // For testing, create user based on the email pattern
     const isProvider = data.email.includes('provider');
     
     const user: User = {
@@ -111,7 +155,6 @@ export class AuthService {
       accountType: isProvider ? 'provider' : 'customer',
     };
     
-    // Add sample provider profile for testing
     if (isProvider) {
       user.providerProfile = {
         businessName: `${user.name}'s Auto Service`,
@@ -129,7 +172,6 @@ export class AuthService {
       };
     }
     
-    // Store user in localStorage to simulate authentication
     localStorage.setItem(this.storageKey, JSON.stringify(user));
     
     return user;
@@ -155,6 +197,11 @@ export class AuthService {
     return !!this.getCurrentUser();
   }
   
+  isEmailVerified(): boolean {
+    const user = this.getCurrentUser();
+    return !!user && !!user.isEmailVerified;
+  }
+  
   isProvider(): boolean {
     const user = this.getCurrentUser();
     return !!user && user.accountType === 'provider';
@@ -178,5 +225,4 @@ export class AuthService {
   }
 }
 
-// Export a singleton instance for application use
 export const authService = new AuthService();

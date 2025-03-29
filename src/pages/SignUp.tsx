@@ -49,9 +49,11 @@ const SignUp = () => {
       
       toast({
         title: 'Account created',
-        description: 'Your account has been created successfully.',
+        description: 'Please verify your email to continue.',
       });
-      navigate('/');
+      
+      // Navigate to verification page with email
+      navigate('/verify-email', { state: { email: data.email } });
     } catch (error) {
       console.error(error);
       toast({
