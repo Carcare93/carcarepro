@@ -1,12 +1,12 @@
 
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, Edit, ListCheck } from 'lucide-react';
+import { Calendar, Edit, ListCheck, User } from 'lucide-react';
 import BookingsTab from '@/components/provider/BookingsTab';
 import ServicesTab from '@/components/provider/ServicesTab';
 import ProfileTab from '@/components/provider/ProfileTab';
@@ -40,7 +40,7 @@ const ProviderDashboard = () => {
                   Manage your service offerings and bookings
                 </p>
               </div>
-              <Button variant="outline" onClick={() => navigate('/profile')}>
+              <Button variant="outline" onClick={() => navigate('/provider-profile')}>
                 View Public Profile
               </Button>
             </div>

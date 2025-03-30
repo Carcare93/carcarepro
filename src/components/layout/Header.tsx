@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -18,6 +18,7 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const isProvider = user?.accountType === 'provider';
   
@@ -36,6 +37,10 @@ const Header = () => {
       title: "Logged out",
       description: "You've been successfully logged out.",
     });
+  };
+  
+  const getProfilePath = () => {
+    return isProvider ? '/provider-profile' : '/profile';
   };
 
   const getLinkClass = ({ isActive }: { isActive: boolean }) => {
@@ -78,7 +83,7 @@ const Header = () => {
                     Provider Dashboard
                   </Link>
                 )}
-                <Link to="/profile" className="hidden md:block py-2 px-4 rounded-md hover:bg-secondary/50 transition-colors duration-200">
+                <Link to={getProfilePath()} className="hidden md:block py-2 px-4 rounded-md hover:bg-secondary/50 transition-colors duration-200">
                   Profile
                 </Link>
                 <Button variant="outline" size="sm" className="hidden md:block" onClick={handleLogout}>
@@ -143,7 +148,7 @@ const Header = () => {
                         Provider Dashboard
                       </Link>
                     )}
-                    <Link to="/profile" className="hover:text-secondary" onClick={closeMobileMenu}>
+                    <Link to={getProfilePath()} className="hover:text-secondary" onClick={closeMobileMenu}>
                       Profile
                     </Link>
                     <Button variant="outline" size="sm" className="w-full" onClick={handleLogout}>
@@ -185,7 +190,7 @@ const Header = () => {
                   {isProvider && (
                     <NavLink to="/provider" className={getLinkClass} onClick={closeMobileMenu}>Provider Dashboard</NavLink>
                   )}
-                  <NavLink to="/profile" className={getLinkClass} onClick={closeMobileMenu}>Profile</NavLink>
+                  <NavLink to={getProfilePath()} className={getLinkClass} onClick={closeMobileMenu}>Profile</NavLink>
                   <Button variant="outline" size="sm" className="w-full" onClick={handleLogout}>Log Out</Button>
                 </>
               ) : (
