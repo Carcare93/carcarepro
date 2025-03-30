@@ -13,9 +13,9 @@
     --accent: 33 100% 50%;
     --accent-foreground: 0 0% 100%;
     
-    /* Soft Orange */
-    --secondary: 36 100% 57%;
-    --secondary-foreground: 0 0% 100%;
+    /* Light Gray (replacing Soft Orange) */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 20%;
     
     /* Light Gray */
     --background: 0 0% 96%;
