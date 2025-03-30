@@ -6,8 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
-import Discover from "./pages/Discover";
-import ServiceMarketplace from "./pages/ServiceMarketplace";
+import ServiceExplorer from "./pages/ServiceExplorer";
 import Profile from "./pages/Profile";
 import ProviderProfile from "./pages/ProviderProfile";
 import Bookings from "./pages/Bookings";
@@ -30,8 +29,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/discover" element={<Discover />} />
-            <Route path="/marketplace" element={<ServiceMarketplace />} />
+            <Route path="/services" element={<ServiceExplorer />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/provider-profile" element={<ProviderProfile />} />
             <Route path="/bookings" element={<Bookings />} />
@@ -41,6 +39,9 @@ const App = () => (
             <Route path="/signup" element={<SignUp />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/provider" element={<ProviderDashboard />} />
+            {/* Redirects for old routes */}
+            <Route path="/discover" element={<Navigate to="/services" replace />} />
+            <Route path="/marketplace" element={<Navigate to="/services" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

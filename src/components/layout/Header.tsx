@@ -67,8 +67,7 @@ const Header = () => {
             <NavLink to="/" className={getLinkClass}>Home</NavLink>
             {!isProvider && (
               <>
-                <NavLink to="/discover" className={getLinkClass}>Discover</NavLink>
-                <NavLink to="/marketplace" className={getLinkClass}>Marketplace</NavLink>
+                <NavLink to="/services" className={getLinkClass}>Services</NavLink>
                 <NavLink to="/bookings" className={getLinkClass}>Bookings</NavLink>
               </>
             )}
@@ -130,11 +129,8 @@ const Header = () => {
                 </Link>
                 {!isProvider && (
                   <>
-                    <Link to="/discover" className="hover:text-secondary" onClick={closeMobileMenu}>
-                      Discover
-                    </Link>
-                    <Link to="/marketplace" className="hover:text-secondary" onClick={closeMobileMenu}>
-                      Marketplace
+                    <Link to="/services" className="hover:text-secondary" onClick={closeMobileMenu}>
+                      Services
                     </Link>
                     <Link to="/bookings" className="hover:text-secondary" onClick={closeMobileMenu}>
                       Bookings
@@ -179,8 +175,7 @@ const Header = () => {
               <NavLink to="/" className={getLinkClass} onClick={closeMobileMenu}>Home</NavLink>
               {!isProvider && (
                 <>
-                  <NavLink to="/discover" className={getLinkClass} onClick={closeMobileMenu}>Discover</NavLink>
-                  <NavLink to="/marketplace" className={getLinkClass} onClick={closeMobileMenu}>Marketplace</NavLink>
+                  <NavLink to="/services" className={getLinkClass} onClick={closeMobileMenu}>Services</NavLink>
                   <NavLink to="/bookings" className={getLinkClass} onClick={closeMobileMenu}>Bookings</NavLink>
                 </>
               )}
