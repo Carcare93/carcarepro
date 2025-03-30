@@ -5,33 +5,44 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222 20% 18%;
-
+    /* Deep Blue */
+    --primary: 215 51% 25%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Vibrant Orange */
+    --accent: 33 100% 50%;
+    --accent-foreground: 0 0% 100%;
+    
+    /* Soft Orange */
+    --secondary: 36 100% 57%;
+    --secondary-foreground: 0 0% 100%;
+    
+    /* Light Gray */
+    --background: 0 0% 96%;
+    --foreground: 0 0% 20%;
+    
+    /* Dark Gray */
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 20%;
+    
+    /* Card styles based on light gray */
     --card: 0 0% 100%;
-    --card-foreground: 222 20% 18%;
-
+    --card-foreground: 0 0% 20%;
+    
+    /* Popover based on light gray */
     --popover: 0 0% 100%;
-    --popover-foreground: 222 20% 18%;
-
-    --primary: 198 95% 39%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 20% 98%;
-    --secondary-foreground: 222 20% 18%;
-
-    --muted: 210 20% 98%;
-    --muted-foreground: 215 16% 47%;
-
-    --accent: 210 40% 96%;
-    --accent-foreground: 222 20% 18%;
-
+    --popover-foreground: 0 0% 20%;
+    
+    /* Border color based on light gray */
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    
+    /* Ring color based on deep blue */
+    --ring: 215 51% 25%;
+    
+    /* Destructive stays the same for error states */
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 222 84% 5%;
 
     --radius: 0.75rem;
   }
@@ -86,7 +97,7 @@ html {
   }
   
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-600;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
   }
   
   .animate-enter {
