@@ -7,7 +7,10 @@
     "login": "Se connecter",
     "signup": "S'inscrire",
     "logout": "Se déconnecter",
-    "profile": "Profil"
+    "profile": "Profil",
+    "apply": "Appliquer",
+    "close": "Fermer",
+    "details": "Détails"
   },
   "header": {
     "home": "Accueil",
@@ -27,6 +30,57 @@
     "verified": "Vérifié",
     "availableToday": "Disponible aujourd'hui",
     "loading": "Chargement des prestataires..."
+  },
+  "filters": {
+    "title": "Filtres",
+    "serviceType": "Type de service",
+    "distance": "Distance",
+    "rating": "Évaluation",
+    "availability": "Disponibilité",
+    "search": "Rechercher",
+    "location": "Emplacement",
+    "keywords": "Mots-clés...",
+    "cityOrZip": "Ville ou code postal...",
+    "minRating": "Évaluation minimale",
+    "serviceTypes": {
+      "oilChange": "Vidange d'huile",
+      "tireServices": "Services de pneus",
+      "brakes": "Freins",
+      "engineRepair": "Réparation moteur",
+      "diagnostics": "Diagnostics"
+    },
+    "availabilityOptions": {
+      "anyTime": "N'importe quand",
+      "today": "Disponible aujourd'hui",
+      "tomorrow": "Disponible demain",
+      "week": "Disponible cette semaine"
+    },
+    "ratingOptions": {
+      "fiveStars": "5 étoiles et plus",
+      "fourStars": "4 étoiles et plus",
+      "threeStars": "3 étoiles et plus",
+      "twoStars": "2 étoiles et plus",
+      "oneStar": "1 étoile et plus",
+      "andUp": "et plus"
+    }
+  },
+  "bookings": {
+    "title": "Vos réservations",
+    "subtitle": "Gérez et suivez vos rendez-vous de service automobile",
+    "bookNew": "Réserver un nouveau service",
+    "upcoming": "À venir",
+    "past": "Passées",
+    "all": "Toutes les réservations",
+    "noUpcoming": "Aucune réservation à venir",
+    "noUpcomingDesc": "Vous n'avez aucune réservation à venir programmée pour le moment.",
+    "noPast": "Aucune réservation passée",
+    "noPastDesc": "Vous n'avez aucune réservation passée ou historique de service à afficher.",
+    "noBookings": "Aucune réservation trouvée",
+    "noBookingsDesc": "Vous n'avez aucune réservation correspondant aux filtres sélectionnés.",
+    "clearFilters": "Effacer les filtres",
+    "bookingDetails": "Détails de la réservation",
+    "selectBooking": "Sélectionnez une réservation pour voir ses détails",
+    "vehicle": "Véhicule:"
   },
   "footer": {
     "product": "Produit",
@@ -50,5 +104,42 @@
     "spanish": "Espagnol",
     "french": "Français",
     "italian": "Italien"
+  },
+  "home": {
+    "hero": {
+      "title": "L'entretien automobile simplifié",
+      "subtitle": "Trouvez, réservez et gérez les services de votre véhicule en un seul endroit",
+      "cta": "Explorer les services"
+    },
+    "features": {
+      "title": "Pourquoi choisir CarCare",
+      "subtitle": "Nous rendons l'entretien automobile pratique, fiable et transparent",
+      "discover": {
+        "title": "Découvrez des prestataires de confiance",
+        "description": "Parcourez les prestataires de services automobiles vérifiés près de chez vous avec des avis et des évaluations réels"
+      },
+      "book": {
+        "title": "Réservez en toute confiance",
+        "description": "Planifiez des rendez-vous instantanément avec des prix transparents et sans frais cachés"
+      },
+      "track": {
+        "title": "Suivez vos services",
+        "description": "Gérez tous vos dossiers d'entretien de véhicules et recevez des rappels de service opportuns"
+      },
+      "manage": {
+        "title": "Gérez plusieurs véhicules",
+        "description": "Suivez l'historique de service de tous vos véhicules en un seul endroit pratique"
+      }
+    },
+    "providers": {
+      "title": "Meilleurs prestataires de services",
+      "subtitle": "Approuvés par des milliers de propriétaires de véhicules",
+      "viewAll": "Voir tous les prestataires"
+    },
+    "cta": {
+      "title": "Prêt à commencer?",
+      "subtitle": "Rejoignez des milliers de propriétaires de véhicules qui font confiance à CarCare pour leurs besoins automobiles",
+      "button": "Trouver des services maintenant"
+    }
   }
 }

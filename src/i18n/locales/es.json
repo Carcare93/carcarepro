@@ -7,7 +7,10 @@
     "login": "Iniciar sesión",
     "signup": "Registrarse",
     "logout": "Cerrar sesión",
-    "profile": "Perfil"
+    "profile": "Perfil",
+    "apply": "Aplicar",
+    "close": "Cerrar",
+    "details": "Detalles"
   },
   "header": {
     "home": "Inicio",
@@ -27,6 +30,57 @@
     "verified": "Verificado",
     "availableToday": "Disponible hoy",
     "loading": "Cargando proveedores..."
+  },
+  "filters": {
+    "title": "Filtros",
+    "serviceType": "Tipo de servicio",
+    "distance": "Distancia",
+    "rating": "Calificación",
+    "availability": "Disponibilidad",
+    "search": "Buscar",
+    "location": "Ubicación",
+    "keywords": "Palabras clave...",
+    "cityOrZip": "Ciudad o código postal...",
+    "minRating": "Calificación mínima",
+    "serviceTypes": {
+      "oilChange": "Cambio de aceite",
+      "tireServices": "Servicios de neumáticos",
+      "brakes": "Frenos",
+      "engineRepair": "Reparación de motor",
+      "diagnostics": "Diagnósticos"
+    },
+    "availabilityOptions": {
+      "anyTime": "Cualquier momento",
+      "today": "Disponible hoy",
+      "tomorrow": "Disponible mañana",
+      "week": "Disponible esta semana"
+    },
+    "ratingOptions": {
+      "fiveStars": "5 Estrellas y más",
+      "fourStars": "4 Estrellas y más",
+      "threeStars": "3 Estrellas y más",
+      "twoStars": "2 Estrellas y más",
+      "oneStar": "1 Estrella y más",
+      "andUp": "y más"
+    }
+  },
+  "bookings": {
+    "title": "Tus Reservas",
+    "subtitle": "Administra y rastrea tus citas de servicio automotriz",
+    "bookNew": "Reservar Nuevo Servicio",
+    "upcoming": "Próximas",
+    "past": "Pasadas",
+    "all": "Todas las Reservas",
+    "noUpcoming": "No hay reservas próximas",
+    "noUpcomingDesc": "No tienes ninguna reserva programada en este momento.",
+    "noPast": "No hay reservas pasadas",
+    "noPastDesc": "No tienes ninguna reserva pasada o historial de servicio para mostrar.",
+    "noBookings": "No se encontraron reservas",
+    "noBookingsDesc": "No tienes ninguna reserva que coincida con los filtros seleccionados.",
+    "clearFilters": "Limpiar Filtros",
+    "bookingDetails": "Detalles de la Reserva",
+    "selectBooking": "Selecciona una reserva para ver sus detalles",
+    "vehicle": "Vehículo:"
   },
   "footer": {
     "product": "Producto",
@@ -50,5 +104,42 @@
     "spanish": "Español",
     "french": "Francés",
     "italian": "Italiano"
+  },
+  "home": {
+    "hero": {
+      "title": "Cuidado automotriz simplificado",
+      "subtitle": "Encuentra, reserva y gestiona los servicios de tu vehículo en un solo lugar",
+      "cta": "Explorar Servicios"
+    },
+    "features": {
+      "title": "¿Por qué elegir CarCare?",
+      "subtitle": "Hacemos que el cuidado automotriz sea conveniente, confiable y transparente",
+      "discover": {
+        "title": "Descubre Proveedores Confiables",
+        "description": "Explora proveedores de servicios automotrices verificados cerca de ti con reseñas y calificaciones reales"
+      },
+      "book": {
+        "title": "Reserva con Confianza",
+        "description": "Programa citas al instante con precios transparentes y sin tarifas ocultas"
+      },
+      "track": {
+        "title": "Rastrea Tus Servicios",
+        "description": "Administra todos tus registros de mantenimiento de vehículos y recibe recordatorios de servicio oportunos"
+      },
+      "manage": {
+        "title": "Gestiona Múltiples Vehículos",
+        "description": "Mantén un registro del historial de servicio de todos tus vehículos en un lugar conveniente"
+      }
+    },
+    "providers": {
+      "title": "Proveedores de Servicios Destacados",
+      "subtitle": "De confianza para miles de propietarios de vehículos",
+      "viewAll": "Ver Todos los Proveedores"
+    },
+    "cta": {
+      "title": "¿Listo para comenzar?",
+      "subtitle": "Únete a miles de propietarios de vehículos que confían en CarCare para sus necesidades automotrices",
+      "button": "Encontrar Servicios Ahora"
+    }
   }
 }

@@ -14,6 +14,20 @@ import ProviderCard from '@/components/marketplace/ProviderCard';
 import { useServiceProviders } from '@/hooks/useServiceProviders';
 import { useTranslation } from 'react-i18next';
 
+// Add a type definition for provider to fix the TypeScript error
+interface ServiceProvider {
+  id: string;
+  name: string;
+  image: string;
+  rating: number;
+  reviewCount: number;
+  distance: string;
+  address: string;
+  available: boolean;
+  verified: boolean;
+  services: string[];
+}
+
 const ServiceExplorer = () => {
   const [view, setView] = useState<'list' | 'map'>('list');
   const [location, setLocation] = useState('');
@@ -94,7 +108,7 @@ const ServiceExplorer = () => {
                           // Show providers list with type checking
                           providers.map((provider) => {
                             if (provider && provider.id) {
-                              return <ProviderCard key={provider.id} provider={provider} />;
+                              return <ProviderCard key={provider.id} provider={provider as ServiceProvider} />;
                             }
                             return null;
                           })

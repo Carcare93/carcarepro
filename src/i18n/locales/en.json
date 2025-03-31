@@ -7,7 +7,10 @@
     "login": "Log In",
     "signup": "Sign Up",
     "logout": "Log Out",
-    "profile": "Profile"
+    "profile": "Profile",
+    "apply": "Apply",
+    "close": "Close",
+    "details": "Details"
   },
   "header": {
     "home": "Home",
@@ -27,6 +30,57 @@
     "verified": "Verified",
     "availableToday": "Available Today",
     "loading": "Loading providers..."
+  },
+  "filters": {
+    "title": "Filters",
+    "serviceType": "Service Type",
+    "distance": "Distance",
+    "rating": "Rating",
+    "availability": "Availability",
+    "search": "Search",
+    "location": "Location",
+    "keywords": "Keywords...",
+    "cityOrZip": "City or zip code...",
+    "minRating": "Minimum Rating",
+    "serviceTypes": {
+      "oilChange": "Oil Change",
+      "tireServices": "Tire Services",
+      "brakes": "Brakes",
+      "engineRepair": "Engine Repair",
+      "diagnostics": "Diagnostics"
+    },
+    "availabilityOptions": {
+      "anyTime": "Any time",
+      "today": "Available today",
+      "tomorrow": "Available tomorrow",
+      "week": "Available this week"
+    },
+    "ratingOptions": {
+      "fiveStars": "5 Stars & Up",
+      "fourStars": "4 Stars & Up",
+      "threeStars": "3 Stars & Up",
+      "twoStars": "2 Stars & Up",
+      "oneStar": "1 Star & Up",
+      "andUp": "& Up"
+    }
+  },
+  "bookings": {
+    "title": "Your Bookings",
+    "subtitle": "Manage and track your automotive service appointments",
+    "bookNew": "Book New Service",
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "all": "All Bookings",
+    "noUpcoming": "No upcoming bookings",
+    "noUpcomingDesc": "You don't have any upcoming bookings scheduled at the moment.",
+    "noPast": "No past bookings",
+    "noPastDesc": "You don't have any past bookings or service history to display.",
+    "noBookings": "No bookings found",
+    "noBookingsDesc": "You don't have any bookings that match the selected filters.",
+    "clearFilters": "Clear Filters",
+    "bookingDetails": "Booking Details",
+    "selectBooking": "Select a booking to view its details",
+    "vehicle": "Vehicle:"
   },
   "footer": {
     "product": "Product",
@@ -50,5 +104,42 @@
     "spanish": "Spanish",
     "french": "French",
     "italian": "Italian"
+  },
+  "home": {
+    "hero": {
+      "title": "Automotive care made simple",
+      "subtitle": "Find, book, and manage your vehicle services all in one place",
+      "cta": "Explore Services"
+    },
+    "features": {
+      "title": "Why Choose CarCare",
+      "subtitle": "We make automotive care convenient, reliable, and transparent",
+      "discover": {
+        "title": "Discover Trusted Providers",
+        "description": "Browse verified automotive service providers near you with real reviews and ratings"
+      },
+      "book": {
+        "title": "Book with Confidence",
+        "description": "Schedule appointments instantly with transparent pricing and no hidden fees"
+      },
+      "track": {
+        "title": "Track Your Services",
+        "description": "Manage all your vehicle maintenance records and get timely service reminders"
+      },
+      "manage": {
+        "title": "Manage Multiple Vehicles",
+        "description": "Keep track of service history for all your vehicles in one convenient place"
+      }
+    },
+    "providers": {
+      "title": "Top Service Providers",
+      "subtitle": "Trusted by thousands of vehicle owners",
+      "viewAll": "View All Providers"
+    },
+    "cta": {
+      "title": "Ready to get started?",
+      "subtitle": "Join thousands of vehicle owners who trust CarCare for their automotive needs",
+      "button": "Find Services Now"
+    }
   }
 }

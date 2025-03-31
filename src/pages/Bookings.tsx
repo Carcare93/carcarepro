@@ -18,11 +18,13 @@ import BookingDetails from '@/components/bookings/BookingDetails';
 import BookingStatusBadge from '@/components/bookings/BookingStatusBadge';
 import EmptyState from '@/components/shared/EmptyState';
 import BookingFilters from '@/components/bookings/BookingFilters';
+import { useTranslation } from 'react-i18next';
 
 const Bookings = () => {
   const { toast } = useToast();
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [filterStatus, setFilterStatus] = useState<BookingStatus | 'all'>('all');
+  const { t } = useTranslation();
   
   const { data: bookings, isLoading, error } = useQuery({
     queryKey: ['bookings'],
@@ -66,14 +68,14 @@ const Bookings = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row justify-between items-start mb-8">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight mb-2">Your Bookings</h1>
-              <p className="text-muted-foreground">Manage and track your automotive service appointments</p>
+              <h1 className="text-3xl font-bold tracking-tight mb-2">{t('bookings.title')}</h1>
+              <p className="text-muted-foreground">{t('bookings.subtitle')}</p>
             </div>
             <div className="mt-4 md:mt-0">
               <Button asChild>
                 <a href="/discover" className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
-                  Book New Service
+                  {t('bookings.bookNew')}
                 </a>
               </Button>
             </div>
@@ -82,9 +84,9 @@ const Bookings = () => {
           <Tabs defaultValue="upcoming" className="w-full">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
               <TabsList>
-                <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-                <TabsTrigger value="past">Past</TabsTrigger>
-                <TabsTrigger value="all">All Bookings</TabsTrigger>
+                <TabsTrigger value="upcoming">{t('bookings.upcoming')}</TabsTrigger>
+                <TabsTrigger value="past">{t('bookings.past')}</TabsTrigger>
+                <TabsTrigger value="all">{t('bookings.all')}</TabsTrigger>
               </TabsList>
               
               <BookingFilters 
@@ -118,11 +120,11 @@ const Bookings = () => {
                   ) : (
                     <EmptyState
                       icon={<Calendar className="h-12 w-12 text-muted-foreground" />}
-                      title="No upcoming bookings"
-                      description="You don't have any upcoming bookings scheduled at the moment."
+                      title={t('bookings.noUpcoming')}
+                      description={t('bookings.noUpcomingDesc')}
                       action={
                         <Button asChild>
-                          <a href="/discover">Book a Service</a>
+                          <a href="/discover">{t('bookings.bookNew')}</a>
                         </Button>
                       }
                     />
@@ -152,8 +154,8 @@ const Bookings = () => {
                   ) : (
                     <EmptyState
                       icon={<Clock className="h-12 w-12 text-muted-foreground" />}
-                      title="No past bookings"
-                      description="You don't have any past bookings or service history to display."
+                      title={t('bookings.noPast')}
+                      description={t('bookings.noPastDesc')}
                     />
                   )}
                 </TabsContent>
@@ -181,11 +183,11 @@ const Bookings = () => {
                   ) : (
                     <EmptyState
                       icon={<Calendar className="h-12 w-12 text-muted-foreground" />}
-                      title="No bookings found"
-                      description="You don't have any bookings that match the selected filters."
+                      title={t('bookings.noBookings')}
+                      description={t('bookings.noBookingsDesc')}
                       action={
                         <Button variant="outline" onClick={() => setFilterStatus('all')}>
-                          Clear Filters
+                          {t('bookings.clearFilters')}
                         </Button>
                       }
                     />
@@ -206,9 +208,9 @@ const Bookings = () => {
                       <div className="rounded-full bg-primary/10 p-4 mb-4">
                         <ChevronRight className="h-6 w-6 text-primary" />
                       </div>
-                      <h3 className="text-lg font-medium mb-2">Booking Details</h3>
+                      <h3 className="text-lg font-medium mb-2">{t('bookings.bookingDetails')}</h3>
                       <p className="text-muted-foreground text-sm mb-6">
-                        Select a booking to view its details
+                        {t('bookings.selectBooking')}
                       </p>
                     </CardContent>
                   </Card>
@@ -231,6 +233,8 @@ interface BookingCardProps {
 }
 
 const BookingCard = ({ booking, onClick, isSelected }: BookingCardProps) => {
+  const { t } = useTranslation();
+  
   return (
     <Card 
       className={`border border-border/40 transition-all hover:border-primary/20 hover:shadow-sm cursor-pointer ${isSelected ? 'border-primary border-opacity-50 ring-1 ring-primary ring-opacity-20' : ''}`}
@@ -266,10 +270,10 @@ const BookingCard = ({ booking, onClick, isSelected }: BookingCardProps) => {
         
         <div className="mt-4 pt-4 border-t border-border/40 flex justify-between items-center">
           <div className="text-sm">
-            <span className="text-muted-foreground">Vehicle:</span> {booking.vehicle.make} {booking.vehicle.model}
+            <span className="text-muted-foreground">{t('bookings.vehicle')}</span> {booking.vehicle.make} {booking.vehicle.model}
           </div>
           <Button variant="ghost" size="sm" className="gap-1">
-            Details <ChevronRight className="h-4 w-4" />
+            {t('common.details')} <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       </CardContent>
