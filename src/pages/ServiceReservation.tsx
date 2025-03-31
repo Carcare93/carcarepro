@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useServices } from '@/hooks/useSupabaseData';
-import { bookAppointment } from '@/services/booking-service';
+import { bookAppointment, getServiceDuration } from '@/services/booking-service';
+import { ServiceDuration } from '@/types/booking';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
@@ -83,6 +84,9 @@ const ServiceReservation = () => {
     setIsSubmitting(true);
     
     try {
+      // Get the appropriate duration for this service type using the getServiceDuration helper
+      const serviceDuration: ServiceDuration = getServiceDuration(selectedService.name);
+      
       // Create booking
       const bookingData = {
         serviceType: selectedService.name,
@@ -113,7 +117,7 @@ const ServiceReservation = () => {
         },
         price: selectedService.price,
         notes: notes,
-        duration: 60 // Default duration
+        duration: serviceDuration // Use the properly typed duration value
       };
       
       const booking = await bookAppointment(bookingData);
