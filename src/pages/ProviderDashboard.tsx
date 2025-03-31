@@ -28,7 +28,7 @@ const ProviderDashboard = () => {
     }
   }, [user, navigate]);
 
-  // Fetch bookings
+  // Fetch bookings - specifying the default as an empty array instead of empty object
   const { 
     data: bookings = [], 
     isLoading: isLoadingBookings, 
