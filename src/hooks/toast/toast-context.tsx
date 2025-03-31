@@ -15,10 +15,6 @@ export const ToastContext = React.createContext<{
 export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatchAction] = React.useReducer(reducer, { toasts: [] })
 
-  React.useEffect(() => {
-    // This effect can be used for syncing state if needed
-  }, [state]);
-
   const toast = React.useCallback((props: Toast) => {
     const id = genId()
 

@@ -23,10 +23,10 @@ import ProviderDashboard from "./pages/ProviderDashboard";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <BrowserRouter>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <AuthProvider>
+  <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
+      <AuthProvider>
+        <TooltipProvider>
           <ToastProvider>
             <Routes>
               <Route path="/" element={<Index />} />
@@ -48,10 +48,10 @@ const App = () => (
             <Toaster />
             <Sonner />
           </ToastProvider>
-        </AuthProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  </QueryClientProvider>
 );
 
 export default App;
