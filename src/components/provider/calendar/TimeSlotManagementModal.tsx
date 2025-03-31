@@ -21,7 +21,8 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { serviceDurations } from '@/services/booking-service';
+import { serviceDurations, standardDurations } from '@/services/booking-service';
+import { ServiceDuration } from '@/types/booking';
 
 interface TimeSlotManagementModalProps {
   isOpen: boolean;
@@ -65,7 +66,7 @@ const TimeSlotManagementModal = ({ isOpen, onClose }: TimeSlotManagementModalPro
     serviceTypes.map(service => ({
       serviceId: service.id,
       name: service.name,
-      duration: service.defaultDuration,
+      duration: service.defaultDuration as ServiceDuration,
       isEnabled: true,
       maxBookingsPerDay: 8
     }))
@@ -183,19 +184,18 @@ const TimeSlotManagementModal = ({ isOpen, onClose }: TimeSlotManagementModalPro
                         <Select 
                           value={service.duration.toString()} 
                           onValueChange={(value) => 
-                            handleServiceSettingChange(service.serviceId, 'duration', parseInt(value))
+                            handleServiceSettingChange(service.serviceId, 'duration', parseInt(value) as ServiceDuration)
                           }
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Duration" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="15">15 min</SelectItem>
-                            <SelectItem value="30">30 min</SelectItem>
-                            <SelectItem value="45">45 min</SelectItem>
-                            <SelectItem value="60">60 min</SelectItem>
-                            <SelectItem value="90">90 min</SelectItem>
-                            <SelectItem value="120">120 min</SelectItem>
+                            {standardDurations.map(duration => (
+                              <SelectItem key={duration} value={duration.toString()}>
+                                {duration} min
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </div>

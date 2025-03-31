@@ -1,7 +1,7 @@
 
 import * as React from "react"
 import { ToastContext } from "./toast/toast-context"
-import { dispatch, memoryState, listeners } from "./toast/toast-reducer"
+import { dispatch, memoryState } from "./toast/toast-reducer"
 import { Toast, ToasterToast } from "./toast/types"
 import { genId } from "./toast/utils"
 
@@ -40,7 +40,7 @@ export function toast(props: Toast) {
 export function useToast() {
   const context = React.useContext(ToastContext)
   
-  if (context === undefined) {
+  if (!context) {
     throw new Error("useToast must be used within a ToastProvider")
   }
   

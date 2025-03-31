@@ -1,8 +1,8 @@
 
 import { useState, useEffect } from 'react';
-import { Booking } from '@/types/booking';
+import { Booking, ServiceDuration } from '@/types/booking';
 import { startOfDay, endOfDay, format, parseISO, addMinutes } from 'date-fns';
-import { getServiceDuration } from '@/services/booking-service';
+import { getServiceDuration, standardizeDuration } from '@/services/booking-service';
 
 export type CalendarEvent = {
   id: string;
@@ -11,7 +11,7 @@ export type CalendarEvent = {
   time: string;
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
   color: string;
-  duration: number; // in minutes
+  duration: ServiceDuration; // in minutes
   booking: Booking;
 };
 
@@ -21,7 +21,7 @@ export type TimeSlot = {
   endTime: string;
   dayOfWeek: number; // 0 = Sunday, 1 = Monday, etc.
   serviceType: string;
-  duration: number; // in minutes
+  duration: ServiceDuration; // in minutes
   isAvailable: boolean;
 };
 
@@ -114,8 +114,14 @@ export const useCalendarEvents = (bookings: Booking[], currentDate: Date) => {
       const serviceType = booking.serviceType.split('(')[0].trim();
       const color = serviceColorMap[serviceType] || serviceColorMap.default;
       
-      // Use booking duration if available, otherwise calculate it
-      const duration = booking.duration || getServiceDuration(booking.serviceType);
+      // Use booking duration if available, otherwise calculate it and standardize
+      let duration = booking.duration;
+      if (!duration) {
+        duration = getServiceDuration(booking.serviceType);
+      } else {
+        // Ensure duration is one of the standard options
+        duration = standardizeDuration(duration);
+      }
       
       return {
         id: booking.id,

@@ -1,10 +1,9 @@
-
-import { Booking, BookingStatus } from '@/types/booking';
+import { Booking, BookingStatus, ServiceDuration } from '@/types/booking';
 import { v4 as uuidv4 } from 'uuid';
 import { authService, User } from './auth-service';
 
 // Map of service types to their durations in minutes
-export const serviceDurations: Record<string, number> = {
+export const serviceDurations: Record<string, ServiceDuration> = {
   'Oil Change & Filter Replacement': 45,
   'Scheduled Maintenance': 120,
   'Tire Rotation & Balancing': 60,
@@ -19,8 +18,11 @@ export const serviceDurations: Record<string, number> = {
   'default': 60
 };
 
-// Function to get the duration for a specific service type
-export const getServiceDuration = (serviceType: string): number => {
+// Standard duration options for services
+export const standardDurations: ServiceDuration[] = [15, 30, 45, 60, 90, 120];
+
+// Function to get the standardized duration for a specific service type
+export const getServiceDuration = (serviceType: string): ServiceDuration => {
   // Remove anything in parentheses for matching
   const baseServiceType = serviceType.split('(')[0].trim();
   
@@ -36,6 +38,14 @@ export const getServiceDuration = (serviceType: string): number => {
   
   // Fall back to default duration
   return serviceDurations.default;
+};
+
+// Function to standardize a duration value to one of the standard options
+export const standardizeDuration = (duration: number): ServiceDuration => {
+  // Find the closest standard duration
+  return standardDurations.reduce((prev, curr) => {
+    return Math.abs(curr - duration) < Math.abs(prev - duration) ? curr : prev;
+  }, standardDurations[0]);
 };
 
 // Function to generate mock bookings data
@@ -180,13 +190,14 @@ export const fetchMockBookings = async (): Promise<Booking[]> => {
 
 // Function to mock booking appointment (in real app this would call an API)
 export const bookAppointment = async (bookingData: Omit<Booking, 'id'>): Promise<Booking> => {
-  // Calculate duration if not provided
-  const duration = bookingData.duration || getServiceDuration(bookingData.serviceType);
+  // Calculate duration if not provided and ensure it's standardized
+  const rawDuration = bookingData.duration || getServiceDuration(bookingData.serviceType);
+  const duration = standardizeDuration(rawDuration);
   
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 1000));
   
-  // Return mocked response with generated ID and calculated duration
+  // Return mocked response with generated ID and standardized duration
   return {
     id: uuidv4(),
     ...bookingData,
