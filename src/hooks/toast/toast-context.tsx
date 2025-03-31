@@ -67,3 +67,16 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     </ToastContext.Provider>
   )
 }
+
+// Export the custom hook to use the toast context
+export const useToast = () => {
+  const context = React.useContext(ToastContext)
+  if (!context) {
+    throw new Error("useToast must be used within a ToastProvider")
+  }
+  return {
+    ...context.state,
+    toast: context.toast,
+    dismiss: context.dismiss,
+  }
+}

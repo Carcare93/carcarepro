@@ -1,7 +1,7 @@
 
 import * as React from "react"
 import { ToastContext } from "./toast/toast-context"
-import { dispatch, memoryState } from "./toast/toast-reducer"
+import { dispatch, memoryState, listeners } from "./toast/toast-reducer"
 import { Toast, ToasterToast } from "./toast/types"
 import { genId } from "./toast/utils"
 
@@ -70,7 +70,4 @@ function useToast() {
   }
 }
 
-// We also need to export the listeners array
-import { listeners } from "./toast/toast-reducer"
-
-export { useToast, toast, ToastProvider } from "./toast/toast-context"
+export { useToast, toast }
