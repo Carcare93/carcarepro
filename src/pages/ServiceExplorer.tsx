@@ -1,135 +1,159 @@
 
-import React, { useState } from 'react';
-import { Filter, List, MapIcon, Car } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-import { useToast } from '@/hooks/use-toast';
-import ServiceMap from '@/components/marketplace/ServiceMap';
-import ServiceList from '@/components/marketplace/ServiceList';
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import ProviderCard from '@/components/marketplace/ProviderCard';
 import FilterSidebar from '@/components/marketplace/FilterSidebar';
 import LocationSearch from '@/components/marketplace/LocationSearch';
-import ProviderCard from '@/components/marketplace/ProviderCard';
-import { useServiceProviders } from '@/hooks/useServiceProviders';
-import { useTranslation } from 'react-i18next';
+import ServiceMap from '@/components/marketplace/ServiceMap';
+import ServiceList from '@/components/marketplace/ServiceList';
+import EmptyState from '@/components/shared/EmptyState';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Wrench, Map, List, SlidersHorizontal } from 'lucide-react';
+import { getServiceProviders } from '@/services/car-service';
+import { useQuery } from '@tanstack/react-query';
 
-// Add a type definition for provider to fix the TypeScript error
+// Define a separate interface for the component instead of reusing the imported type
 interface ServiceProvider {
   id: string;
   name: string;
-  image: string;
+  services: string[];
   rating: number;
   reviewCount: number;
+  image: string;
   distance: string;
   address: string;
   available: boolean;
   verified: boolean;
-  services: string[];
 }
 
-const ServiceExplorer = () => {
-  const [view, setView] = useState<'list' | 'map'>('list');
-  const [location, setLocation] = useState('');
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const { toast } = useToast();
-  const { providers, isLoading } = useServiceProviders(location);
+export default function ServiceExplorer() {
   const { t } = useTranslation();
+  const [showFilters, setShowFilters] = useState(false);
+  const [view, setView] = useState<'list' | 'map'>('list');
+  const [filters, setFilters] = useState({
+    service: '',
+    rating: 0,
+    distance: 50,
+    open: false,
+    verified: false
+  });
+  
+  const { data: providers = [], isLoading } = useQuery({
+    queryKey: ['serviceProviders'],
+    queryFn: getServiceProviders
+  });
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast({
-      title: "Searching services",
-      description: `Finding automotive services near ${location || 'your location'}`,
-    });
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
   };
 
+  // Apply filters to providers
+  const filteredProviders = providers.filter((provider: any) => {
+    // Filter by service type
+    if (filters.service && !provider.services.includes(filters.service)) {
+      return false;
+    }
+    
+    // Filter by minimum rating
+    if (filters.rating > 0 && provider.rating < filters.rating) {
+      return false;
+    }
+    
+    // Filter by verified status
+    if (filters.verified && !provider.verified) {
+      return false;
+    }
+    
+    // Filter by availability
+    if (filters.open && !provider.available) {
+      return false;
+    }
+    
+    return true;
+  });
+  
+  // Map the providers to match our component's expected ServiceProvider interface
+  const mappedProviders: ServiceProvider[] = filteredProviders.map((provider: any) => ({
+    id: provider.id,
+    name: provider.name,
+    services: provider.services,
+    rating: provider.rating,
+    reviewCount: provider.reviewCount,
+    image: provider.image || '/placeholder.svg',
+    distance: provider.distance || '5 miles',
+    address: provider.location?.address || 'Unknown location',
+    available: provider.available || true,
+    verified: provider.verified || false
+  }));
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-grow pt-24 pb-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-              <div>
-                <h1 className="text-3xl font-bold mb-2">{t('services.title')}</h1>
-                <p className="text-muted-foreground">{t('services.subtitle')}</p>
-              </div>
-              
-              <div className="w-full md:w-auto">
-                <LocationSearch 
-                  location={location}
-                  setLocation={setLocation}
-                  handleSearch={handleSearch}
-                />
-              </div>
+      <main className="flex-grow container py-8">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold">{t('serviceExplorer.title', 'Auto Service Providers')}</h1>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleFilters}
+              className="flex items-center gap-1 md:gap-2"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              <span className="hidden md:inline">{t('serviceExplorer.filters', 'Filters')}</span>
+            </Button>
+          </div>
+        </div>
+        
+        <div className="mb-6">
+          <LocationSearch />
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {showFilters && (
+            <div className="lg:col-span-3">
+              <FilterSidebar filters={filters} setFilters={setFilters} />
             </div>
-            
-            <Tabs defaultValue="list" className="w-full">
-              <div className="flex justify-between items-center mb-6">
-                <TabsList>
-                  <TabsTrigger value="list" onClick={() => setView('list')}>
-                    <List className="h-4 w-4 mr-2" />
-                    {t('services.listView')}
-                  </TabsTrigger>
-                  <TabsTrigger value="map" onClick={() => setView('map')}>
-                    <MapIcon className="h-4 w-4 mr-2" />
-                    {t('services.mapView')}
-                  </TabsTrigger>
-                </TabsList>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsFilterOpen(!isFilterOpen)}
-                  className="md:hidden"
-                >
-                  <Filter className="h-4 w-4 mr-2" />
-                  {t('services.filters')}
-                </Button>
-              </div>
+          )}
+          
+          <div className={`${showFilters ? 'lg:col-span-9' : 'lg:col-span-12'}`}>
+            <Tabs defaultValue="list" className="mb-6" onValueChange={(value) => setView(value as 'list' | 'map')}>
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="list" className="flex items-center gap-2">
+                  <List className="h-4 w-4" />
+                  {t('serviceExplorer.listView', 'List View')}
+                </TabsTrigger>
+                <TabsTrigger value="map" className="flex items-center gap-2">
+                  <Map className="h-4 w-4" />
+                  {t('serviceExplorer.mapView', 'Map View')}
+                </TabsTrigger>
+              </TabsList>
               
-              <div className="flex flex-col md:flex-row gap-6">
-                {/* Filters sidebar */}
-                <FilterSidebar 
-                  isFilterOpen={isFilterOpen} 
-                  setIsFilterOpen={setIsFilterOpen} 
-                />
-                
-                {/* Content area */}
-                <div className="flex-1">
-                  <TabsContent value="list" className="mt-0">
-                    {view === 'list' && (
-                      <div className="space-y-6">
-                        {isLoading ? (
-                          // Show skeletons when loading
-                          <div>{t('services.loading')}</div>
-                        ) : providers && providers.length > 0 ? (
-                          // Show providers list with type checking
-                          providers.map((provider) => {
-                            if (provider && provider.id) {
-                              return <ProviderCard key={provider.id} provider={provider as ServiceProvider} />;
-                            }
-                            return null;
-                          })
-                        ) : (
-                          // Show empty state
-                          <div className="text-center py-12">
-                            <Car className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                            <h3 className="text-xl font-medium mb-2">{t('services.noProvidersFound')}</h3>
-                            <p className="text-muted-foreground">
-                              {t('services.tryAdjusting')}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </TabsContent>
-                  <TabsContent value="map" className="mt-0">
-                    <ServiceMap providers={providers || []} isLoading={isLoading} />
-                  </TabsContent>
+              <TabsContent value="list" className="mt-4">
+                {isLoading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+                    <p className="mt-4 text-muted-foreground">{t('serviceExplorer.loading', 'Loading service providers...')}</p>
+                  </div>
+                ) : mappedProviders.length > 0 ? (
+                  <ServiceList providers={mappedProviders} />
+                ) : (
+                  <EmptyState
+                    icon={<Wrench className="h-12 w-12" />}
+                    title={t('serviceExplorer.noResults', 'No service providers found')}
+                    description={t('serviceExplorer.tryDifferent', 'Try changing your filters or location')}
+                  />
+                )}
+              </TabsContent>
+              
+              <TabsContent value="map" className="mt-4">
+                <div className="h-[70vh] rounded-xl overflow-hidden">
+                  <ServiceMap providers={mappedProviders} />
                 </div>
-              </div>
+              </TabsContent>
             </Tabs>
           </div>
         </div>
@@ -137,6 +161,4 @@ const ServiceExplorer = () => {
       <Footer />
     </div>
   );
-};
-
-export default ServiceExplorer;
+}
