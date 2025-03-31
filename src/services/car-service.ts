@@ -1,25 +1,26 @@
+import { Booking, BookingStatus, ServiceDuration } from '@/types/booking';
+import { v4 as uuidv4 } from 'uuid';
+import { authService, User } from './auth-service';
 
-import { ApiService, apiService } from './api';
+export interface User {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  accountType: 'customer' | 'provider';
+  providerProfile?: ProviderProfile;
+  vehicles?: Vehicle[];
+}
 
 export interface Vehicle {
   id: string;
   make: string;
   model: string;
   year: number;
-  licensePlate?: string;
-  userId?: string; // Add userId to track vehicle ownership
-}
-
-export interface Invoice {
-  id: string;
-  vehicleId: string;
-  serviceProviderId: string;
-  date: string;
-  amount: number;
-  description: string;
-  services: string[];
-  paid: boolean;
-  fileUrl?: string; // Optional URL to an invoice PDF or image
+  licensePlate: string;
+  vin?: string;
+  color?: string;
+  owner?: string;
 }
 
 export interface ServiceProvider {
@@ -30,104 +31,155 @@ export interface ServiceProvider {
     city: string;
     state: string;
     zipCode: string;
-    coordinates: {
-      lat: number;
-      lng: number;
-    }
+    coordinates?: { lat: number; lng: number };
   };
   services: string[];
-  rating: number;
-  reviewCount: number;
-  phone: string;
+  serviceDetails?: { 
+    name: string;
+    duration: number; 
+  }[];
+  rating?: number;
+  reviewCount?: number;
+  website?: string;
+  phone?: string;
+  email?: string;
+  businessHours?: Record<string, { open: string; close: string }>;
 }
 
-export class CarService {
-  private api: ApiService;
-  private vehicleStorageKey = 'car_care_vehicles';
-  private invoiceStorageKey = 'car_care_invoices';
-  
-  constructor(api: ApiService = apiService) {
-    this.api = api;
-  }
-  
-  async getUserVehicles(): Promise<Vehicle[]> {
-    // Get vehicles from local storage for demo purposes
-    // In a real app, this would call the API with the user's ID
-    const storedVehicles = localStorage.getItem(this.vehicleStorageKey);
-    if (storedVehicles) {
-      return JSON.parse(storedVehicles) as Vehicle[];
+export interface ProviderProfile {
+  id: string;
+  userId: string;
+  businessName: string;
+  description?: string;
+  location: {
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    coordinates?: { lat: number; lng: number };
+  };
+  services: string[];
+  rating?: number;
+  reviewCount?: number;
+  phone?: string;
+  website?: string;
+  businessHours?: Record<string, { open: string; close: string }>;
+}
+
+class AuthService {
+  private currentUser: User | null = null;
+
+  constructor() {
+    // Load user from localStorage if available
+    const storedUser = localStorage.getItem('currentUser');
+    if (storedUser) {
+      this.currentUser = JSON.parse(storedUser);
     }
-    return [];
-  }
-  
-  async getServiceProviders(location: string): Promise<ServiceProvider[]> {
-    return this.api.get<ServiceProvider[]>(`/service-providers?location=${encodeURIComponent(location)}`);
-  }
-  
-  async addVehicle(vehicle: Omit<Vehicle, 'id'>): Promise<Vehicle> {
-    // Create a new vehicle with a random ID
-    const newVehicle: Vehicle = {
-      ...vehicle,
-      id: `vehicle-${Math.random().toString(36).substring(2, 9)}`
-    };
-    
-    // Get existing vehicles
-    const vehicles = await this.getUserVehicles();
-    
-    // Add the new vehicle
-    const updatedVehicles = [...vehicles, newVehicle];
-    
-    // Save to local storage
-    localStorage.setItem(this.vehicleStorageKey, JSON.stringify(updatedVehicles));
-    
-    return newVehicle;
   }
 
-  async getVehicleInvoices(vehicleId: string): Promise<Invoice[]> {
-    // Get invoices from local storage
-    const storedInvoices = localStorage.getItem(this.invoiceStorageKey);
-    if (storedInvoices) {
-      const allInvoices = JSON.parse(storedInvoices) as Invoice[];
-      // Filter invoices for the specific vehicle
-      return allInvoices.filter(invoice => invoice.vehicleId === vehicleId);
+  getCurrentUser(): User | null {
+    return this.currentUser;
+  }
+
+  async register(
+    email: string,
+    firstName: string,
+    lastName: string,
+    accountType: 'customer' | 'provider',
+    providerProfileData?: Omit<ProviderProfile, 'id' | 'userId'>
+  ): Promise<User> {
+    // Basic email validation
+    if (!email.includes('@')) {
+      throw new Error('Invalid email address');
     }
-    return [];
-  }
 
-  async addInvoice(invoice: Omit<Invoice, 'id'>): Promise<Invoice> {
-    // Create a new invoice with a random ID
-    const newInvoice: Invoice = {
-      ...invoice,
-      id: `invoice-${Math.random().toString(36).substring(2, 9)}`
+    // Simulate user registration
+    const newUser: User = {
+      id: uuidv4(),
+      email,
+      firstName,
+      lastName,
+      accountType,
+      ...(accountType === 'provider' && providerProfileData
+        ? {
+            providerProfile: {
+              id: uuidv4(),
+              userId: uuidv4(), // Mock user ID
+              ...providerProfileData,
+            },
+          }
+        : {}),
     };
-    
-    // Get existing invoices
-    const storedInvoices = localStorage.getItem(this.invoiceStorageKey);
-    const invoices = storedInvoices ? JSON.parse(storedInvoices) as Invoice[] : [];
-    
-    // Add the new invoice
-    const updatedInvoices = [...invoices, newInvoice];
-    
-    // Save to local storage
-    localStorage.setItem(this.invoiceStorageKey, JSON.stringify(updatedInvoices));
-    
-    return newInvoice;
+
+    this.currentUser = newUser;
+    localStorage.setItem('currentUser', JSON.stringify(newUser));
+    return newUser;
   }
 
-  async deleteInvoice(invoiceId: string): Promise<void> {
-    // Get existing invoices
-    const storedInvoices = localStorage.getItem(this.invoiceStorageKey);
-    if (storedInvoices) {
-      const invoices = JSON.parse(storedInvoices) as Invoice[];
-      
-      // Filter out the invoice to delete
-      const updatedInvoices = invoices.filter(invoice => invoice.id !== invoiceId);
-      
-      // Save to local storage
-      localStorage.setItem(this.invoiceStorageKey, JSON.stringify(updatedInvoices));
+  async login(email: string): Promise<User> {
+    // Simulate fetching user data (replace with actual API call)
+    const mockUser: User = {
+      id: uuidv4(),
+      email,
+      firstName: 'John',
+      lastName: 'Doe',
+      accountType: 'customer',
+      vehicles: [
+        {
+          id: uuidv4(),
+          make: 'Toyota',
+          model: 'Camry',
+          year: 2018,
+          licensePlate: 'ABC-123',
+        },
+      ],
+    };
+
+    // Simulate provider profile (optional)
+    if (email === 'provider@example.com') {
+      mockUser.accountType = 'provider';
+      mockUser.providerProfile = {
+        id: uuidv4(),
+        userId: mockUser.id,
+        businessName: 'Express Auto Care',
+        location: {
+          address: '123 Mechanic St',
+          city: 'San Francisco',
+          state: 'CA',
+          zipCode: '94101',
+        },
+        services: ['Oil Change', 'Tire Rotation', 'Brake Inspection'],
+        rating: 4.5,
+        reviewCount: 50,
+        phone: '(415) 555-1212',
+      };
+    }
+
+    this.currentUser = mockUser;
+    localStorage.setItem('currentUser', JSON.stringify(mockUser));
+    return mockUser;
+  }
+
+  logout(): void {
+    this.currentUser = null;
+    localStorage.removeItem('currentUser');
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.currentUser;
+  }
+
+  updateProviderProfile(profileData: Partial<ProviderProfile>): void {
+    if (this.currentUser && this.currentUser.accountType === 'provider' && this.currentUser.providerProfile) {
+      this.currentUser.providerProfile = {
+        ...this.currentUser.providerProfile,
+        ...profileData,
+      };
+      localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+    } else {
+      throw new Error('User is not a provider or not logged in.');
     }
   }
 }
 
-// Export a singleton instance for application use
-export const carService = new CarService();
+export const authService = new AuthService();

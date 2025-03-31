@@ -48,6 +48,18 @@ export const standardizeDuration = (duration: number): ServiceDuration => {
   }, standardDurations[0]);
 };
 
+// Function to register a new service with duration
+export const registerServiceWithDuration = (
+  serviceName: string, 
+  duration: ServiceDuration
+): void => {
+  // In a real app, this would update a database
+  serviceDurations[serviceName] = duration;
+  
+  // For now, just update the in-memory map
+  console.log(`Registered service "${serviceName}" with duration ${duration} minutes`);
+};
+
 // Function to generate mock bookings data
 export const fetchMockBookings = async (): Promise<Booking[]> => {
   // Simulate API delay
