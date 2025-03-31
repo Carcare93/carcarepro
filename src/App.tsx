@@ -22,6 +22,19 @@ import ProviderDashboard from "./pages/ProviderDashboard";
 
 const queryClient = new QueryClient();
 
+// Protected route component to redirect unauthenticated users
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  // Check if the user is logged in using local storage
+  const isAuthenticated = localStorage.getItem('car_care_user') !== null;
+  
+  if (!isAuthenticated) {
+    // Redirect them to the login page if not authenticated
+    return <Navigate to="/login" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
@@ -33,7 +46,14 @@ const App = () => (
               <Route path="/services" element={<ServiceExplorer />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/provider-profile" element={<ProviderProfile />} />
-              <Route path="/bookings" element={<Bookings />} />
+              <Route 
+                path="/bookings" 
+                element={
+                  <ProtectedRoute>
+                    <Bookings />
+                  </ProtectedRoute>
+                } 
+              />
               <Route path="/vehicles" element={<Vehicles />} />
               <Route path="/vehicles/:vehicleId/invoices" element={<VehicleInvoices />} />
               <Route path="/login" element={<Login />} />

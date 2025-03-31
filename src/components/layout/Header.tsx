@@ -71,7 +71,9 @@ const Header = () => {
             {!isProvider && (
               <>
                 <NavLink to="/services" className={getLinkClass}>{t('header.services')}</NavLink>
-                <NavLink to="/bookings" className={getLinkClass}>{t('header.bookings')}</NavLink>
+                {isAuthenticated && (
+                  <NavLink to="/bookings" className={getLinkClass}>{t('header.bookings')}</NavLink>
+                )}
               </>
             )}
           </nav>
@@ -138,9 +140,11 @@ const Header = () => {
                     <Link to="/services" className="hover:text-secondary" onClick={closeMobileMenu}>
                       {t('header.services')}
                     </Link>
-                    <Link to="/bookings" className="hover:text-secondary" onClick={closeMobileMenu}>
-                      {t('header.bookings')}
-                    </Link>
+                    {isAuthenticated && (
+                      <Link to="/bookings" className="hover:text-secondary" onClick={closeMobileMenu}>
+                        {t('header.bookings')}
+                      </Link>
+                    )}
                   </>
                 )}
                 {isAuthenticated ? (
