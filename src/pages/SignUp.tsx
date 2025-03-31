@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -45,6 +46,9 @@ const formSchema = z.discriminatedUnion('accountType', [
   providerSchema
 ]);
 
+// Define explicit types based on the schemas for better type inference
+type CustomerFormData = z.infer<typeof customerSchema>;
+type ProviderFormData = z.infer<typeof providerSchema>;
 type FormData = z.infer<typeof formSchema>;
 
 const SignUp = () => {
@@ -88,32 +92,40 @@ const SignUp = () => {
     setIsLoading(true);
     try {
       if (data.accountType === 'provider') {
-        // We now have a properly typed providerData object
-        const providerData: ProviderRegisterData = {
-          email: data.email,
-          password: data.password,
-          name: data.name,
+        // Type assertion to help TypeScript understand the discriminated union
+        const providerData = data as ProviderFormData;
+        
+        // Create a properly typed ProviderRegisterData object
+        const registerData: ProviderRegisterData = {
+          email: providerData.email,
+          password: providerData.password,
+          name: providerData.name,
           accountType: 'provider',
-          businessName: data.businessName,
-          services: data.serviceType ? [data.serviceType] : [],
+          businessName: providerData.businessName,
+          services: [providerData.serviceType],
           location: {
-            address: data.address,
-            city: data.city,
-            state: data.state,
-            zipCode: data.zipCode,
+            address: providerData.address,
+            city: providerData.city,
+            state: providerData.state,
+            zipCode: providerData.zipCode,
           },
-          phone: data.phone
+          phone: providerData.phone
         };
-        await register(providerData);
+        
+        await register(registerData);
       } else {
-        // We now have a properly typed customerData object
-        const customerData: RegisterData = {
-          name: data.name,
-          email: data.email,
-          password: data.password,
+        // Type assertion for customer data
+        const customerData = data as CustomerFormData;
+        
+        // Create a properly typed RegisterData object
+        const registerData: RegisterData = {
+          name: customerData.name,
+          email: customerData.email,
+          password: customerData.password,
           accountType: 'customer',
         };
-        await register(customerData);
+        
+        await register(registerData);
       }
       
       toast({
