@@ -185,29 +185,29 @@ const SignUp = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                 <Button 
                   onClick={() => handleAccountTypeSelection('customer')}
-                  variant="outline"
-                  className="h-auto py-8 flex flex-col items-center gap-4 border-2 hover:border-primary hover:bg-primary/5"
+                  variant="customer"
+                  className="h-auto py-8 flex flex-col items-center gap-4 border-2 border-blue-200 hover:border-blue-500"
                 >
                   <div className="p-4 rounded-full bg-blue-100">
-                    <Car className="h-8 w-8 text-blue-600" />
+                    <UserRound className="h-8 w-8 text-blue-600" />
                   </div>
                   <div className="text-center">
                     <h3 className="font-bold text-lg">Customer</h3>
-                    <p className="text-sm text-muted-foreground">Find and book car services</p>
+                    <p className="text-sm text-white/80">Find and book car services</p>
                   </div>
                 </Button>
 
                 <Button 
                   onClick={() => handleAccountTypeSelection('provider')}
-                  variant="outline"
-                  className="h-auto py-8 flex flex-col items-center gap-4 border-2 hover:border-primary hover:bg-primary/5"
+                  variant="provider"
+                  className="h-auto py-8 flex flex-col items-center gap-4 border-2 border-amber-200 hover:border-amber-500"
                 >
                   <div className="p-4 rounded-full bg-amber-100">
-                    <Building2 className="h-8 w-8 text-amber-600" />
+                    <Briefcase className="h-8 w-8 text-amber-600" />
                   </div>
                   <div className="text-center">
                     <h3 className="font-bold text-lg">Service Provider</h3>
-                    <p className="text-sm text-muted-foreground">Offer automotive services</p>
+                    <p className="text-sm text-white/80">Offer automotive services</p>
                   </div>
                 </Button>
               </div>
