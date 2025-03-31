@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -31,7 +30,6 @@ const ProviderProfileForm = () => {
   
   const [isLoading, setIsLoading] = useState(false);
   
-  // Handle geocoding to get coordinates from address
   const getCoordinates = async (address: string, city: string, state: string, zip: string) => {
     const fullAddress = `${address}, ${city}, ${state} ${zip}`;
     try {
@@ -128,7 +126,6 @@ const ProviderProfileForm = () => {
     setIsLoading(true);
     
     try {
-      // First check if user is authenticated
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) {
         toast({
@@ -140,7 +137,6 @@ const ProviderProfileForm = () => {
         return;
       }
       
-      // Validate required fields
       if (!formData.name || !formData.address || !formData.city || !formData.state || !formData.zip_code) {
         toast({
           variant: "destructive",
@@ -151,7 +147,6 @@ const ProviderProfileForm = () => {
         return;
       }
       
-      // Get coordinates for the address
       const coordinates = await getCoordinates(
         formData.address, 
         formData.city, 
@@ -159,7 +154,6 @@ const ProviderProfileForm = () => {
         formData.zip_code
       );
       
-      // Create the provider profile
       const providerData: Omit<ServiceProvider, 'id'> = {
         name: formData.name,
         description: formData.description,
@@ -176,10 +170,19 @@ const ProviderProfileForm = () => {
         phone: formData.phone,
         website: formData.website,
         verified: formData.verified || false,
-        available_today: formData.available_today || false
+        available_today: formData.available_today || false,
+        location: {
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zipCode: formData.zip_code,
+          coordinates: coordinates ? { 
+            lat: coordinates.lat, 
+            lng: coordinates.lng 
+          } : undefined
+        }
       };
       
-      // Save provider profile to Supabase
       const newProvider = await supabaseService.createProvider(providerData);
       
       toast({
@@ -187,7 +190,6 @@ const ProviderProfileForm = () => {
         description: "Your provider profile has been created successfully",
       });
       
-      // Redirect to the provider profile page
       navigate('/service-explorer');
       
     } catch (error) {
@@ -207,7 +209,6 @@ const ProviderProfileForm = () => {
       <h2 className="text-2xl font-bold mb-6">Create Service Provider Profile</h2>
       
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Basic Info */}
         <div className="space-y-4">
           <h3 className="text-lg font-medium">Basic Information</h3>
           
@@ -260,7 +261,6 @@ const ProviderProfileForm = () => {
           </div>
         </div>
         
-        {/* Location */}
         <div className="space-y-4">
           <h3 className="text-lg font-medium">Location</h3>
           
@@ -315,7 +315,6 @@ const ProviderProfileForm = () => {
           </div>
         </div>
         
-        {/* Services */}
         <div className="space-y-4">
           <h3 className="text-lg font-medium">Services</h3>
           

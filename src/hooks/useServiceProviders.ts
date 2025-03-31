@@ -18,21 +18,37 @@ export const useServiceProviders = (location: string) => {
         // If we have providers from the database, return them
         if (dbProviders && dbProviders.length > 0) {
           console.log('Found providers in database:', dbProviders);
-          return dbProviders as ServiceProvider[];
+          return dbProviders;
         }
         
         // If database is empty or error occurs, try the API
         if (!location) {
           console.log('No location provided, using mock data');
-          return await carService.getServiceProviders();
+          const mockProviders = await carService.getServiceProviders();
+          // Make sure each provider has the location field needed by our components
+          return mockProviders.map(provider => ({
+            ...provider,
+            verified: provider.verified || false,
+            available_today: provider.available_today || false
+          }));
         }
         
         console.log('Using location to fetch providers:', location);
-        return await carService.getServiceProviders(location);
+        const apiProviders = await carService.getServiceProviders(location);
+        return apiProviders.map(provider => ({
+          ...provider,
+          verified: provider.verified || false,
+          available_today: provider.available_today || false
+        }));
       } catch (error) {
         // Fall back to mock data if all attempts fail
         console.error('Error fetching service providers:', error);
-        return await carService.getServiceProviders();
+        const fallbackProviders = await carService.getServiceProviders();
+        return fallbackProviders.map(provider => ({
+          ...provider,
+          verified: provider.verified || false,
+          available_today: provider.available_today || false
+        }));
       }
     },
   });
