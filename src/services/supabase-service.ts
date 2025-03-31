@@ -2,6 +2,38 @@
 import { supabase } from "@/integrations/supabase/client";
 
 /**
+ * Type definitions for database tables
+ */
+export interface Booking {
+  id: string;
+  created_at?: string;
+  status?: string;
+  customer_id?: string;
+  service_id?: string;
+  provider_id?: string;
+  appointment_time: string;
+}
+
+export interface Service {
+  id: string;
+  name: string;
+  created_at?: string;
+  duration: number;
+  price: number;
+  provider_id?: string;
+  description?: string;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  phone?: string;
+  role: string;
+  created_at?: string;
+  name: string;
+}
+
+/**
  * Service for interacting with Supabase tables
  */
 export class SupabaseService {
@@ -12,7 +44,7 @@ export class SupabaseService {
     try {
       const { data, error } = await supabase
         .from('bookings')
-        .select('*');
+        .select('*') as { data: Booking[] | null, error: any };
       
       if (error) throw error;
       return data;
@@ -25,12 +57,12 @@ export class SupabaseService {
   /**
    * Create a new booking
    */
-  async createBooking(bookingData: any) {
+  async createBooking(bookingData: Partial<Booking>) {
     try {
       const { data, error } = await supabase
         .from('bookings')
         .insert(bookingData)
-        .select();
+        .select() as { data: Booking[] | null, error: any };
       
       if (error) throw error;
       return data;
@@ -47,7 +79,7 @@ export class SupabaseService {
     try {
       const { data, error } = await supabase
         .from('services')
-        .select('*');
+        .select('*') as { data: Service[] | null, error: any };
       
       if (error) throw error;
       return data;
@@ -60,12 +92,12 @@ export class SupabaseService {
   /**
    * Create a new service
    */
-  async createService(serviceData: any) {
+  async createService(serviceData: Partial<Service>) {
     try {
       const { data, error } = await supabase
         .from('services')
         .insert(serviceData)
-        .select();
+        .select() as { data: Service[] | null, error: any };
       
       if (error) throw error;
       return data;
@@ -82,7 +114,7 @@ export class SupabaseService {
     try {
       const { data, error } = await supabase
         .from('users')
-        .select('*');
+        .select('*') as { data: User[] | null, error: any };
       
       if (error) throw error;
       return data;
@@ -95,12 +127,12 @@ export class SupabaseService {
   /**
    * Create a new user
    */
-  async createUser(userData: any) {
+  async createUser(userData: Partial<User>) {
     try {
       const { data, error } = await supabase
         .from('users')
         .insert(userData)
-        .select();
+        .select() as { data: User[] | null, error: any };
       
       if (error) throw error;
       return data;
@@ -113,13 +145,13 @@ export class SupabaseService {
   /**
    * Update a user
    */
-  async updateUser(userId: string, userData: any) {
+  async updateUser(userId: string, userData: Partial<User>) {
     try {
       const { data, error } = await supabase
         .from('users')
         .update(userData)
         .eq('id', userId)
-        .select();
+        .select() as { data: User[] | null, error: any };
       
       if (error) throw error;
       return data;
@@ -137,7 +169,7 @@ export class SupabaseService {
       const { error } = await supabase
         .from('bookings')
         .delete()
-        .eq('id', bookingId);
+        .eq('id', bookingId) as { error: any };
       
       if (error) throw error;
       return true;
@@ -150,13 +182,13 @@ export class SupabaseService {
   /**
    * Update a booking
    */
-  async updateBooking(bookingId: string, bookingData: any) {
+  async updateBooking(bookingId: string, bookingData: Partial<Booking>) {
     try {
       const { data, error } = await supabase
         .from('bookings')
         .update(bookingData)
         .eq('id', bookingId)
-        .select();
+        .select() as { data: Booking[] | null, error: any };
       
       if (error) throw error;
       return data;
