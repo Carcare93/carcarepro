@@ -1,5 +1,5 @@
-import * as React from "react"
 
+import * as React from "react"
 import type {
   ToastActionElement,
   ToastProps,
@@ -126,7 +126,7 @@ export const reducer = (state: State, action: Action): State => {
   }
 }
 
-// Create a separate context to make sure we don't call useState in an invalid location
+// Create a separate context to make sure we don't call useState outside a component
 const ToastContext = React.createContext<{
   state: State
   toast: (props: Toast) => { id: string; dismiss: () => void; update: (props: ToasterToast) => void }
