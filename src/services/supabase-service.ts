@@ -57,7 +57,7 @@ export class SupabaseService {
   /**
    * Create a new booking
    */
-  async createBooking(bookingData: Partial<Booking>) {
+  async createBooking(bookingData: Omit<Booking, 'id'> & { id?: string }) {
     try {
       const { data, error } = await supabase
         .from('bookings')
@@ -92,7 +92,7 @@ export class SupabaseService {
   /**
    * Create a new service
    */
-  async createService(serviceData: Partial<Service>) {
+  async createService(serviceData: Omit<Service, 'id'> & { id?: string }) {
     try {
       const { data, error } = await supabase
         .from('services')
@@ -127,7 +127,7 @@ export class SupabaseService {
   /**
    * Create a new user
    */
-  async createUser(userData: Partial<User>) {
+  async createUser(userData: Omit<User, 'id'> & { id: string }) {
     try {
       const { data, error } = await supabase
         .from('users')

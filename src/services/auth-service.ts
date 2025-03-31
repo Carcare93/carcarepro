@@ -1,4 +1,6 @@
-import { ApiService, apiService } from './api';
+
+import { supabase } from '@/integrations/supabase/client';
+import { supabaseService } from './supabase-service';
 
 export interface User {
   id: string;
@@ -60,137 +62,151 @@ export interface VerificationStatus {
 }
 
 export class AuthService {
-  private api: ApiService;
   private storageKey = 'car_care_user';
-  private verificationCodeKey = 'verification_code';
   
-  constructor(api: ApiService = apiService) {
-    this.api = api;
+  // Convert Supabase user to our app's user format
+  private mapSupabaseUser(supabaseUser: any, additionalData?: any): User {
+    if (!supabaseUser) return null;
+    
+    return {
+      id: supabaseUser.id,
+      email: supabaseUser.email,
+      name: supabaseUser.user_metadata?.name || 'User',
+      createdAt: supabaseUser.created_at,
+      accountType: supabaseUser.user_metadata?.accountType || 'customer',
+      isEmailVerified: supabaseUser.email_confirmed_at !== null,
+      providerProfile: supabaseUser.user_metadata?.providerProfile,
+      ...additionalData
+    };
   }
   
   async register(data: RegisterData | ProviderRegisterData): Promise<User> {
-    const user: User = {
-      id: `user-${Math.random().toString(36).substring(2, 9)}`,
+    // Register with Supabase
+    const { data: authData, error } = await supabase.auth.signUp({
       email: data.email,
-      name: data.name,
-      createdAt: new Date().toISOString(),
-      accountType: data.accountType || 'customer',
-      isEmailVerified: false,
-    };
+      password: data.password,
+      options: {
+        data: {
+          name: data.name,
+          accountType: data.accountType,
+          ...(data.accountType === 'provider' && 'businessName' in data ? {
+            providerProfile: {
+              businessName: (data as ProviderRegisterData).businessName,
+              services: (data as ProviderRegisterData).services,
+              location: (data as ProviderRegisterData).location,
+              phone: (data as ProviderRegisterData).phone,
+              rating: 0,
+              reviewCount: 0,
+              verified: false
+            }
+          } : {})
+        }
+      }
+    });
     
-    if (data.accountType === 'provider' && 'businessName' in data) {
-      const providerData = data as ProviderRegisterData;
-      user.providerProfile = {
-        businessName: providerData.businessName,
-        services: providerData.services,
-        location: providerData.location,
-        phone: providerData.phone,
-        rating: 0,
-        reviewCount: 0,
-        verified: false,
-      };
+    if (error) {
+      throw new Error(error.message);
     }
     
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-    localStorage.setItem(this.verificationCodeKey + '_' + user.email, verificationCode);
+    if (!authData.user) {
+      throw new Error('Registration failed, please try again');
+    }
     
-    localStorage.setItem(this.storageKey, JSON.stringify(user));
+    // Also create user entry in our users table
+    try {
+      await supabaseService.createUser({
+        id: authData.user.id,
+        email: data.email,
+        name: data.name,
+        role: data.accountType,
+        ...(data.accountType === 'provider' && 'phone' in data ? {
+          phone: (data as ProviderRegisterData).phone
+        } : {})
+      });
+    } catch (err) {
+      console.error('Error creating user in users table:', err);
+      // We can continue even if this fails, as the auth user is created
+    }
     
-    console.log(`Verification code for ${user.email}: ${verificationCode}`);
-    
-    return user;
+    return this.mapSupabaseUser(authData.user);
   }
   
   async verifyEmail(email: string, code: string): Promise<VerificationStatus> {
-    const storedCode = localStorage.getItem(this.verificationCodeKey + '_' + email);
-    
-    if (!storedCode) {
-      return { verified: false, message: 'Verification code not found. Please register again.' };
-    }
-    
-    if (storedCode !== code) {
-      return { verified: false, message: 'Invalid verification code. Please try again.' };
-    }
-    
-    const userData = localStorage.getItem(this.storageKey);
-    if (!userData) {
-      return { verified: false, message: 'User not found. Please register again.' };
-    }
-    
-    const user = JSON.parse(userData) as User;
-    user.isEmailVerified = true;
-    localStorage.setItem(this.storageKey, JSON.stringify(user));
-    
-    localStorage.removeItem(this.verificationCodeKey + '_' + email);
-    
-    return { verified: true, message: 'Email successfully verified!' };
+    // Supabase handles email verification automatically
+    // This method is kept for API compatibility but won't do anything
+    return { 
+      verified: true, 
+      message: 'Please check your email to complete verification' 
+    };
   }
   
   async resendVerificationCode(email: string): Promise<boolean> {
-    const user = this.getCurrentUser();
-    if (!user || user.email !== email) {
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email
+      });
+      
+      if (error) {
+        console.error('Error resending verification:', error);
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Failed to resend verification:', error);
       return false;
     }
-    
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-    localStorage.setItem(this.verificationCodeKey + '_' + email, verificationCode);
-    
-    console.log(`New verification code for ${email}: ${verificationCode}`);
-    
-    return true;
   }
   
   async login(data: LoginData): Promise<User> {
-    if (!data.email.includes('test')) {
-      throw new Error('Invalid credentials');
-    }
-    
-    const isProvider = data.email.includes('provider');
-    
-    const user: User = {
-      id: `user-${Math.random().toString(36).substring(2, 9)}`,
+    const { data: authData, error } = await supabase.auth.signInWithPassword({
       email: data.email,
-      name: data.email.split('@')[0],
-      createdAt: new Date().toISOString(),
-      accountType: isProvider ? 'provider' : 'customer',
-    };
+      password: data.password
+    });
     
-    if (isProvider) {
-      user.providerProfile = {
-        businessName: `${user.name}'s Auto Service`,
-        services: ['Oil Change', 'Tire Rotation', 'Brake Service'],
-        location: {
-          address: '123 Service Lane',
-          city: 'Metropolis',
-          state: 'NY',
-          zipCode: '10001',
-        },
-        phone: '(555) 123-4567',
-        rating: 4.5,
-        reviewCount: 12,
-        verified: true,
-      };
+    if (error) {
+      throw new Error(error.message);
     }
     
-    localStorage.setItem(this.storageKey, JSON.stringify(user));
+    if (!authData.user) {
+      throw new Error('Login failed');
+    }
     
-    return user;
+    // Get additional user data from our users table
+    let userData = null;
+    try {
+      const users = await supabaseService.getUsers();
+      userData = users?.find(u => u.id === authData.user.id);
+    } catch (err) {
+      console.error('Error fetching user data:', err);
+    }
+    
+    return this.mapSupabaseUser(authData.user, userData);
   }
   
   logout(): void {
+    supabase.auth.signOut();
     localStorage.removeItem(this.storageKey);
   }
   
-  getCurrentUser(): User | null {
-    const userData = localStorage.getItem(this.storageKey);
-    if (!userData) return null;
+  async getCurrentUser(): Promise<User | null> {
+    const { data, error } = await supabase.auth.getSession();
     
-    try {
-      return JSON.parse(userData) as User;
-    } catch (error) {
-      this.logout();
+    if (error || !data.session) {
       return null;
     }
+    
+    // Get additional user data from our users table
+    let userData = null;
+    try {
+      const users = await supabaseService.getUsers();
+      userData = users?.find(u => u.id === data.session.user.id);
+    } catch (err) {
+      console.error('Error fetching user data:', err);
+    }
+    
+    return this.mapSupabaseUser(data.session.user, userData);
   }
   
   isAuthenticated(): boolean {
@@ -207,21 +223,16 @@ export class AuthService {
     return !!user && user.accountType === 'provider';
   }
   
-  updateProviderProfile(providerProfile: Partial<ProviderProfile>): User {
-    const user = this.getCurrentUser();
-    if (!user) throw new Error('Not authenticated');
-    if (user.accountType !== 'provider') throw new Error('Not a provider account');
+  async updateProviderProfile(providerProfile: Partial<ProviderProfile>): Promise<User> {
+    const { data: userData, error } = await supabase.auth.updateUser({
+      data: { providerProfile }
+    });
     
-    const updatedUser = {
-      ...user,
-      providerProfile: {
-        ...user.providerProfile,
-        ...providerProfile
-      }
-    };
+    if (error) {
+      throw new Error(error.message);
+    }
     
-    localStorage.setItem(this.storageKey, JSON.stringify(updatedUser));
-    return updatedUser;
+    return this.mapSupabaseUser(userData.user);
   }
 }
 

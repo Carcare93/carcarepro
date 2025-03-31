@@ -1,6 +1,8 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService, User, LoginData, RegisterData, ProviderRegisterData, VerificationStatus } from '@/services/auth-service';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface AuthContextType {
   user: User | null;
@@ -26,9 +28,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const currentUser = authService.getCurrentUser();
-    setUser(currentUser);
-    setIsLoading(false);
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+          if (session?.user) {
+            try {
+              const currentUser = await authService.getCurrentUser();
+              setUser(currentUser);
+            } catch (error) {
+              console.error('Error fetching user data:', error);
+            }
+          }
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+        }
+      }
+    );
+
+    // Check for existing session
+    const checkUser = async () => {
+      try {
+        const currentUser = await authService.getCurrentUser();
+        setUser(currentUser);
+      } catch (error) {
+        console.error('Error checking current user:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    checkUser();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (data: LoginData) => {
@@ -59,7 +93,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(user);
       toast({
         title: "Account created!",
-        description: "Your account has been created. Please verify your email.",
+        description: "Your account has been created. Please check your email for verification.",
       });
     } catch (error) {
       toast({
@@ -79,7 +113,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const result = await authService.verifyEmail(email, code);
       
       if (result.verified) {
-        const updatedUser = authService.getCurrentUser();
+        const updatedUser = await authService.getCurrentUser();
         setUser(updatedUser);
       }
       
