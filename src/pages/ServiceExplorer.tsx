@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Filter, List, MapIcon, Car } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import FilterSidebar from '@/components/marketplace/FilterSidebar';
 import LocationSearch from '@/components/marketplace/LocationSearch';
 import ProviderCard from '@/components/marketplace/ProviderCard';
 import { useServiceProviders } from '@/hooks/useServiceProviders';
+import { useTranslation } from 'react-i18next';
 
 const ServiceExplorer = () => {
   const [view, setView] = useState<'list' | 'map'>('list');
@@ -18,6 +20,7 @@ const ServiceExplorer = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { toast } = useToast();
   const { providers, isLoading } = useServiceProviders(location);
+  const { t } = useTranslation();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,8 +38,8 @@ const ServiceExplorer = () => {
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
               <div>
-                <h1 className="text-3xl font-bold mb-2">Find Automotive Services</h1>
-                <p className="text-muted-foreground">Browse, search and book trusted service providers near you</p>
+                <h1 className="text-3xl font-bold mb-2">{t('services.title')}</h1>
+                <p className="text-muted-foreground">{t('services.subtitle')}</p>
               </div>
               
               <div className="w-full md:w-auto">
@@ -53,11 +56,11 @@ const ServiceExplorer = () => {
                 <TabsList>
                   <TabsTrigger value="list" onClick={() => setView('list')}>
                     <List className="h-4 w-4 mr-2" />
-                    List View
+                    {t('services.listView')}
                   </TabsTrigger>
                   <TabsTrigger value="map" onClick={() => setView('map')}>
                     <MapIcon className="h-4 w-4 mr-2" />
-                    Map View
+                    {t('services.mapView')}
                   </TabsTrigger>
                 </TabsList>
                 
@@ -68,7 +71,7 @@ const ServiceExplorer = () => {
                   className="md:hidden"
                 >
                   <Filter className="h-4 w-4 mr-2" />
-                  Filters
+                  {t('services.filters')}
                 </Button>
               </div>
               
@@ -86,7 +89,7 @@ const ServiceExplorer = () => {
                       <div className="space-y-6">
                         {isLoading ? (
                           // Show skeletons when loading
-                          <div>Loading providers...</div>
+                          <div>{t('services.loading')}</div>
                         ) : providers.length > 0 ? (
                           // Show providers list
                           providers.map((provider) => (
@@ -96,9 +99,9 @@ const ServiceExplorer = () => {
                           // Show empty state
                           <div className="text-center py-12">
                             <Car className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                            <h3 className="text-xl font-medium mb-2">No service providers found</h3>
+                            <h3 className="text-xl font-medium mb-2">{t('services.noProvidersFound')}</h3>
                             <p className="text-muted-foreground">
-                              Try adjusting your search criteria or location to find more results.
+                              {t('services.tryAdjusting')}
                             </p>
                           </div>
                         )}
