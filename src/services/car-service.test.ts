@@ -8,10 +8,12 @@ jest.mock('./api', () => {
     ApiService: jest.fn().mockImplementation(() => ({
       get: jest.fn(),
       post: jest.fn(),
+      delete: jest.fn(),
     })),
     apiService: {
       get: jest.fn(),
       post: jest.fn(),
+      delete: jest.fn(),
     },
   };
 });
@@ -25,6 +27,7 @@ describe('CarService', () => {
     mockApi = {
       get: jest.fn(),
       post: jest.fn(),
+      delete: jest.fn(),
     } as unknown as jest.Mocked<ApiService>;
     
     carService = new CarService(mockApi);
@@ -32,7 +35,7 @@ describe('CarService', () => {
   
   describe('getUserVehicles', () => {
     it('should call api.get with the correct endpoint', async () => {
-      const mockVehicles = [{ id: '1', make: 'Toyota', model: 'Camry', year: 2020 }];
+      const mockVehicles = [{ id: '1', make: 'Toyota', model: 'Camry', year: 2020, licensePlate: 'ABC123' }];
       mockApi.get.mockResolvedValue(mockVehicles);
       
       const result = await carService.getUserVehicles();
@@ -70,7 +73,7 @@ describe('CarService', () => {
   
   describe('addVehicle', () => {
     it('should call api.post with the correct endpoint and data', async () => {
-      const newVehicle = { make: 'Honda', model: 'Civic', year: 2021 };
+      const newVehicle = { make: 'Honda', model: 'Civic', year: 2021, licensePlate: 'XYZ789' };
       const mockResponse = { id: '2', ...newVehicle };
       
       mockApi.post.mockResolvedValue(mockResponse);

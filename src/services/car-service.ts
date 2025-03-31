@@ -87,7 +87,7 @@ export class CarService {
     // In a real app, this would call the API with the current user's ID
     // For now, return mock data
     try {
-      const vehicles = await this.api.get('/vehicles');
+      const vehicles = await this.api.get<Vehicle[]>('/vehicles');
       return vehicles;
     } catch (error) {
       console.error('Error fetching vehicles:', error);
@@ -112,7 +112,7 @@ export class CarService {
 
   async getVehicle(vehicleId: string): Promise<Vehicle | undefined> {
     try {
-      const vehicle = await this.api.get(`/vehicles/${vehicleId}`);
+      const vehicle = await this.api.get<Vehicle>(`/vehicles/${vehicleId}`);
       return vehicle;
     } catch (error) {
       console.error('Error fetching vehicle:', error);
@@ -123,22 +123,26 @@ export class CarService {
 
   async addVehicle(newVehicle: Partial<Vehicle>): Promise<Vehicle> {
     try {
-      const vehicle = await this.api.post('/vehicles', newVehicle);
+      const vehicle = await this.api.post<Vehicle>('/vehicles', newVehicle);
       return vehicle;
     } catch (error) {
       console.error('Error adding vehicle:', error);
       // Mock response
       return {
         id: uuidv4(),
-        ...newVehicle,
-      } as Vehicle;
+        make: newVehicle.make || '',
+        model: newVehicle.model || '',
+        year: newVehicle.year || new Date().getFullYear(),
+        licensePlate: newVehicle.licensePlate || '',
+        ...newVehicle
+      };
     }
   }
 
   async getServiceProviders(location?: string): Promise<ServiceProvider[]> {
     try {
       const queryParams = location ? `?location=${encodeURIComponent(location)}` : '';
-      const providers = await this.api.get(`/service-providers${queryParams}`);
+      const providers = await this.api.get<ServiceProvider[]>(`/service-providers${queryParams}`);
       return providers;
     } catch (error) {
       console.error('Error fetching service providers:', error);
@@ -190,7 +194,7 @@ export class CarService {
 
   async getVehicleInvoices(vehicleId: string): Promise<Invoice[]> {
     try {
-      const invoices = await this.api.get(`/vehicles/${vehicleId}/invoices`);
+      const invoices = await this.api.get<Invoice[]>(`/vehicles/${vehicleId}/invoices`);
       return invoices;
     } catch (error) {
       console.error('Error fetching invoices:', error);
@@ -223,7 +227,7 @@ export class CarService {
 
   async addInvoice(newInvoice: Omit<Invoice, 'id'>): Promise<Invoice> {
     try {
-      const invoice = await this.api.post(`/vehicles/${newInvoice.vehicleId}/invoices`, newInvoice);
+      const invoice = await this.api.post<Invoice>(`/vehicles/${newInvoice.vehicleId}/invoices`, newInvoice);
       return invoice;
     } catch (error) {
       console.error('Error adding invoice:', error);

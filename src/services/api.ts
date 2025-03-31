@@ -40,7 +40,21 @@ export class ApiService {
     return response.json();
   }
   
-  // Additional methods for PUT, DELETE, etc.
+  async delete<T>(endpoint: string, options?: RequestInit): Promise<T> {
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      ...options,
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    
+    return response.json();
+  }
 }
 
 // Create a singleton instance
