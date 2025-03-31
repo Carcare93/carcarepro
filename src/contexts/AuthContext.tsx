@@ -1,6 +1,5 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authService, User, LoginData, RegisterData, VerificationStatus } from '@/services/auth-service';
+import { authService, User, LoginData, RegisterData, ProviderRegisterData, VerificationStatus } from '@/services/auth-service';
 import { useToast } from '@/hooks/use-toast';
 
 interface AuthContextType {
@@ -9,7 +8,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isEmailVerified: boolean;
   login: (data: LoginData) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
+  register: (data: RegisterData | ProviderRegisterData) => Promise<void>;
   verifyEmail: (email: string, code: string) => Promise<VerificationStatus>;
   resendVerificationCode: (email: string) => Promise<boolean>;
   logout: () => void;
@@ -27,7 +26,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if user is already logged in
     const currentUser = authService.getCurrentUser();
     setUser(currentUser);
     setIsLoading(false);
@@ -54,7 +52,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const register = async (data: RegisterData) => {
+  const register = async (data: RegisterData | ProviderRegisterData) => {
     try {
       setIsLoading(true);
       const user = await authService.register(data);
@@ -81,7 +79,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const result = await authService.verifyEmail(email, code);
       
       if (result.verified) {
-        // Update the user state to reflect the verified status
         const updatedUser = authService.getCurrentUser();
         setUser(updatedUser);
       }

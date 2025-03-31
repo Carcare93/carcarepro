@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -93,13 +94,14 @@ const SignUp = () => {
     try {
       if (data.accountType === 'provider') {
         // Register as service provider with additional fields
+        // We need to use the proper ProviderRegisterData structure
         await register({
           email: data.email,
           password: data.password,
           name: data.name,
           accountType: 'provider',
           businessName: data.businessName || '',
-          services: [data.serviceType || ''],
+          services: data.serviceType ? [data.serviceType] : [],
           location: {
             address: data.address || '',
             city: data.city || '',
