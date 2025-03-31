@@ -22,6 +22,7 @@ const LanguageSwitcher = () => {
       case 'en': return t('language.english');
       case 'es': return t('language.spanish');
       case 'fr': return t('language.french');
+      case 'it': return t('language.italian');
       default: return code;
     }
   };
@@ -43,6 +44,9 @@ const LanguageSwitcher = () => {
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => changeLanguage('fr')}>
           {t('language.french')}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => changeLanguage('it')}>
+          {t('language.italian')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

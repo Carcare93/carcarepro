@@ -1,0 +1,54 @@
+
+{
+  "common": {
+    "search": "Cerca",
+    "location": "Inserisci la tua posizione...",
+    "bookNow": "Prenota ora",
+    "login": "Accedi",
+    "signup": "Registrati",
+    "logout": "Esci",
+    "profile": "Profilo"
+  },
+  "header": {
+    "home": "Home",
+    "services": "Servizi",
+    "bookings": "Prenotazioni",
+    "providerDashboard": "Pannello fornitore"
+  },
+  "services": {
+    "title": "Trova servizi automobilistici",
+    "subtitle": "Sfoglia, cerca e prenota fornitori di servizi affidabili vicino a te",
+    "listView": "Vista elenco",
+    "mapView": "Vista mappa",
+    "filters": "Filtri",
+    "noProvidersFound": "Nessun fornitore di servizi trovato",
+    "tryAdjusting": "Prova a modificare i criteri di ricerca o la posizione per trovare più risultati",
+    "available": "Disponibile",
+    "verified": "Verificato",
+    "availableToday": "Disponibile oggi",
+    "loading": "Caricamento fornitori..."
+  },
+  "footer": {
+    "product": "Prodotto",
+    "features": "Funzionalità",
+    "howItWorks": "Come funziona",
+    "pricing": "Prezzi",
+    "company": "Azienda",
+    "aboutUs": "Chi siamo",
+    "blog": "Blog",
+    "careers": "Carriere",
+    "contact": "Contatti",
+    "legal": "Legale",
+    "privacyPolicy": "Politica sulla privacy",
+    "termsOfService": "Termini di servizio",
+    "cookiePolicy": "Politica sui cookie",
+    "allRightsReserved": "Tutti i diritti riservati"
+  },
+  "language": {
+    "select": "Seleziona lingua",
+    "english": "Inglese",
+    "spanish": "Spagnolo",
+    "french": "Francese",
+    "italian": "Italiano"
+  }
+}
