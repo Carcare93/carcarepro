@@ -31,5 +31,9 @@ if (!rootElement) throw new Error("Root element not found");
 
 const root = createRoot(rootElement);
 
-// Remove the extra React.StrictMode wrapper
-root.render(<App />);
+// Wrap the App in StrictMode to catch potential problems
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);

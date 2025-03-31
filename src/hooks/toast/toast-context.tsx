@@ -4,11 +4,16 @@ import { State, Toast, ToasterToast } from "./types"
 import { reducer } from "./toast-reducer"
 import { genId } from "./utils"
 
+// Create the context with a default value to avoid null checks
 export const ToastContext = React.createContext<{
   state: State
   toast: (props: Toast) => { id: string; dismiss: () => void; update: (props: ToasterToast) => void }
   dismiss: (toastId?: string) => void
-} | null>(null);
+}>({
+  state: { toasts: [] },
+  toast: () => ({ id: "", dismiss: () => {}, update: () => {} }),
+  dismiss: () => {},
+});
 
 // Define the Provider component
 export const ToastProvider = ({ children }: { children: React.ReactNode }) => {

@@ -40,32 +40,13 @@ export function toast(props: Toast) {
 export function useToast() {
   const context = React.useContext(ToastContext)
   
-  // If within the context provider, use that context
-  if (context) {
-    return {
-      ...context.state,
-      toast: context.toast,
-      dismiss: context.dismiss,
-    }
+  if (!context) {
+    throw new Error("useToast must be used within a ToastProvider")
   }
   
-  // Fallback to the stateful implementation for backwards compatibility
-  const [state, setState] = React.useState(memoryState)
-
-  React.useEffect(() => {
-    const listener = (newState: typeof memoryState) => setState(newState)
-    listeners.push(listener)
-    return () => {
-      const index = listeners.indexOf(listener)
-      if (index > -1) {
-        listeners.splice(index, 1)
-      }
-    }
-  }, [])
-
   return {
-    ...state,
-    toast,
-    dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
+    ...context.state,
+    toast: context.toast,
+    dismiss: context.dismiss,
   }
 }
