@@ -50,7 +50,7 @@ export interface ServiceProvider {
   verified?: boolean;
   available_today?: boolean;
   created_at?: string;
-  // Location property needs to be required for compatibility
+  // Location property for compatibility
   location: {
     address: string;
     city: string;

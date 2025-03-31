@@ -3,7 +3,12 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { carService } from '@/services/car-service';
-import { supabaseService, ServiceProvider } from '@/services/supabase-service';
+import { supabaseService } from '@/services/supabase-service';
+import { ServiceProvider as DBServiceProvider } from '@/types/supabase-models';
+import { ServiceProvider as ApiServiceProvider } from '@/services/car-service';
+
+// Create a type that works with both ServiceProvider types
+type Provider = DBServiceProvider | ApiServiceProvider;
 
 export const useServiceProviders = (location: string) => {
   const { toast } = useToast();
@@ -28,8 +33,8 @@ export const useServiceProviders = (location: string) => {
           // Make sure each provider has the location field needed by our components
           return mockProviders.map(provider => ({
             ...provider,
-            verified: provider.verified || false,
-            available_today: provider.available_today || false
+            verified: provider.verified !== undefined ? provider.verified : false,
+            available_today: provider.available_today !== undefined ? provider.available_today : false
           }));
         }
         
@@ -37,8 +42,8 @@ export const useServiceProviders = (location: string) => {
         const apiProviders = await carService.getServiceProviders(location);
         return apiProviders.map(provider => ({
           ...provider,
-          verified: provider.verified || false,
-          available_today: provider.available_today || false
+          verified: provider.verified !== undefined ? provider.verified : false,
+          available_today: provider.available_today !== undefined ? provider.available_today : false
         }));
       } catch (error) {
         // Fall back to mock data if all attempts fail
@@ -46,8 +51,8 @@ export const useServiceProviders = (location: string) => {
         const fallbackProviders = await carService.getServiceProviders();
         return fallbackProviders.map(provider => ({
           ...provider,
-          verified: provider.verified || false,
-          available_today: provider.available_today || false
+          verified: provider.verified !== undefined ? provider.verified : false,
+          available_today: provider.available_today !== undefined ? provider.available_today : false
         }));
       }
     },
