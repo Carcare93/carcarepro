@@ -105,7 +105,7 @@ const SignUp = () => {
           name: providerData.name,
           accountType: 'provider',
           businessName: providerData.businessName,
-          services: [providerData.serviceType],
+          services: [providerData.serviceType], // Convert to array since we expect an array of services
           location: {
             address: providerData.address,
             city: providerData.city,
@@ -115,7 +115,15 @@ const SignUp = () => {
           phone: providerData.phone
         };
         
-        await registerUser(registerData);
+        console.log("Formatted provider register data:", { ...registerData, password: "REDACTED" });
+        
+        try {
+          await registerUser(registerData);
+          console.log("Provider registration successful");
+        } catch (error) {
+          console.error("Provider registration failed:", error);
+          throw error;
+        }
       } else {
         // Type assertion for customer data
         const customerData = data as CustomerFormData;
@@ -130,7 +138,13 @@ const SignUp = () => {
           accountType: 'customer',
         };
         
-        await registerUser(registerData);
+        try {
+          await registerUser(registerData);
+          console.log("Customer registration successful");
+        } catch (error) {
+          console.error("Customer registration failed:", error);
+          throw error;
+        }
       }
       
       toast({

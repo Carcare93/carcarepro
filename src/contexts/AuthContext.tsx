@@ -31,12 +31,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log("Auth state change event:", event);
         if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
           if (session?.user) {
             try {
               // Use setTimeout to prevent potential deadlocks with Supabase auth
               setTimeout(async () => {
+                console.log("Fetching user after auth state change");
                 const currentUser = await authService.fetchCurrentUser();
+                console.log("Current user from fetchCurrentUser:", currentUser);
                 if (currentUser) setUser(currentUser);
               }, 0);
             } catch (error) {
@@ -44,6 +47,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             }
           }
         } else if (event === 'SIGNED_OUT') {
+          console.log("User signed out, clearing user state");
           setUser(null);
         }
       }
@@ -52,7 +56,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Check for existing session
     const checkUser = async () => {
       try {
+        console.log("Checking for existing user session");
         const currentUser = await authService.fetchCurrentUser();
+        console.log("Current user from initial check:", currentUser);
         if (currentUser) setUser(currentUser);
       } catch (error) {
         console.error('Error checking current user:', error);
@@ -93,7 +99,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = async (data: RegisterData | ProviderRegisterData) => {
     try {
       setIsLoading(true);
-      console.log("Registering with data:", data);
+      console.log("AuthContext: Registering with data:", { ...data, password: "REDACTED" });
+      
+      // Check if this is a provider registration
+      if (data.accountType === 'provider' && 'businessName' in data) {
+        console.log("Provider registration detected with business name:", (data as ProviderRegisterData).businessName);
+      }
+      
       const user = await authService.register(data);
       console.log("Registration successful, user:", user);
       setUser(user);

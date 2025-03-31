@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { supabaseService } from './supabase-service';
 
@@ -83,26 +84,38 @@ export class AuthService {
   async register(data: RegisterData | ProviderRegisterData): Promise<User> {
     console.log("Starting registration process with data:", { ...data, password: "REDACTED" });
     
+    let metadataObj: any = {
+      name: data.name,
+      accountType: data.accountType
+    };
+
+    // If this is a provider registration, format the provider profile data properly
+    if (data.accountType === 'provider' && 'businessName' in data) {
+      console.log("Registering as provider with business data:", {
+        businessName: (data as ProviderRegisterData).businessName,
+        services: (data as ProviderRegisterData).services,
+        location: (data as ProviderRegisterData).location,
+      });
+      
+      metadataObj.providerProfile = {
+        businessName: (data as ProviderRegisterData).businessName,
+        services: (data as ProviderRegisterData).services,
+        location: (data as ProviderRegisterData).location,
+        phone: (data as ProviderRegisterData).phone,
+        rating: 0,
+        reviewCount: 0,
+        verified: false
+      };
+    }
+    
+    console.log("Final metadata for Supabase registration:", metadataObj);
+    
     // Register with Supabase
     const { data: authData, error } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
       options: {
-        data: {
-          name: data.name,
-          accountType: data.accountType,
-          ...(data.accountType === 'provider' && 'businessName' in data ? {
-            providerProfile: {
-              businessName: (data as ProviderRegisterData).businessName,
-              services: (data as ProviderRegisterData).services,
-              location: (data as ProviderRegisterData).location,
-              phone: (data as ProviderRegisterData).phone,
-              rating: 0,
-              reviewCount: 0,
-              verified: false
-            }
-          } : {})
-        }
+        data: metadataObj
       }
     });
     
@@ -131,6 +144,31 @@ export class AuthService {
         } : {})
       });
       console.log("User created in users table successfully");
+      
+      // Additionally, if this is a provider, also create the provider profile
+      if (data.accountType === 'provider' && 'businessName' in data) {
+        try {
+          console.log("Creating provider in service_providers table");
+          const providerData = {
+            user_id: authData.user.id,
+            name: (data as ProviderRegisterData).businessName,
+            services: (data as ProviderRegisterData).services,
+            address: (data as ProviderRegisterData).location.address,
+            city: (data as ProviderRegisterData).location.city,
+            state: (data as ProviderRegisterData).location.state,
+            zip_code: (data as ProviderRegisterData).location.zipCode,
+            phone: (data as ProviderRegisterData).phone,
+            location: (data as ProviderRegisterData).location
+          };
+          
+          console.log("Provider data to save:", providerData);
+          await supabaseService.createProvider(providerData);
+          console.log("Provider created in service_providers table successfully");
+        } catch (providerError) {
+          console.error("Error creating provider in service_providers table:", providerError);
+          // We continue even if provider creation fails, as the user account is created
+        }
+      }
     } catch (err) {
       console.error('Error creating user in users table:', err);
       // We can continue even if this fails, as the auth user is created
