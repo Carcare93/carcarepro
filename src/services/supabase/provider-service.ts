@@ -11,11 +11,15 @@ export class ProviderService {
    */
   async getProviders() {
     try {
+      // Check if the service_providers table exists in the database
       const { data, error } = await supabase
         .from('service_providers')
         .select('*');
       
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
       
       // Map the data to include the location property for compatibility
       const providers = (data || []).map(provider => {
@@ -26,7 +30,10 @@ export class ProviderService {
             city: provider.city,
             state: provider.state,
             zipCode: provider.zip_code,
-            coordinates: provider.lat && provider.lng ? { lat: provider.lat, lng: provider.lng } : undefined
+            coordinates: provider.lat && provider.lng ? { 
+              lat: provider.lat, 
+              lng: provider.lng 
+            } : undefined
           }
         } as ServiceProvider;
       });
@@ -49,7 +56,10 @@ export class ProviderService {
         .eq('id', providerId)
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
       
       if (data) {
         return {
@@ -59,7 +69,10 @@ export class ProviderService {
             city: data.city,
             state: data.state,
             zipCode: data.zip_code,
-            coordinates: data.lat && data.lng ? { lat: data.lat, lng: data.lng } : undefined
+            coordinates: data.lat && data.lng ? { 
+              lat: data.lat, 
+              lng: data.lng 
+            } : undefined
           }
         } as ServiceProvider;
       }
@@ -76,29 +89,37 @@ export class ProviderService {
    */
   async createProvider(providerData: Omit<ServiceProvider, 'id'> & { id?: string }) {
     try {
+      // Extract location data to map to database fields
+      const { location, ...otherData } = providerData;
+      
+      const insertData = {
+        name: otherData.name,
+        description: otherData.description,
+        user_id: otherData.user_id,
+        address: location.address,
+        city: location.city,
+        state: location.state,
+        zip_code: location.zipCode,
+        lat: location.coordinates?.lat,
+        lng: location.coordinates?.lng,
+        services: otherData.services || [],
+        rating: otherData.rating || 0,
+        review_count: otherData.review_count || 0,
+        phone: otherData.phone,
+        website: otherData.website,
+        verified: otherData.verified || false,
+        available_today: otherData.available_today || false
+      };
+      
       const { data, error } = await supabase
         .from('service_providers')
-        .insert({
-          name: providerData.name,
-          description: providerData.description,
-          user_id: providerData.user_id,
-          address: providerData.address,
-          city: providerData.city,
-          state: providerData.state,
-          zip_code: providerData.zip_code,
-          lat: providerData.lat,
-          lng: providerData.lng,
-          services: providerData.services || [],
-          rating: providerData.rating || 0,
-          review_count: providerData.review_count || 0,
-          phone: providerData.phone,
-          website: providerData.website,
-          verified: providerData.verified || false,
-          available_today: providerData.available_today || false
-        })
+        .insert(insertData)
         .select();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
       
       if (data && data[0]) {
         return {
@@ -108,7 +129,10 @@ export class ProviderService {
             city: data[0].city,
             state: data[0].state,
             zipCode: data[0].zip_code,
-            coordinates: data[0].lat && data[0].lng ? { lat: data[0].lat, lng: data[0].lng } : undefined
+            coordinates: data[0].lat && data[0].lng ? { 
+              lat: data[0].lat, 
+              lng: data[0].lng 
+            } : undefined
           }
         } as ServiceProvider;
       }
@@ -149,7 +173,10 @@ export class ProviderService {
         .eq('id', providerId)
         .select();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
       
       if (data && data[0]) {
         return {
@@ -159,7 +186,10 @@ export class ProviderService {
             city: data[0].city,
             state: data[0].state,
             zipCode: data[0].zip_code,
-            coordinates: data[0].lat && data[0].lng ? { lat: data[0].lat, lng: data[0].lng } : undefined
+            coordinates: data[0].lat && data[0].lng ? { 
+              lat: data[0].lat, 
+              lng: data[0].lng 
+            } : undefined
           }
         } as ServiceProvider;
       }
@@ -181,7 +211,10 @@ export class ProviderService {
         .delete()
         .eq('id', providerId);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
     } catch (error) {
       console.error('Error deleting service provider:', error);
       throw error;

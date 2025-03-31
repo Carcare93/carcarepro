@@ -18,13 +18,13 @@ export const useServiceProviders = (location: string) => {
         // If we have providers from the database, return them
         if (dbProviders && dbProviders.length > 0) {
           console.log('Found providers in database:', dbProviders);
-          return dbProviders;
+          return dbProviders as ServiceProvider[];
         }
         
         // If database is empty or error occurs, try the API
         if (!location) {
           console.log('No location provided, using mock data');
-          return carService.getServiceProviders();
+          return await carService.getServiceProviders();
         }
         
         console.log('Using location to fetch providers:', location);
@@ -32,7 +32,7 @@ export const useServiceProviders = (location: string) => {
       } catch (error) {
         // Fall back to mock data if all attempts fail
         console.error('Error fetching service providers:', error);
-        return carService.getServiceProviders();
+        return await carService.getServiceProviders();
       }
     },
   });

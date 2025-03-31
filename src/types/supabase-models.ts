@@ -50,8 +50,8 @@ export interface ServiceProvider {
   verified?: boolean;
   available_today?: boolean;
   created_at?: string;
-  // Add a location property that maps to our car-service format
-  location?: {
+  // Add a location property that matches the car-service format
+  location: {
     address: string;
     city: string;
     state: string;

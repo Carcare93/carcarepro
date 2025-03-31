@@ -1,7 +1,6 @@
 
-import React, { useState, useEffect, FormEvent } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import ProviderCard from '@/components/marketplace/ProviderCard';
 import FilterSidebar from '@/components/marketplace/FilterSidebar';
 import LocationSearch from '@/components/marketplace/LocationSearch';
 import ServiceMap from '@/components/marketplace/ServiceMap';
@@ -12,7 +11,6 @@ import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Wrench, Map, List, SlidersHorizontal } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
 import { useServiceProviders } from '@/hooks/useServiceProviders';
 import { ServiceProvider } from '@/types/supabase-models';
 
@@ -53,13 +51,13 @@ export default function ServiceExplorer() {
       return false;
     }
     
-    // Filter by verified status
-    if (filters.verified && !provider.verified) {
+    // Filter by verified status - handle undefined values
+    if (filters.verified && provider.verified !== true) {
       return false;
     }
     
-    // Filter by availability
-    if (filters.open && !provider.available_today) {
+    // Filter by availability - handle undefined values
+    if (filters.open && provider.available_today !== true) {
       return false;
     }
     
@@ -123,7 +121,7 @@ export default function ServiceExplorer() {
                     <p className="mt-4 text-muted-foreground">{t('serviceExplorer.loading', 'Loading service providers...')}</p>
                   </div>
                 ) : filteredProviders.length > 0 ? (
-                  <ServiceList providers={filteredProviders as ServiceProvider[]} isLoading={isLoading} />
+                  <ServiceList providers={filteredProviders} isLoading={isLoading} />
                 ) : (
                   <EmptyState
                     icon={<Wrench className="h-12 w-12" />}
@@ -135,7 +133,7 @@ export default function ServiceExplorer() {
               
               <TabsContent value="map" className="mt-4">
                 <div className="h-[70vh] rounded-xl overflow-hidden">
-                  <ServiceMap providers={filteredProviders as ServiceProvider[]} isLoading={isLoading} />
+                  <ServiceMap providers={filteredProviders} isLoading={isLoading} />
                 </div>
               </TabsContent>
             </Tabs>
