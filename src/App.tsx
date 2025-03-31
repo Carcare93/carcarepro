@@ -73,11 +73,9 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <React.StrictMode>
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
-    </React.StrictMode>
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   );
 }
 
