@@ -32,8 +32,8 @@ const ServiceMap = ({ providers, isLoading }: ServiceMapProps) => {
   const [mapLoaded, setMapLoaded] = useState(false);
   const mapRef = useRef<google.maps.Map | null>(null);
 
-  // Replace with your Google Maps API key
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
+  // Use the provided Google Maps API key
+  const apiKey = "AIzaSyA6HLJkPV64cLa5YE43uk4sY0HaUnb-T8k";
 
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
