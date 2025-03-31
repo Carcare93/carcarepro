@@ -56,12 +56,12 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-md z-50 border-b border-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
+          {/* Logo - Updated size */}
           <Link to="/" className="flex items-center">
             <img 
               src="/lovable-uploads/cf04f4b5-7f5b-4af0-9ee6-b8bce2bec514.png" 
               alt="CarCare Logo" 
-              className="h-14 w-auto transition-transform hover:scale-105"
+              className="h-16 w-auto transition-transform hover:scale-105"
             />
           </Link>
           
@@ -126,7 +126,7 @@ const Header = () => {
                     <img 
                       src="/lovable-uploads/cf04f4b5-7f5b-4af0-9ee6-b8bce2bec514.png" 
                       alt="CarCare Logo" 
-                      className="h-12 w-auto"
+                      className="h-14 w-auto" 
                     />
                   </div>
                 </SheetTitle>
