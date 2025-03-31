@@ -17,6 +17,7 @@ import SignUp from '@/pages/SignUp';
 import VerifyEmail from '@/pages/VerifyEmail';
 import ProviderProfile from '@/pages/ProviderProfile';
 import Profile from '@/pages/Profile';
+import Bookings from '@/pages/Bookings';
 import NotFound from '@/pages/NotFound';
 import { Toaster } from '@/components/ui/toaster';
 
@@ -81,6 +82,10 @@ const router = createBrowserRouter([
   {
     path: "/profile",
     element: <Profile />,
+  },
+  {
+    path: "/bookings",
+    element: <Bookings />,
   },
   {
     path: "*",

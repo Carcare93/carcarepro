@@ -76,14 +76,9 @@ const Header = () => {
                 )}
               </>
             )}
-            <li>
-              <Link
-                to="/provider-registration"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                Become a Provider
-              </Link>
-            </li>
+            <NavLink to="/provider-registration" className={getLinkClass}>
+              {t('header.becomeProvider')}
+            </NavLink>
           </nav>
           
           <div className="flex items-center space-x-4">
