@@ -1,5 +1,5 @@
 
-import * as React from "react"
+import React from "react"
 import { ToastContext } from "./toast/toast-context"
 import { dispatch, memoryState, listeners } from "./toast/toast-reducer"
 import { Toast, ToasterToast } from "./toast/types"
