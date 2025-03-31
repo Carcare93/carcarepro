@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -39,6 +40,7 @@ const Header = () => {
       title: "Logged out",
       description: "You've been successfully logged out.",
     });
+    navigate('/');
   };
   
   const getProfilePath = () => {
