@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Booking } from '@/types/booking';
 import { startOfDay, endOfDay, format, parseISO, addMinutes } from 'date-fns';
+import { getServiceDuration } from '@/services/booking-service';
 
 export type CalendarEvent = {
   id: string;
@@ -113,11 +114,8 @@ export const useCalendarEvents = (bookings: Booking[], currentDate: Date) => {
       const serviceType = booking.serviceType.split('(')[0].trim();
       const color = serviceColorMap[serviceType] || serviceColorMap.default;
       
-      // Determine duration based on service type
-      let duration = 30; // default 30 minutes
-      if (serviceType.includes('Inspection')) duration = 60;
-      if (serviceType.includes('Replacement')) duration = 90;
-      if (serviceType.includes('Maintenance')) duration = 120;
+      // Use booking duration if available, otherwise calculate it
+      const duration = booking.duration || getServiceDuration(booking.serviceType);
       
       return {
         id: booking.id,
@@ -131,7 +129,27 @@ export const useCalendarEvents = (bookings: Booking[], currentDate: Date) => {
       };
     });
 
+    // Update available time slots based on bookings
+    const updatedTimeSlots = [...availableTimeSlots];
+    
+    // In a real app, this would check for time slot conflicts and mark slots as unavailable
+    // For now, we'll just mark a few as unavailable
+    mappedEvents.forEach(event => {
+      if (event.status === 'confirmed' || event.status === 'pending') {
+        const eventDate = new Date(event.date);
+        const dayOfWeek = eventDate.getDay();
+        
+        // Mark time slots as unavailable if they overlap with the booking
+        updatedTimeSlots.forEach((slot, index) => {
+          if (slot.dayOfWeek === dayOfWeek && slot.startTime === event.time) {
+            updatedTimeSlots[index] = { ...slot, isAvailable: false };
+          }
+        });
+      }
+    });
+
     setEvents(mappedEvents);
+    setAvailableTimeSlots(updatedTimeSlots);
   }, [bookings]);
 
   return {

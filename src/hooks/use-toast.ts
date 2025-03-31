@@ -40,7 +40,7 @@ export function toast(props: Toast) {
 export function useToast() {
   const context = React.useContext(ToastContext)
   
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useToast must be used within a ToastProvider")
   }
   

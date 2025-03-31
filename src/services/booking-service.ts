@@ -3,6 +3,41 @@ import { Booking, BookingStatus } from '@/types/booking';
 import { v4 as uuidv4 } from 'uuid';
 import { authService, User } from './auth-service';
 
+// Map of service types to their durations in minutes
+export const serviceDurations: Record<string, number> = {
+  'Oil Change & Filter Replacement': 45,
+  'Scheduled Maintenance': 120,
+  'Tire Rotation & Balancing': 60,
+  'Brake Inspection & Repair': 90,
+  'Oil Change': 30,
+  'Tire Rotation': 30,
+  'Brake Inspection': 60,
+  'Full Inspection': 90,
+  'Tire Replacement': 60,
+  'Scheduled Maintenance (30,000 miles)': 120,
+  // Default duration if service type not found
+  'default': 60
+};
+
+// Function to get the duration for a specific service type
+export const getServiceDuration = (serviceType: string): number => {
+  // Remove anything in parentheses for matching
+  const baseServiceType = serviceType.split('(')[0].trim();
+  
+  // Try to find an exact match first
+  if (serviceDurations[serviceType]) {
+    return serviceDurations[serviceType];
+  }
+  
+  // Then try the base service type
+  if (serviceDurations[baseServiceType]) {
+    return serviceDurations[baseServiceType];
+  }
+  
+  // Fall back to default duration
+  return serviceDurations.default;
+};
+
 // Function to generate mock bookings data
 export const fetchMockBookings = async (): Promise<Booking[]> => {
   // Simulate API delay
@@ -42,7 +77,8 @@ export const fetchMockBookings = async (): Promise<Booking[]> => {
         licensePlate: 'ABC123'
       },
       price: 89.99,
-      notes: 'Used synthetic oil as requested.'
+      notes: 'Used synthetic oil as requested.',
+      duration: 45 // Add duration in minutes
     },
     {
       id: uuidv4(),
@@ -73,7 +109,8 @@ export const fetchMockBookings = async (): Promise<Booking[]> => {
         licensePlate: 'ABC123'
       },
       price: 349.99,
-      notes: 'Customer cancelled due to scheduling conflict.'
+      notes: 'Customer cancelled due to scheduling conflict.',
+      duration: 120 // Add duration in minutes
     },
     {
       id: uuidv4(),
@@ -103,7 +140,8 @@ export const fetchMockBookings = async (): Promise<Booking[]> => {
         year: 2020,
         licensePlate: 'XYZ789'
       },
-      price: 79.99
+      price: 79.99,
+      duration: 60 // Add duration in minutes
     },
     {
       id: uuidv4(),
@@ -134,20 +172,25 @@ export const fetchMockBookings = async (): Promise<Booking[]> => {
         licensePlate: 'XYZ789'
       },
       price: 149.99,
-      notes: 'Customer reported squeaking when braking.'
+      notes: 'Customer reported squeaking when braking.',
+      duration: 90 // Add duration in minutes
     }
   ];
 };
 
 // Function to mock booking appointment (in real app this would call an API)
 export const bookAppointment = async (bookingData: Omit<Booking, 'id'>): Promise<Booking> => {
+  // Calculate duration if not provided
+  const duration = bookingData.duration || getServiceDuration(bookingData.serviceType);
+  
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 1000));
   
-  // Return mocked response with generated ID
+  // Return mocked response with generated ID and calculated duration
   return {
     id: uuidv4(),
-    ...bookingData
+    ...bookingData,
+    duration
   };
 };
 

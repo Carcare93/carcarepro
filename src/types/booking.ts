@@ -13,4 +13,5 @@ export interface Booking {
   vehicle: Vehicle;
   price?: number;
   notes?: string;
+  duration?: number; // Duration in minutes
 }

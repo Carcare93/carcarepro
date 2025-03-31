@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -21,21 +21,21 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+import { serviceDurations } from '@/services/booking-service';
 
 interface TimeSlotManagementModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-// Sample service types
-const serviceTypes = [
-  { id: '1', name: 'Oil Change', defaultDuration: 30 },
-  { id: '2', name: 'Tire Rotation', defaultDuration: 30 },
-  { id: '3', name: 'Brake Inspection', defaultDuration: 60 },
-  { id: '4', name: 'Full Inspection', defaultDuration: 90 },
-  { id: '5', name: 'Tire Replacement', defaultDuration: 60 },
-  { id: '6', name: 'Scheduled Maintenance', defaultDuration: 120 }
-];
+// Generate service types from durations map
+const serviceTypes = Object.entries(serviceDurations)
+  .filter(([name]) => !name.includes('(') && name !== 'default')
+  .map(([name, duration]) => ({ 
+    id: name.toLowerCase().replace(/\s+/g, '-'), 
+    name, 
+    defaultDuration: duration 
+  }));
 
 // Days of the week
 const daysOfWeek = [

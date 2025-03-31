@@ -34,6 +34,13 @@ const generateTimeSlots = () => {
   return slots;
 };
 
+// Function to calculate end time
+const calculateEndTime = (startTime: string, durationMinutes: number): string => {
+  const startDate = parse(startTime, 'HH:mm', new Date());
+  const endDate = addMinutes(startDate, durationMinutes);
+  return format(endDate, 'HH:mm');
+};
+
 const DailyView = ({ 
   selectedDate, 
   events, 
@@ -69,68 +76,68 @@ const DailyView = ({
               <div className="flex-grow">
                 {eventsAtTime.length > 0 ? (
                   <div className="space-y-2">
-                    {eventsAtTime.map(event => (
-                      <Card key={event.id} 
-                        className="overflow-hidden"
-                        style={{ borderLeft: `4px solid ${event.color}` }}
-                      >
-                        <CardContent className="p-3">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h4 className="font-medium">{event.title}</h4>
-                              <p className="text-sm text-muted-foreground">
-                                {time} - {format(
-                                  addMinutes(
-                                    parse(time, 'HH:mm', new Date()), 
-                                    event.duration
-                                  ),
-                                  'HH:mm'
-                                )}
+                    {eventsAtTime.map(event => {
+                      const endTime = calculateEndTime(time, event.duration);
+                      return (
+                        <Card key={event.id} 
+                          className="overflow-hidden"
+                          style={{ 
+                            borderLeft: `4px solid ${event.color}`,
+                            minHeight: `${Math.max(event.duration / 15, 1) * 1.5}rem` // Scale height based on duration
+                          }}
+                        >
+                          <CardContent className="p-3">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h4 className="font-medium">{event.title}</h4>
+                                <p className="text-sm text-muted-foreground">
+                                  {time} - {endTime} ({event.duration} min)
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <BookingStatusBadge status={event.status} />
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                                      <MoreVertical className="h-4 w-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    {event.status === 'pending' && (
+                                      <>
+                                        <DropdownMenuItem onClick={() => onAcceptBooking(event.id)}>
+                                          <Check className="h-4 w-4 mr-2" />
+                                          Accept
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => onDeclineBooking(event.id)}>
+                                          <X className="h-4 w-4 mr-2" />
+                                          Decline
+                                        </DropdownMenuItem>
+                                      </>
+                                    )}
+                                    {event.status === 'confirmed' && (
+                                      <DropdownMenuItem onClick={() => onCompleteBooking(event.id)}>
+                                        <Check className="h-4 w-4 mr-2" />
+                                        Mark as Completed
+                                      </DropdownMenuItem>
+                                    )}
+                                    <DropdownMenuItem>
+                                      View Details
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </div>
+                            </div>
+                            
+                            <div className="mt-2">
+                              <p className="text-sm">
+                                {event.booking.vehicle.year} {event.booking.vehicle.make} {event.booking.vehicle.model}
                               </p>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <BookingStatusBadge status={event.status} />
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                                    <MoreVertical className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  {event.status === 'pending' && (
-                                    <>
-                                      <DropdownMenuItem onClick={() => onAcceptBooking(event.id)}>
-                                        <Check className="h-4 w-4 mr-2" />
-                                        Accept
-                                      </DropdownMenuItem>
-                                      <DropdownMenuItem onClick={() => onDeclineBooking(event.id)}>
-                                        <X className="h-4 w-4 mr-2" />
-                                        Decline
-                                      </DropdownMenuItem>
-                                    </>
-                                  )}
-                                  {event.status === 'confirmed' && (
-                                    <DropdownMenuItem onClick={() => onCompleteBooking(event.id)}>
-                                      <Check className="h-4 w-4 mr-2" />
-                                      Mark as Completed
-                                    </DropdownMenuItem>
-                                  )}
-                                  <DropdownMenuItem>
-                                    View Details
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </div>
-                          </div>
-                          
-                          <div className="mt-2">
-                            <p className="text-sm">
-                              {event.booking.vehicle.year} {event.booking.vehicle.make} {event.booking.vehicle.model}
-                            </p>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
                   </div>
                 ) : availableSlot ? (
                   <div 
