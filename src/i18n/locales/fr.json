@@ -1,0 +1,53 @@
+
+{
+  "common": {
+    "search": "Rechercher",
+    "location": "Entrez votre emplacement...",
+    "bookNow": "Réserver maintenant",
+    "login": "Se connecter",
+    "signup": "S'inscrire",
+    "logout": "Se déconnecter",
+    "profile": "Profil"
+  },
+  "header": {
+    "home": "Accueil",
+    "services": "Services",
+    "bookings": "Réservations",
+    "providerDashboard": "Tableau de bord du fournisseur"
+  },
+  "services": {
+    "title": "Trouver des services automobiles",
+    "subtitle": "Parcourez, recherchez et réservez des prestataires de services de confiance près de chez vous",
+    "listView": "Vue liste",
+    "mapView": "Vue carte",
+    "filters": "Filtres",
+    "noProvidersFound": "Aucun prestataire de services trouvé",
+    "tryAdjusting": "Essayez d'ajuster vos critères de recherche ou votre emplacement pour trouver plus de résultats",
+    "available": "Disponible",
+    "verified": "Vérifié",
+    "availableToday": "Disponible aujourd'hui",
+    "loading": "Chargement des prestataires..."
+  },
+  "footer": {
+    "product": "Produit",
+    "features": "Fonctionnalités",
+    "howItWorks": "Comment ça marche",
+    "pricing": "Tarification",
+    "company": "Entreprise",
+    "aboutUs": "À propos de nous",
+    "blog": "Blog",
+    "careers": "Carrières",
+    "contact": "Contact",
+    "legal": "Légal",
+    "privacyPolicy": "Politique de confidentialité",
+    "termsOfService": "Conditions d'utilisation",
+    "cookiePolicy": "Politique de cookies",
+    "allRightsReserved": "Tous droits réservés"
+  },
+  "language": {
+    "select": "Sélectionner la langue",
+    "english": "Anglais",
+    "spanish": "Espagnol",
+    "french": "Français"
+  }
+}

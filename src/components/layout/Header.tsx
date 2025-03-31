@@ -1,8 +1,8 @@
-
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 import {
   Sheet,
   SheetContent,
@@ -13,12 +13,14 @@ import {
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Menu } from "lucide-react"
+import LanguageSwitcher from '../shared/LanguageSwitcher';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   const isProvider = user?.accountType === 'provider';
   
@@ -64,38 +66,41 @@ const Header = () => {
           
           {/* Main Navigation - Desktop */}
           <nav className="hidden md:flex space-x-8">
-            <NavLink to="/" className={getLinkClass}>Home</NavLink>
+            <NavLink to="/" className={getLinkClass}>{t('header.home')}</NavLink>
             {!isProvider && (
               <>
-                <NavLink to="/services" className={getLinkClass}>Services</NavLink>
-                <NavLink to="/bookings" className={getLinkClass}>Bookings</NavLink>
+                <NavLink to="/services" className={getLinkClass}>{t('header.services')}</NavLink>
+                <NavLink to="/bookings" className={getLinkClass}>{t('header.bookings')}</NavLink>
               </>
             )}
           </nav>
           
           {/* User section */}
           <div className="flex items-center space-x-4">
+            {/* Language Switcher */}
+            <LanguageSwitcher />
+            
             {isAuthenticated ? (
               <>
                 {isProvider && (
                   <Link to="/provider" className="hidden md:block py-2 px-4 rounded-md hover:bg-secondary/50 transition-colors duration-200">
-                    Provider Dashboard
+                    {t('header.providerDashboard')}
                   </Link>
                 )}
                 <Link to={getProfilePath()} className="hidden md:block py-2 px-4 rounded-md hover:bg-secondary/50 transition-colors duration-200">
-                  Profile
+                  {t('common.profile')}
                 </Link>
                 <Button variant="outline" size="sm" className="hidden md:block" onClick={handleLogout}>
-                  Log Out
+                  {t('common.logout')}
                 </Button>
               </>
             ) : (
               <>
                 <Link to="/login" className="hidden md:block py-2 px-4 rounded-md hover:bg-secondary/50 transition-colors duration-200">
-                  Log In
+                  {t('common.login')}
                 </Link>
                 <Link to="/signup" className="hidden md:block py-2 px-4 rounded-md bg-primary text-white hover:bg-primary/90 transition-colors duration-200">
-                  Sign Up
+                  {t('common.signup')}
                 </Link>
               </>
             )}
@@ -125,15 +130,15 @@ const Header = () => {
               </SheetHeader>
               <nav className="grid gap-4 text-lg font-medium mt-4">
                 <Link to="/" className="hover:text-secondary" onClick={closeMobileMenu}>
-                  Home
+                  {t('header.home')}
                 </Link>
                 {!isProvider && (
                   <>
                     <Link to="/services" className="hover:text-secondary" onClick={closeMobileMenu}>
-                      Services
+                      {t('header.services')}
                     </Link>
                     <Link to="/bookings" className="hover:text-secondary" onClick={closeMobileMenu}>
-                      Bookings
+                      {t('header.bookings')}
                     </Link>
                   </>
                 )}
@@ -141,63 +146,34 @@ const Header = () => {
                   <>
                     {isProvider && (
                       <Link to="/provider" className="hover:text-secondary" onClick={closeMobileMenu}>
-                        Provider Dashboard
+                        {t('header.providerDashboard')}
                       </Link>
                     )}
                     <Link to={getProfilePath()} className="hover:text-secondary" onClick={closeMobileMenu}>
-                      Profile
+                      {t('common.profile')}
                     </Link>
                     <Button variant="outline" size="sm" className="w-full" onClick={handleLogout}>
-                      Log Out
+                      {t('common.logout')}
                     </Button>
                   </>
                 ) : (
                   <>
                     <Link to="/login" className="hover:text-secondary" onClick={closeMobileMenu}>
-                      Log In
+                      {t('common.login')}
                     </Link>
                     <Link to="/signup" className="bg-primary text-white text-center py-2 rounded-md hover:bg-primary/90 transition-colors duration-200" onClick={closeMobileMenu}>
-                      Sign Up
+                      {t('common.signup')}
                     </Link>
                   </>
                 )}
+                <div className="pt-2 flex justify-center">
+                  <LanguageSwitcher />
+                </div>
               </nav>
             </SheetContent>
           </Sheet>
         </div>
       </div>
-      
-      {/* Mobile Navigation */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden bg-background border-b border-border">
-          <div className="container mx-auto px-4 py-3">
-            <nav className="flex flex-col space-y-3">
-              <NavLink to="/" className={getLinkClass} onClick={closeMobileMenu}>Home</NavLink>
-              {!isProvider && (
-                <>
-                  <NavLink to="/services" className={getLinkClass} onClick={closeMobileMenu}>Services</NavLink>
-                  <NavLink to="/bookings" className={getLinkClass} onClick={closeMobileMenu}>Bookings</NavLink>
-                </>
-              )}
-              
-              {isAuthenticated ? (
-                <>
-                  {isProvider && (
-                    <NavLink to="/provider" className={getLinkClass} onClick={closeMobileMenu}>Provider Dashboard</NavLink>
-                  )}
-                  <NavLink to={getProfilePath()} className={getLinkClass} onClick={closeMobileMenu}>Profile</NavLink>
-                  <Button variant="outline" size="sm" className="w-full" onClick={handleLogout}>Log Out</Button>
-                </>
-              ) : (
-                <>
-                  <NavLink to="/login" className={getLinkClass} onClick={closeMobileMenu}>Log In</NavLink>
-                  <NavLink to="/signup" className="bg-primary text-white text-center py-2 rounded-md hover:bg-primary/90 transition-colors duration-200" onClick={closeMobileMenu}>Sign Up</NavLink>
-                </>
-              )}
-            </nav>
-          </div>
-        </div>
-      )}
     </header>
   );
 };

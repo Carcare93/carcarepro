@@ -4,6 +4,7 @@ import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import App from './App.tsx'
 import './index.css'
 import { Capacitor } from '@capacitor/core';
+import './i18n'; // Import i18n configuration
 
 // Initialize Capacitor when running as native app
 if (Capacitor.isNativePlatform()) {

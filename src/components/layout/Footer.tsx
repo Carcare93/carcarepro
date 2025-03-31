@@ -2,26 +2,28 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Car, Instagram, Twitter, Facebook, Youtube, Mail, Phone } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
+  const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
   
   const footerLinks = {
     product: [
-      { name: 'Features', href: '#features' },
-      { name: 'How it Works', href: '#how-it-works' },
-      { name: 'Pricing', href: '#pricing' },
+      { name: t('footer.features'), href: '#features' },
+      { name: t('footer.howItWorks'), href: '#how-it-works' },
+      { name: t('footer.pricing'), href: '#pricing' },
     ],
     company: [
-      { name: 'About Us', href: '/about' },
-      { name: 'Blog', href: '/blog' },
-      { name: 'Careers', href: '/careers' },
-      { name: 'Contact', href: '/contact' },
+      { name: t('footer.aboutUs'), href: '/about' },
+      { name: t('footer.blog'), href: '/blog' },
+      { name: t('footer.careers'), href: '/careers' },
+      { name: t('footer.contact'), href: '/contact' },
     ],
     legal: [
-      { name: 'Privacy Policy', href: '/privacy' },
-      { name: 'Terms of Service', href: '/terms' },
-      { name: 'Cookie Policy', href: '/cookies' },
+      { name: t('footer.privacyPolicy'), href: '/privacy' },
+      { name: t('footer.termsOfService'), href: '/terms' },
+      { name: t('footer.cookiePolicy'), href: '/cookies' },
     ],
   };
 
@@ -77,7 +79,7 @@ const Footer = () => {
           {/* Footer Links */}
           <div className="md:col-span-1">
             <h3 className="text-sm font-semibold uppercase tracking-wider mb-4">
-              Product
+              {t('footer.product')}
             </h3>
             <ul className="space-y-3">
               {footerLinks.product.map((link) => (
@@ -95,7 +97,7 @@ const Footer = () => {
           
           <div className="md:col-span-1">
             <h3 className="text-sm font-semibold uppercase tracking-wider mb-4">
-              Company
+              {t('footer.company')}
             </h3>
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
@@ -113,7 +115,7 @@ const Footer = () => {
           
           <div className="md:col-span-1">
             <h3 className="text-sm font-semibold uppercase tracking-wider mb-4">
-              Legal
+              {t('footer.legal')}
             </h3>
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
@@ -132,7 +134,7 @@ const Footer = () => {
           {/* Contact Information */}
           <div className="md:col-span-1">
             <h3 className="text-sm font-semibold uppercase tracking-wider mb-4">
-              Contact
+              {t('footer.contact')}
             </h3>
             <ul className="space-y-3">
               <li className="flex items-center text-sm text-muted-foreground">
@@ -154,7 +156,7 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="mt-12 pt-8 border-t border-border">
           <p className="text-sm text-muted-foreground text-center">
-            © {currentYear} CarCare. All rights reserved.
+            © {currentYear} CarCare. {t('footer.allRightsReserved')}
           </p>
         </div>
       </div>

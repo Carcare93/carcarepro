@@ -1,0 +1,53 @@
+
+{
+  "common": {
+    "search": "Buscar",
+    "location": "Ingrese su ubicación...",
+    "bookNow": "Reservar ahora",
+    "login": "Iniciar sesión",
+    "signup": "Registrarse",
+    "logout": "Cerrar sesión",
+    "profile": "Perfil"
+  },
+  "header": {
+    "home": "Inicio",
+    "services": "Servicios",
+    "bookings": "Reservas",
+    "providerDashboard": "Panel del proveedor"
+  },
+  "services": {
+    "title": "Encuentra servicios automotrices",
+    "subtitle": "Explora, busca y reserva proveedores de servicios confiables cerca de ti",
+    "listView": "Vista de lista",
+    "mapView": "Vista de mapa",
+    "filters": "Filtros",
+    "noProvidersFound": "No se encontraron proveedores de servicios",
+    "tryAdjusting": "Intenta ajustar tus criterios de búsqueda o ubicación para encontrar más resultados",
+    "available": "Disponible",
+    "verified": "Verificado",
+    "availableToday": "Disponible hoy",
+    "loading": "Cargando proveedores..."
+  },
+  "footer": {
+    "product": "Producto",
+    "features": "Características",
+    "howItWorks": "Cómo funciona",
+    "pricing": "Precios",
+    "company": "Empresa",
+    "aboutUs": "Sobre nosotros",
+    "blog": "Blog",
+    "careers": "Carreras",
+    "contact": "Contacto",
+    "legal": "Legal",
+    "privacyPolicy": "Política de privacidad",
+    "termsOfService": "Términos de servicio",
+    "cookiePolicy": "Política de cookies",
+    "allRightsReserved": "Todos los derechos reservados"
+  },
+  "language": {
+    "select": "Seleccionar idioma",
+    "english": "Inglés",
+    "spanish": "Español",
+    "french": "Francés"
+  }
+}

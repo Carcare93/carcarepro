@@ -1,0 +1,53 @@
+
+{
+  "common": {
+    "search": "Search",
+    "location": "Enter your location...",
+    "bookNow": "Book Now",
+    "login": "Log In",
+    "signup": "Sign Up",
+    "logout": "Log Out",
+    "profile": "Profile"
+  },
+  "header": {
+    "home": "Home",
+    "services": "Services",
+    "bookings": "Bookings",
+    "providerDashboard": "Provider Dashboard"
+  },
+  "services": {
+    "title": "Find Automotive Services",
+    "subtitle": "Browse, search and book trusted service providers near you",
+    "listView": "List View",
+    "mapView": "Map View",
+    "filters": "Filters",
+    "noProvidersFound": "No service providers found",
+    "tryAdjusting": "Try adjusting your search criteria or location to find more results",
+    "available": "Available",
+    "verified": "Verified",
+    "availableToday": "Available Today",
+    "loading": "Loading providers..."
+  },
+  "footer": {
+    "product": "Product",
+    "features": "Features",
+    "howItWorks": "How it Works",
+    "pricing": "Pricing",
+    "company": "Company",
+    "aboutUs": "About Us",
+    "blog": "Blog",
+    "careers": "Careers",
+    "contact": "Contact",
+    "legal": "Legal",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "cookiePolicy": "Cookie Policy",
+    "allRightsReserved": "All rights reserved"
+  },
+  "language": {
+    "select": "Select Language",
+    "english": "English",
+    "spanish": "Spanish",
+    "french": "French"
+  }
+}
