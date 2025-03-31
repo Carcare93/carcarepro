@@ -6,7 +6,7 @@ import { Toast, ToasterToast } from "./toast/types"
 import { genId } from "./toast/utils"
 
 // Function to be used outside of components for showing toasts
-function toast(props: Toast) {
+export function toast(props: Toast) {
   const id = genId()
 
   const update = (props: ToasterToast) =>
@@ -37,7 +37,7 @@ function toast(props: Toast) {
 }
 
 // The hook that components should use to access toast functionality
-function useToast() {
+export function useToast() {
   const context = React.useContext(ToastContext)
   
   // If within the context provider, use that context
@@ -69,5 +69,3 @@ function useToast() {
     dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
   }
 }
-
-export { useToast, toast }

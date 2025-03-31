@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -28,7 +27,7 @@ const ProviderDashboard = () => {
     }
   }, [user, navigate]);
 
-  // Fetch bookings - specifying the default as an empty array instead of empty object
+  // Fetch bookings - make sure to initialize with empty array
   const { 
     data: bookings = [], 
     isLoading: isLoadingBookings, 
@@ -135,12 +134,10 @@ const ProviderDashboard = () => {
                 </TabsTrigger>
               </TabsList>
               
-              {/* Bookings Tab */}
               <TabsContent value="bookings" className="mt-6">
                 <BookingsTab />
               </TabsContent>
               
-              {/* Calendar Tab */}
               <TabsContent value="calendar" className="mt-6">
                 <CalendarView 
                   bookings={bookings}
@@ -151,12 +148,10 @@ const ProviderDashboard = () => {
                 />
               </TabsContent>
               
-              {/* Services Tab */}
               <TabsContent value="services" className="mt-6">
                 <ServicesTab providerProfile={user.providerProfile} />
               </TabsContent>
               
-              {/* Profile Tab */}
               <TabsContent value="profile" className="mt-6">
                 <ProfileTab providerProfile={user.providerProfile} />
               </TabsContent>

@@ -1,7 +1,7 @@
 
 import * as React from "react"
 import { State, Toast, ToasterToast } from "./types"
-import { reducer, dispatch, listeners } from "./toast-reducer"
+import { reducer } from "./toast-reducer"
 import { genId } from "./utils"
 
 // Create the Context
@@ -9,11 +9,7 @@ export const ToastContext = React.createContext<{
   state: State
   toast: (props: Toast) => { id: string; dismiss: () => void; update: (props: ToasterToast) => void }
   dismiss: (toastId?: string) => void
-}>({
-  state: { toasts: [] },
-  toast: () => ({ id: '', dismiss: () => {}, update: () => {} }),
-  dismiss: () => {},
-})
+} | null>(null);
 
 // Define the Provider component
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ 
@@ -22,12 +18,10 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
   const [state, dispatchAction] = React.useReducer(reducer, { toasts: [] })
 
   React.useEffect(() => {
-    listeners.forEach((listener) => {
-      listener(state)
-    })
-  }, [state])
+    // This effect can be used for syncing state if needed
+  }, [state]);
 
-  const toast = (props: Toast) => {
+  const toast = React.useCallback((props: Toast) => {
     const id = genId()
 
     const update = (props: ToasterToast) =>
@@ -55,28 +49,21 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
       dismiss,
       update,
     }
-  }
+  }, [])
 
-  const dismiss = (toastId?: string) => {
+  const dismiss = React.useCallback((toastId?: string) => {
     dispatchAction({ type: "DISMISS_TOAST", toastId })
-  }
+  }, [])
+
+  const contextValue = React.useMemo(() => ({
+    state,
+    toast,
+    dismiss
+  }), [state, toast, dismiss])
 
   return (
-    <ToastContext.Provider value={{ state, toast, dismiss }}>
+    <ToastContext.Provider value={contextValue}>
       {children}
     </ToastContext.Provider>
   )
-}
-
-// Export the custom hook to use the toast context
-export const useToast = () => {
-  const context = React.useContext(ToastContext)
-  if (!context) {
-    throw new Error("useToast must be used within a ToastProvider")
-  }
-  return {
-    ...context.state,
-    toast: context.toast,
-    dismiss: context.dismiss,
-  }
 }
