@@ -18,39 +18,42 @@ import NotFound from "./pages/NotFound";
 import Vehicles from "./pages/Vehicles";
 import VehicleInvoices from "./pages/VehicleInvoices";
 import ProviderDashboard from "./pages/ProviderDashboard";
+import React from "react";
 
 const queryClient = new QueryClient();
 
 const App = () => (
-  <BrowserRouter>
-    <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-        <TooltipProvider>
-          <AuthProvider>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/services" element={<ServiceExplorer />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/provider-profile" element={<ProviderProfile />} />
-              <Route path="/bookings" element={<Bookings />} />
-              <Route path="/vehicles" element={<Vehicles />} />
-              <Route path="/vehicles/:vehicleId/invoices" element={<VehicleInvoices />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/verify-email" element={<VerifyEmail />} />
-              <Route path="/provider" element={<ProviderDashboard />} />
-              {/* Redirects for old routes */}
-              <Route path="/discover" element={<Navigate to="/services" replace />} />
-              <Route path="/marketplace" element={<Navigate to="/services" replace />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <Toaster />
-            <Sonner />
-          </AuthProvider>
-        </TooltipProvider>
-      </ToastProvider>
-    </QueryClientProvider>
-  </BrowserRouter>
+  <React.StrictMode>
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <ToastProvider>
+          <TooltipProvider>
+            <AuthProvider>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/services" element={<ServiceExplorer />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/provider-profile" element={<ProviderProfile />} />
+                <Route path="/bookings" element={<Bookings />} />
+                <Route path="/vehicles" element={<Vehicles />} />
+                <Route path="/vehicles/:vehicleId/invoices" element={<VehicleInvoices />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/provider" element={<ProviderDashboard />} />
+                {/* Redirects for old routes */}
+                <Route path="/discover" element={<Navigate to="/services" replace />} />
+                <Route path="/marketplace" element={<Navigate to="/services" replace />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+              <Toaster />
+              <Sonner />
+            </AuthProvider>
+          </TooltipProvider>
+        </ToastProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
+  </React.StrictMode>
 );
 
 export default App;

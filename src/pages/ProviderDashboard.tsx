@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { useQuery } from '@tanstack/react-query';
 import { bookingService } from '@/services/booking-service';
-import { authService } from '@/services/auth-service';
+import { authService, ProviderProfile } from '@/services/auth-service';
 import BookingsTab from '@/components/provider/BookingsTab';
 import ServicesTab from '@/components/provider/ServicesTab';
 import ProfileTab from '@/components/provider/ProfileTab';
@@ -25,7 +25,13 @@ const ProviderDashboard = () => {
     isLoading: isLoadingProfile 
   } = useQuery({
     queryKey: ['providerProfile'],
-    queryFn: authService.getProviderProfile.bind(authService),
+    queryFn: () => {
+      const user = authService.getCurrentUser();
+      if (user && user.providerProfile) {
+        return user.providerProfile;
+      }
+      return null;
+    },
   });
 
   // Fetch bookings
@@ -132,7 +138,7 @@ const ProviderDashboard = () => {
                 </CardContent>
               </Card>
             ) : providerProfile ? (
-              <ServicesTab providerProfile={providerProfile} />
+              <ServicesTab providerProfile={providerProfile as ProviderProfile} />
             ) : (
               <Card>
                 <CardContent className="p-6 text-center">
@@ -150,7 +156,7 @@ const ProviderDashboard = () => {
                 </CardContent>
               </Card>
             ) : providerProfile ? (
-              <ProfileTab providerProfile={providerProfile} />
+              <ProfileTab providerProfile={providerProfile as ProviderProfile} />
             ) : (
               <Card>
                 <CardContent className="p-6 text-center">
