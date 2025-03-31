@@ -55,7 +55,6 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-md z-50 border-b border-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo - Updated size */}
           <Link to="/" className="flex items-center">
             <img 
               src="/lovable-uploads/cf04f4b5-7f5b-4af0-9ee6-b8bce2bec514.png" 
@@ -64,7 +63,6 @@ const Header = () => {
             />
           </Link>
           
-          {/* Main Navigation - Desktop */}
           <nav className="hidden md:flex space-x-8">
             <NavLink to="/" className={getLinkClass}>{t('header.home')}</NavLink>
             {!isProvider && (
@@ -76,7 +74,6 @@ const Header = () => {
                 )}
               </>
             )}
-            {/* Add a "Become a Provider" link in the navigation list */}
             <li>
               <Link
                 to="/provider-registration"
@@ -87,9 +84,7 @@ const Header = () => {
             </li>
           </nav>
           
-          {/* User section */}
           <div className="flex items-center space-x-4">
-            {/* Language Switcher */}
             <div className="border border-border rounded-md p-1 hover:bg-secondary/30 transition-colors">
               <LanguageSwitcher />
             </div>
@@ -120,7 +115,6 @@ const Header = () => {
             )}
           </div>
           
-          {/* Mobile Menu Toggle */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" onClick={toggleMobileMenu} className="md:hidden">

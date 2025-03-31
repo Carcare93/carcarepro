@@ -9,19 +9,28 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User, Mail, Calendar, LogOut } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const Profile = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   useEffect(() => {
     if (!isAuthenticated) {
+      console.log("User not authenticated, redirecting to login");
       navigate('/login');
+    } else {
+      console.log("Authenticated user:", user);
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, user]);
 
   const handleLogout = () => {
     logout();
+    toast({
+      title: "Logged out successfully",
+      description: "You have been logged out of your account."
+    });
     navigate('/');
   };
 

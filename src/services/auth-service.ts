@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { supabaseService } from './supabase-service';
 
@@ -69,7 +68,10 @@ export class AuthService {
   private mapSupabaseUser(supabaseUser: any, additionalData?: any): User {
     if (!supabaseUser) return null;
     
-    return {
+    console.log("Mapping Supabase user:", supabaseUser);
+    console.log("Additional data:", additionalData);
+    
+    const userData = {
       id: supabaseUser.id,
       email: supabaseUser.email,
       name: supabaseUser.user_metadata?.name || 'User',
@@ -79,6 +81,9 @@ export class AuthService {
       providerProfile: supabaseUser.user_metadata?.providerProfile,
       ...additionalData
     };
+    
+    console.log("Mapped user data:", userData);
+    return userData;
   }
   
   async register(data: RegisterData | ProviderRegisterData): Promise<User> {
