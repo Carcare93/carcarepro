@@ -51,6 +51,8 @@ const SignUp = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedAccountType, setSelectedAccountType] = useState<'customer' | 'provider'>('customer');
+  const [showAccountSelection, setShowAccountSelection] = useState(true);
+  const [showForm, setShowForm] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -80,6 +82,13 @@ const SignUp = () => {
     return () => subscription.unsubscribe();
   }, [form.watch]);
 
+  const handleAccountTypeSelection = (type: 'customer' | 'provider') => {
+    form.setValue('accountType', type);
+    setSelectedAccountType(type);
+    setShowAccountSelection(false);
+    setShowForm(true);
+  };
+
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
     try {
@@ -90,15 +99,17 @@ const SignUp = () => {
           email: data.email,
           password: data.password,
           accountType: 'provider',
-          businessName: data.businessName || '',
-          services: [data.serviceType || ''],
-          location: {
-            address: data.address || '',
-            city: data.city || '',
-            state: data.state || '',
-            zipCode: data.zipCode || '',
-          },
-          phone: data.phone || '',
+          providerDetails: {
+            businessName: data.businessName || '',
+            services: [data.serviceType || ''],
+            location: {
+              address: data.address || '',
+              city: data.city || '',
+              state: data.state || '',
+              zipCode: data.zipCode || '',
+            },
+            phone: data.phone || '',
+          }
         });
       } else {
         // Register as customer
@@ -140,6 +151,11 @@ const SignUp = () => {
     "General Maintenance"
   ];
 
+  const handleBackToSelection = () => {
+    setShowAccountSelection(true);
+    setShowForm(false);
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -152,255 +168,276 @@ const SignUp = () => {
             </p>
           </div>
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="accountType"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>Account Type</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                          form.clearErrors();
-                        }}
-                        defaultValue={field.value}
-                        className="flex flex-col sm:flex-row gap-4"
-                      >
-                        <FormItem className="flex-1 space-y-0">
-                          <FormControl>
-                            <div className={`flex items-center justify-between border rounded-lg p-4 cursor-pointer transition-all ${field.value === 'customer' ? 'border-primary bg-primary/5 shadow-sm' : 'border-input'}`}>
-                              <div className="flex items-center space-x-4">
-                                <div className={`p-3 rounded-full ${field.value === 'customer' ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
-                                  <Car className="h-5 w-5" />
-                                </div>
-                                <div>
-                                  <div className="font-medium">Customer</div>
-                                  <div className="text-sm text-muted-foreground">Find and book car services</div>
-                                </div>
-                              </div>
-                              <RadioGroupItem value="customer" id="customer" className="sr-only" />
-                            </div>
-                          </FormControl>
-                        </FormItem>
-                        <FormItem className="flex-1 space-y-0">
-                          <FormControl>
-                            <div className={`flex items-center justify-between border rounded-lg p-4 cursor-pointer transition-all ${field.value === 'provider' ? 'border-primary bg-primary/5 shadow-sm' : 'border-input'}`}>
-                              <div className="flex items-center space-x-4">
-                                <div className={`p-3 rounded-full ${field.value === 'provider' ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
-                                  <Building2 className="h-5 w-5" />
-                                </div>
-                                <div>
-                                  <div className="font-medium">Service Provider</div>
-                                  <div className="text-sm text-muted-foreground">Offer automotive services</div>
-                                </div>
-                              </div>
-                              <RadioGroupItem value="provider" id="provider" className="sr-only" />
-                            </div>
-                          </FormControl>
-                        </FormItem>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Common fields for both account types */}
-              <div className={selectedAccountType === 'provider' ? 'bg-secondary/20 p-5 rounded-lg' : ''}>
-                {selectedAccountType === 'provider' && (
-                  <div className="flex items-center mb-4 gap-2 text-primary">
-                    <Briefcase className="h-5 w-5" />
-                    <h3 className="font-medium">Business Information</h3>
+          {showAccountSelection ? (
+            <div className="space-y-6">
+              <div className="text-center mb-4">
+                <h2 className="text-xl font-semibold">Choose Account Type</h2>
+                <p className="text-muted-foreground">Select the type of account you want to create</p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                <Button 
+                  onClick={() => handleAccountTypeSelection('customer')}
+                  variant="outline"
+                  className="h-auto py-8 flex flex-col items-center gap-4 border-2 hover:border-primary hover:bg-primary/5"
+                >
+                  <div className="p-4 rounded-full bg-blue-100">
+                    <Car className="h-8 w-8 text-blue-600" />
                   </div>
-                )}
+                  <div className="text-center">
+                    <h3 className="font-bold text-lg">Customer</h3>
+                    <p className="text-sm text-muted-foreground">Find and book car services</p>
+                  </div>
+                </Button>
 
-                <div className="space-y-4">
+                <Button 
+                  onClick={() => handleAccountTypeSelection('provider')}
+                  variant="outline"
+                  className="h-auto py-8 flex flex-col items-center gap-4 border-2 hover:border-primary hover:bg-primary/5"
+                >
+                  <div className="p-4 rounded-full bg-amber-100">
+                    <Building2 className="h-8 w-8 text-amber-600" />
+                  </div>
+                  <div className="text-center">
+                    <h3 className="font-bold text-lg">Service Provider</h3>
+                    <p className="text-sm text-muted-foreground">Offer automotive services</p>
+                  </div>
+                </Button>
+              </div>
+            </div>
+          ) : null}
+
+          {showForm && (
+            <div className="space-y-6">
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleBackToSelection}
+                  className="mb-4"
+                >
+                  ← Back to selection
+                </Button>
+              </div>
+              
+              <div className="flex items-center gap-2 mb-4">
+                <div className={`p-2 rounded-full ${selectedAccountType === 'customer' ? 'bg-blue-100 text-blue-600' : 'bg-amber-100 text-amber-600'}`}>
+                  {selectedAccountType === 'customer' ? (
+                    <Car className="h-5 w-5" />
+                  ) : (
+                    <Building2 className="h-5 w-5" />
+                  )}
+                </div>
+                <h2 className="text-xl font-semibold">
+                  {selectedAccountType === 'customer' ? 'Customer' : 'Service Provider'} Registration
+                </h2>
+              </div>
+
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   <FormField
                     control={form.control}
-                    name="name"
+                    name="accountType"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{selectedAccountType === 'provider' ? 'Owner Name' : 'Name'}</FormLabel>
-                        <FormControl>
-                          <Input placeholder={selectedAccountType === 'provider' ? "Enter business owner's name" : "Enter your name"} {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                      <input type="hidden" {...field} />
                     )}
                   />
 
-                  {/* Provider-specific fields */}
-                  {selectedAccountType === 'provider' && (
-                    <>
+                  {/* Common fields for both account types */}
+                  <div className={selectedAccountType === 'provider' ? 'bg-secondary/20 p-5 rounded-lg' : ''}>
+                    {selectedAccountType === 'provider' && (
+                      <div className="flex items-center mb-4 gap-2 text-primary">
+                        <Briefcase className="h-5 w-5" />
+                        <h3 className="font-medium">Business Information</h3>
+                      </div>
+                    )}
+
+                    <div className="space-y-4">
                       <FormField
                         control={form.control}
-                        name="businessName"
+                        name="name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Business Name</FormLabel>
+                            <FormLabel>{selectedAccountType === 'provider' ? 'Owner Name' : 'Name'}</FormLabel>
                             <FormControl>
-                              <Input placeholder="Enter your business name" {...field} />
+                              <Input placeholder={selectedAccountType === 'provider' ? "Enter business owner's name" : "Enter your name"} {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-                      
+
+                      {/* Provider-specific fields */}
+                      {selectedAccountType === 'provider' && (
+                        <>
+                          <FormField
+                            control={form.control}
+                            name="businessName"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Business Name</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Enter your business name" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
+                            name="serviceType"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Primary Service</FormLabel>
+                                <Select 
+                                  onValueChange={field.onChange} 
+                                  defaultValue={field.value}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select your primary service" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {serviceOptions.map((service) => (
+                                      <SelectItem key={service} value={service}>
+                                        {service}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <FormDescription>
+                                  You can add more services after registration
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </>
+                      )}
+
                       <FormField
                         control={form.control}
-                        name="serviceType"
+                        name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Primary Service</FormLabel>
-                            <Select 
-                              onValueChange={field.onChange} 
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select your primary service" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {serviceOptions.map((service) => (
-                                  <SelectItem key={service} value={service}>
-                                    {service}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormDescription>
-                              You can add more services after registration
-                            </FormDescription>
+                            <FormLabel>Email</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Enter your email" {...field} />
+                            </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-                    </>
+
+                      <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Password</FormLabel>
+                            <FormControl>
+                              <Input type="password" placeholder="Enter your password" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Provider-specific location fields */}
+                  {selectedAccountType === 'provider' && (
+                    <div className="bg-secondary/20 p-5 rounded-lg space-y-4">
+                      <div className="flex items-center mb-4 gap-2 text-primary">
+                        <MapPin className="h-5 w-5" />
+                        <h3 className="font-medium">Business Location</h3>
+                      </div>
+
+                      <FormField
+                        control={form.control}
+                        name="address"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Street Address</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Enter street address" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="city"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>City</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Enter city" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="state"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>State</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Enter state" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="zipCode"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Zip Code</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Enter zip code" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="phone"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Phone</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Enter business phone" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
                   )}
 
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter your email" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input type="password" placeholder="Enter your password" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-              {/* Provider-specific location fields */}
-              {selectedAccountType === 'provider' && (
-                <div className="bg-secondary/20 p-5 rounded-lg space-y-4">
-                  <div className="flex items-center mb-4 gap-2 text-primary">
-                    <MapPin className="h-5 w-5" />
-                    <h3 className="font-medium">Business Location</h3>
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="address"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Street Address</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter street address" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="city"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>City</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter city" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="state"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>State</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter state" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="zipCode"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Zip Code</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter zip code" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Phone</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter business phone" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-              )}
-
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Creating...' : `Create ${selectedAccountType === 'provider' ? 'Business' : 'Customer'} Account`}
-              </Button>
-            </form>
-          </Form>
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? 'Creating...' : `Create ${selectedAccountType === 'provider' ? 'Business' : 'Customer'} Account`}
+                  </Button>
+                </form>
+              </Form>
+            </div>
+          )}
 
           <Separator className="my-6" />
 
