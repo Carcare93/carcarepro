@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { supabaseService } from './supabase-service';
 
@@ -206,21 +205,39 @@ export class AuthService {
       console.error('Error fetching user data:', err);
     }
     
-    return this.mapSupabaseUser(data.session.user, userData);
+    const user = this.mapSupabaseUser(data.session.user, userData);
+    return user;
   }
   
   isAuthenticated(): boolean {
-    return !!this.getCurrentUser();
+    // Use synchronous check to avoid Promise issues
+    return !!localStorage.getItem(this.storageKey);
   }
   
   isEmailVerified(): boolean {
-    const user = this.getCurrentUser();
-    return !!user && !!user.isEmailVerified;
+    // Use synchronous check to avoid Promise issues
+    const userStr = localStorage.getItem(this.storageKey);
+    if (!userStr) return false;
+    
+    try {
+      const user = JSON.parse(userStr);
+      return !!user && !!user.isEmailVerified;
+    } catch (e) {
+      return false;
+    }
   }
   
   isProvider(): boolean {
-    const user = this.getCurrentUser();
-    return !!user && user.accountType === 'provider';
+    // Use synchronous check to avoid Promise issues
+    const userStr = localStorage.getItem(this.storageKey);
+    if (!userStr) return false;
+    
+    try {
+      const user = JSON.parse(userStr);
+      return !!user && user.accountType === 'provider';
+    } catch (e) {
+      return false;
+    }
   }
   
   async updateProviderProfile(providerProfile: Partial<ProviderProfile>): Promise<User> {

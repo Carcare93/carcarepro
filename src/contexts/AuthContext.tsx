@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           if (session?.user) {
             try {
               const currentUser = await authService.getCurrentUser();
-              setUser(currentUser);
+              if (currentUser) setUser(currentUser);
             } catch (error) {
               console.error('Error fetching user data:', error);
             }
@@ -50,7 +50,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const checkUser = async () => {
       try {
         const currentUser = await authService.getCurrentUser();
-        setUser(currentUser);
+        if (currentUser) setUser(currentUser);
       } catch (error) {
         console.error('Error checking current user:', error);
       } finally {
