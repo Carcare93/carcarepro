@@ -1,8 +1,9 @@
 
-import { createRoot } from 'react-dom/client'
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
-import App from './App.tsx'
-import './index.css'
+import App from './App.tsx';
+import './index.css';
 import { Capacitor } from '@capacitor/core';
 import './i18n'; // Import i18n configuration
 
@@ -25,4 +26,6 @@ if ('serviceWorker' in navigator && !Capacitor.isNativePlatform()) {
   });
 }
 
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById("root")!).render(
+  <App />
+);
