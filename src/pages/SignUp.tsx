@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Car, Building2, User, UserRound, Briefcase, MapPin, Phone } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { RegisterData, ProviderRegisterData } from '@/services/auth-service';
 
 // Basic form schema for all users
 const baseSchema = z.object({
@@ -93,9 +94,8 @@ const SignUp = () => {
     setIsLoading(true);
     try {
       if (data.accountType === 'provider') {
-        // Register as service provider with additional fields
-        // We need to use the proper ProviderRegisterData structure
-        await register({
+        // Create a proper ProviderRegisterData object
+        const providerData: ProviderRegisterData = {
           email: data.email,
           password: data.password,
           name: data.name,
@@ -109,15 +109,17 @@ const SignUp = () => {
             zipCode: data.zipCode || '',
           },
           phone: data.phone || ''
-        });
+        };
+        await register(providerData);
       } else {
-        // Register as customer
-        await register({
+        // Register as customer with appropriate RegisterData
+        const customerData: RegisterData = {
           name: data.name,
           email: data.email,
           password: data.password,
           accountType: 'customer',
-        });
+        };
+        await register(customerData);
       }
       
       toast({
