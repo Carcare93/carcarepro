@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { supabaseService } from './supabase-service';
 
@@ -82,6 +81,8 @@ export class AuthService {
   }
   
   async register(data: RegisterData | ProviderRegisterData): Promise<User> {
+    console.log("Starting registration process with data:", { ...data, password: "REDACTED" });
+    
     // Register with Supabase
     const { data: authData, error } = await supabase.auth.signUp({
       email: data.email,
@@ -106,15 +107,20 @@ export class AuthService {
     });
     
     if (error) {
+      console.error("Supabase registration error:", error);
       throw new Error(error.message);
     }
     
     if (!authData.user) {
+      console.error("Registration failed, no user data returned");
       throw new Error('Registration failed, please try again');
     }
     
+    console.log("Supabase signUp successful:", authData);
+    
     // Also create user entry in our users table
     try {
+      console.log("Creating user in users table with ID:", authData.user.id);
       await supabaseService.createUser({
         id: authData.user.id,
         email: data.email,
@@ -124,12 +130,14 @@ export class AuthService {
           phone: (data as ProviderRegisterData).phone
         } : {})
       });
+      console.log("User created in users table successfully");
     } catch (err) {
       console.error('Error creating user in users table:', err);
       // We can continue even if this fails, as the auth user is created
     }
     
     const user = this.mapSupabaseUser(authData.user);
+    console.log("User mapped successfully:", user);
     this.currentUser = user;
     return user;
   }
@@ -191,6 +199,7 @@ export class AuthService {
   }
   
   logout(): void {
+    console.log("Logging out user");
     supabase.auth.signOut();
     localStorage.removeItem(this.storageKey);
     this.currentUser = null;
@@ -198,23 +207,35 @@ export class AuthService {
   
   // Async version that fetches fresh user data
   async fetchCurrentUser(): Promise<User | null> {
+    console.log("Fetching current user");
     const { data, error } = await supabase.auth.getSession();
     
-    if (error || !data.session) {
+    if (error) {
+      console.error("Error fetching session:", error);
       this.currentUser = null;
       return null;
     }
+    
+    if (!data.session) {
+      console.log("No active session found");
+      this.currentUser = null;
+      return null;
+    }
+    
+    console.log("Active session found:", data.session);
     
     // Get additional user data from our users table
     let userData = null;
     try {
       const users = await supabaseService.getUsers();
       userData = users?.find(u => u.id === data.session.user.id);
+      console.log("User data from users table:", userData);
     } catch (err) {
       console.error('Error fetching user data:', err);
     }
     
     const user = this.mapSupabaseUser(data.session.user, userData);
+    console.log("Mapped user data:", user);
     this.currentUser = user;
     return user;
   }
@@ -264,15 +285,18 @@ export class AuthService {
   }
   
   async updateProviderProfile(providerProfile: Partial<ProviderProfile>): Promise<User> {
+    console.log("Updating provider profile with data:", providerProfile);
     const { data: userData, error } = await supabase.auth.updateUser({
       data: { providerProfile }
     });
     
     if (error) {
+      console.error("Error updating provider profile:", error);
       throw new Error(error.message);
     }
     
     const user = this.mapSupabaseUser(userData.user);
+    console.log("Provider profile updated successfully:", user);
     this.currentUser = user;
     return user;
   }

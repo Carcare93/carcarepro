@@ -52,7 +52,7 @@ type ProviderFormData = z.infer<typeof providerSchema>;
 type FormData = z.infer<typeof formSchema>;
 
 const SignUp = () => {
-  const { register } = useAuth();
+  const { register: registerUser } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -89,11 +89,14 @@ const SignUp = () => {
   };
 
   const onSubmit = async (data: FormData) => {
+    console.log("Form submitted with data:", { ...data, password: "REDACTED" });
     setIsLoading(true);
     try {
       if (data.accountType === 'provider') {
         // Type assertion to help TypeScript understand the discriminated union
         const providerData = data as ProviderFormData;
+        
+        console.log("Registering provider with data:", { ...providerData, password: "REDACTED" });
         
         // Create a properly typed ProviderRegisterData object
         const registerData: ProviderRegisterData = {
@@ -112,10 +115,12 @@ const SignUp = () => {
           phone: providerData.phone
         };
         
-        await register(registerData);
+        await registerUser(registerData);
       } else {
         // Type assertion for customer data
         const customerData = data as CustomerFormData;
+        
+        console.log("Registering customer with data:", { ...customerData, password: "REDACTED" });
         
         // Create a properly typed RegisterData object
         const registerData: RegisterData = {
@@ -125,7 +130,7 @@ const SignUp = () => {
           accountType: 'customer',
         };
         
-        await register(registerData);
+        await registerUser(registerData);
       }
       
       toast({
@@ -136,11 +141,11 @@ const SignUp = () => {
       // Navigate to verification page with email
       navigate('/verify-email', { state: { email: data.email } });
     } catch (error) {
-      console.error(error);
+      console.error("Registration error:", error);
       toast({
         variant: 'destructive',
         title: 'Registration failed',
-        description: 'There was a problem creating your account.',
+        description: error instanceof Error ? error.message : 'There was a problem creating your account.',
       });
     } finally {
       setIsLoading(false);

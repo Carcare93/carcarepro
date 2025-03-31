@@ -30,12 +30,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
           if (session?.user) {
             try {
-              const currentUser = await authService.fetchCurrentUser();
-              if (currentUser) setUser(currentUser);
+              // Use setTimeout to prevent potential deadlocks with Supabase auth
+              setTimeout(async () => {
+                const currentUser = await authService.fetchCurrentUser();
+                if (currentUser) setUser(currentUser);
+              }, 0);
             } catch (error) {
               console.error('Error fetching user data:', error);
             }
@@ -75,6 +78,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         description: "You've successfully logged in.",
       });
     } catch (error) {
+      console.error("Login error:", error);
       toast({
         variant: "destructive",
         title: "Authentication failed",
@@ -89,13 +93,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = async (data: RegisterData | ProviderRegisterData) => {
     try {
       setIsLoading(true);
+      console.log("Registering with data:", data);
       const user = await authService.register(data);
+      console.log("Registration successful, user:", user);
       setUser(user);
       toast({
         title: "Account created!",
         description: "Your account has been created. Please check your email for verification.",
       });
     } catch (error) {
+      console.error("Registration error:", error);
       toast({
         variant: "destructive",
         title: "Registration failed",
@@ -152,20 +159,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     });
   };
 
+  const contextValue: AuthContextType = {
+    user,
+    isLoading,
+    isAuthenticated: !!user,
+    isEmailVerified: !!user?.isEmailVerified,
+    login,
+    register,
+    verifyEmail,
+    resendVerificationCode,
+    logout,
+  };
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isLoading,
-        isAuthenticated: !!user,
-        isEmailVerified: !!user?.isEmailVerified,
-        login,
-        register,
-        verifyEmail,
-        resendVerificationCode,
-        logout,
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
