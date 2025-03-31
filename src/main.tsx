@@ -2,10 +2,14 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App.tsx';
 import './index.css';
 import { Capacitor } from '@capacitor/core';
 import './i18n'; // Import i18n configuration
+
+// Create a client
+const queryClient = new QueryClient();
 
 // Initialize Capacitor when running as native app
 if (Capacitor.isNativePlatform()) {
@@ -31,5 +35,11 @@ if (!rootElement) throw new Error("Root element not found");
 
 const root = createRoot(rootElement);
 
-// Render without React.StrictMode to avoid double rendering and potential hook issues
-root.render(<App />);
+// Render with React.StrictMode and wrap App with QueryClientProvider
+root.render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
+  </React.StrictMode>
+);
