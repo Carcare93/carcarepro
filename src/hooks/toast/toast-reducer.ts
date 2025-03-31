@@ -1,4 +1,5 @@
-import { Action, State, TOAST_REMOVE_DELAY } from './types'
+
+import { Action, State, TOAST_REMOVE_DELAY, TOAST_LIMIT } from './types'
 
 const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
 
