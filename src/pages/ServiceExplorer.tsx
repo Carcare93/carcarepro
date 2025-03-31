@@ -39,6 +39,10 @@ export default function ServiceExplorer() {
     // Location state is already set by the LocationSearch component
   };
 
+  const handleFilterChange = (newFilters: typeof filters) => {
+    setFilters(newFilters);
+  };
+
   // Apply filters to providers
   const filteredProviders = Array.isArray(providers) ? providers.filter((provider) => {
     // Filter by service type
@@ -96,7 +100,9 @@ export default function ServiceExplorer() {
             <div className="lg:col-span-3">
               <FilterSidebar 
                 isFilterOpen={showFilters} 
-                setIsFilterOpen={setShowFilters} 
+                setIsFilterOpen={setShowFilters}
+                filters={filters}
+                onFilterChange={handleFilterChange}
               />
             </div>
           )}
