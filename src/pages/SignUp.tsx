@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -95,21 +94,19 @@ const SignUp = () => {
       if (data.accountType === 'provider') {
         // Register as service provider with additional fields
         await register({
-          name: data.name,
           email: data.email,
           password: data.password,
+          name: data.name,
           accountType: 'provider',
-          providerDetails: {
-            businessName: data.businessName || '',
-            services: [data.serviceType || ''],
-            location: {
-              address: data.address || '',
-              city: data.city || '',
-              state: data.state || '',
-              zipCode: data.zipCode || '',
-            },
-            phone: data.phone || '',
-          }
+          businessName: data.businessName || '',
+          services: [data.serviceType || ''],
+          location: {
+            address: data.address || '',
+            city: data.city || '',
+            state: data.state || '',
+            zipCode: data.zipCode || '',
+          },
+          phone: data.phone || ''
         });
       } else {
         // Register as customer
