@@ -1,5 +1,7 @@
+
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { AuthProvider } from '@/contexts/AuthContext';
 import Home from '@/pages/Home';
 import About from '@/pages/About';
 import Contact from '@/pages/Contact';
@@ -10,6 +12,9 @@ import BlogArticle from '@/pages/BlogArticle';
 import Dashboard from '@/pages/Dashboard';
 import ServiceExplorer from '@/pages/ServiceExplorer';
 import ProviderRegistration from '@/pages/ProviderRegistration';
+import Login from '@/pages/Login';
+import VerifyEmail from '@/pages/VerifyEmail';
+import ProviderProfile from '@/pages/ProviderProfile';
 
 const router = createBrowserRouter([
   {
@@ -52,12 +57,26 @@ const router = createBrowserRouter([
     path: "/provider-registration",
     element: <ProviderRegistration />,
   },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/verify-email",
+    element: <VerifyEmail />,
+  },
+  {
+    path: "/provider-profile",
+    element: <ProviderProfile />,
+  },
 ]);
 
 function App() {
   return (
     <React.StrictMode>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </React.StrictMode>
   );
 }
