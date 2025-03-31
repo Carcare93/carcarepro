@@ -48,14 +48,14 @@ const ServicesTab = ({ providerProfile }: ServicesTabProps) => {
   useEffect(() => {
     const updatedServices = (providerProfile.services || []).map(service => ({
       name: service,
-      duration: 30 // Default duration for existing services
+      duration: 30 as ServiceDuration // Explicitly cast to ServiceDuration
     }));
     setServices(updatedServices);
   }, [providerProfile.services]);
 
   const addService = async () => {
     if (newService.trim() && !services.some(s => s.name === newService.trim())) {
-      const newServiceItem = { 
+      const newServiceItem: ServiceWithDuration = { 
         name: newService.trim(), 
         duration: newServiceDuration 
       };
