@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -58,9 +59,9 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center">
             <img 
-              src="/lovable-uploads/76b0a3b0-0956-4bd6-a625-e5c52a0b604f.png" 
+              src="/lovable-uploads/cf04f4b5-7f5b-4af0-9ee6-b8bce2bec514.png" 
               alt="CarCare Logo" 
-              className="h-10 w-auto"
+              className="h-12 w-auto"
             />
           </Link>
           
@@ -118,9 +119,9 @@ const Header = () => {
                 <SheetTitle>
                   <div className="flex items-center">
                     <img 
-                      src="/lovable-uploads/76b0a3b0-0956-4bd6-a625-e5c52a0b604f.png" 
+                      src="/lovable-uploads/cf04f4b5-7f5b-4af0-9ee6-b8bce2bec514.png" 
                       alt="CarCare Logo" 
-                      className="h-8 w-auto"
+                      className="h-10 w-auto"
                     />
                   </div>
                 </SheetTitle>

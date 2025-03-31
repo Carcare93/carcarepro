@@ -93,20 +93,7 @@ const ServiceExplorer = () => {
                         ) : providers && providers.length > 0 ? (
                           // Show providers list with type checking
                           providers.map((provider) => {
-                            // Ensure provider has all required properties before rendering
-                            if (
-                              provider &&
-                              provider.id &&
-                              provider.name &&
-                              provider.image &&
-                              provider.rating !== undefined &&
-                              provider.reviewCount !== undefined &&
-                              provider.distance &&
-                              provider.address &&
-                              provider.available !== undefined &&
-                              provider.verified !== undefined &&
-                              provider.services
-                            ) {
+                            if (provider && provider.id) {
                               return <ProviderCard key={provider.id} provider={provider} />;
                             }
                             return null;

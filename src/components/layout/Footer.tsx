@@ -34,12 +34,11 @@ const Footer = () => {
           {/* Logo and Description */}
           <div className="md:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <Car className="h-5 w-5 text-primary" />
-              </div>
-              <span className="text-xl font-semibold tracking-tight">
-                Car<span className="text-primary">Care</span>
-              </span>
+              <img 
+                src="/lovable-uploads/cf04f4b5-7f5b-4af0-9ee6-b8bce2bec514.png" 
+                alt="CarCare Logo" 
+                className="h-12 w-auto"
+              />
             </Link>
             <p className="text-muted-foreground text-sm max-w-xs">
               The easiest way to find and book automotive services near you. Save time and ensure quality care for your vehicle.
