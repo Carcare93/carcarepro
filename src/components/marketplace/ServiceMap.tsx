@@ -84,19 +84,24 @@ const ServiceMap = ({ providers, isLoading }: ServiceMapProps) => {
       
       // Add all provider locations to bounds
       providers.forEach(provider => {
-        bounds.extend(new google.maps.LatLng(
-          provider.location.coordinates?.lat || defaultCenter.lat,
-          provider.location.coordinates?.lng || defaultCenter.lng
-        ));
+        if (provider.location?.coordinates?.lat && provider.location?.coordinates?.lng) {
+          bounds.extend(new google.maps.LatLng(
+            provider.location.coordinates.lat,
+            provider.location.coordinates.lng
+          ));
+        }
       });
       
-      // Fit map to these bounds
-      mapRef.current.fitBounds(bounds);
-      
-      toast({
-        title: "View updated",
-        description: "Showing all service providers on map",
-      });
+      // Only adjust bounds if we have valid providers
+      if (!bounds.isEmpty()) {
+        // Fit map to these bounds
+        mapRef.current.fitBounds(bounds);
+        
+        toast({
+          title: "View updated",
+          description: "Showing all service providers on map",
+        });
+      }
     }
   };
 
@@ -168,26 +173,32 @@ const ServiceMap = ({ providers, isLoading }: ServiceMapProps) => {
               ]
             }}
           >
-            {providers.map((provider) => (
-              <Marker
-                key={provider.id}
-                position={{
-                  lat: provider.location.coordinates?.lat || defaultCenter.lat,
-                  lng: provider.location.coordinates?.lng || defaultCenter.lng
-                }}
-                onClick={() => handleProviderClick(provider)}
-                icon={{
-                  url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
-                  scaledSize: new google.maps.Size(40, 40)
-                }}
-              />
-            ))}
+            {providers.map((provider) => {
+              // Only show marker if provider has valid coordinates
+              if (provider.location?.coordinates?.lat && provider.location?.coordinates?.lng) {
+                return (
+                  <Marker
+                    key={provider.id}
+                    position={{
+                      lat: provider.location.coordinates.lat,
+                      lng: provider.location.coordinates.lng
+                    }}
+                    onClick={() => handleProviderClick(provider)}
+                    icon={{
+                      url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+                      scaledSize: new google.maps.Size(40, 40)
+                    }}
+                  />
+                );
+              }
+              return null;
+            })}
 
-            {selectedProvider && (
+            {selectedProvider && selectedProvider.location?.coordinates && (
               <InfoWindow
                 position={{
-                  lat: selectedProvider.location.coordinates?.lat || defaultCenter.lat,
-                  lng: selectedProvider.location.coordinates?.lng || defaultCenter.lng
+                  lat: selectedProvider.location.coordinates.lat,
+                  lng: selectedProvider.location.coordinates.lng
                 }}
                 onCloseClick={() => setSelectedProvider(null)}
               >
@@ -203,7 +214,7 @@ const ServiceMap = ({ providers, isLoading }: ServiceMapProps) => {
                   <Button 
                     size="sm"
                     className="w-full mt-3"
-                    onClick={() => window.open(`tel:${selectedProvider.phone}`, '_blank')}
+                    onClick={() => selectedProvider.phone && window.open(`tel:${selectedProvider.phone}`, '_blank')}
                   >
                     Call Now
                   </Button>
@@ -252,11 +263,11 @@ const ServiceMap = ({ providers, isLoading }: ServiceMapProps) => {
               className="p-4 border border-border rounded-lg hover:bg-secondary/50 transition-colors cursor-pointer"
               onClick={() => {
                 handleProviderClick(provider);
-                // Center map on this provider
-                if (mapRef.current) {
+                // Center map on this provider only if coordinates exist
+                if (mapRef.current && provider.location?.coordinates?.lat && provider.location?.coordinates?.lng) {
                   mapRef.current.panTo({
-                    lat: provider.location.coordinates?.lat || defaultCenter.lat,
-                    lng: provider.location.coordinates?.lng || defaultCenter.lng
+                    lat: provider.location.coordinates.lat,
+                    lng: provider.location.coordinates.lng
                   });
                   mapRef.current.setZoom(15);
                 }
@@ -270,7 +281,7 @@ const ServiceMap = ({ providers, isLoading }: ServiceMapProps) => {
                 </div>
               </div>
               <p className="text-sm text-muted-foreground mb-2">
-                {provider.location.address}, {provider.location.city}
+                {provider.location?.address}, {provider.location?.city}
               </p>
               <div className="flex justify-between items-center">
                 <Button variant="ghost" size="sm" className="text-primary p-0 h-auto">
@@ -278,7 +289,7 @@ const ServiceMap = ({ providers, isLoading }: ServiceMapProps) => {
                 </Button>
                 <span className="text-xs text-muted-foreground">
                   {/* In a real app, this would calculate the actual distance */}
-                  ~2.3 miles away
+                  {provider.location?.coordinates ? "~2.3 miles away" : "Distance unknown"}
                 </span>
               </div>
             </div>

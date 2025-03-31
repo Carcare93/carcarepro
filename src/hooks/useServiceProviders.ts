@@ -2,9 +2,34 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
-import { carService, ServiceProvider } from '@/services/car-service';
+import { carService } from '@/services/car-service';
+import { supabaseService, ServiceProvider } from '@/services/supabase-service';
 
-// Mock providers data
+// Mapper function to convert from database ServiceProvider to our app's format
+const mapServiceProvider = (provider: any): ServiceProvider => {
+  return {
+    id: provider.id,
+    name: provider.name,
+    location: {
+      address: provider.address,
+      city: provider.city,
+      state: provider.state,
+      zipCode: provider.zip_code,
+      coordinates: provider.lat && provider.lng ? { 
+        lat: provider.lat, 
+        lng: provider.lng 
+      } : undefined
+    },
+    services: provider.services || [],
+    rating: provider.rating,
+    reviewCount: provider.review_count,
+    phone: provider.phone,
+    verified: provider.verified,
+    availableToday: provider.available_today
+  };
+};
+
+// Mock providers data as fallback
 const mockProviders = [
   {
     id: "1",
@@ -170,12 +195,20 @@ export const useServiceProviders = (location: string) => {
   const { data: providers = [], isLoading, error } = useQuery({
     queryKey: ['serviceProviders', location],
     queryFn: async () => {
-      // If no location provided, use mock data
-      if (!location) return mockProviders;
       try {
+        // Try to get providers from Supabase
+        const dbProviders = await supabaseService.getProviders();
+        
+        // If we have providers from the database, map them to our app format
+        if (dbProviders && dbProviders.length > 0) {
+          return dbProviders.map(mapServiceProvider);
+        }
+        
+        // If database is empty or error occurs, try the API
+        if (!location) return mockProviders;
         return await carService.getServiceProviders(location);
       } catch (error) {
-        // Fall back to mock data if API call fails
+        // Fall back to mock data if all attempts fail
         console.error('Error fetching service providers:', error);
         return mockProviders;
       }

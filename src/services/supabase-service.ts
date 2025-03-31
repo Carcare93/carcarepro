@@ -2,6 +2,7 @@
 import { bookingService } from './supabase/booking-service';
 import { serviceService } from './supabase/service-service';
 import { userService } from './supabase/user-service';
+import { providerService } from './supabase/provider-service';
 
 /**
  * Service for interacting with Supabase tables
@@ -45,10 +46,31 @@ export class SupabaseService {
   async updateUser(userId: string, userData: Partial<import('@/types/supabase-models').User>) {
     return userService.updateUser(userId, userData);
   }
+  
+  // Provider methods
+  async getProviders() {
+    return providerService.getProviders();
+  }
+  
+  async getProvider(providerId: string) {
+    return providerService.getProvider(providerId);
+  }
+  
+  async createProvider(providerData: Omit<import('@/types/supabase-models').ServiceProvider, 'id'> & { id?: string }) {
+    return providerService.createProvider(providerData);
+  }
+  
+  async updateProvider(providerId: string, providerData: Partial<import('@/types/supabase-models').ServiceProvider>) {
+    return providerService.updateProvider(providerId, providerData);
+  }
+  
+  async deleteProvider(providerId: string) {
+    return providerService.deleteProvider(providerId);
+  }
 }
 
-// Re-export the types for convenience using 'export type' to fix the isolatedModules error
-export type { Booking, Service, User } from '@/types/supabase-models';
+// Re-export the types for convenience
+export type { Booking, Service, User, ServiceProvider } from '@/types/supabase-models';
 
 // Create and export a singleton instance
 export const supabaseService = new SupabaseService();

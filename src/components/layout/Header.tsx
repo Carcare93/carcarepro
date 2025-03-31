@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -77,6 +76,15 @@ const Header = () => {
                 )}
               </>
             )}
+            {/* Add a "Become a Provider" link in the navigation list */}
+            <li>
+              <Link
+                to="/provider-registration"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                Become a Provider
+              </Link>
+            </li>
           </nav>
           
           {/* User section */}

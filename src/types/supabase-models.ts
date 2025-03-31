@@ -30,3 +30,24 @@ export interface User {
   created_at?: string;
   name: string;
 }
+
+export interface ServiceProvider {
+  id: string;
+  user_id: string;
+  name: string;
+  description?: string;
+  address: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  lat?: number;
+  lng?: number;
+  services: string[];
+  rating?: number;
+  review_count?: number;
+  phone?: string;
+  website?: string;
+  verified?: boolean;
+  available_today?: boolean;
+  created_at?: string;
+}
