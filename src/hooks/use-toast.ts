@@ -126,28 +126,94 @@ export const reducer = (state: State, action: Action): State => {
   }
 }
 
-const listeners: Array<(state: State) => void> = []
+// Create a separate context to make sure we don't call useState in an invalid location
+const ToastContext = React.createContext<{
+  state: State
+  toast: (props: Toast) => { id: string; dismiss: () => void; update: (props: ToasterToast) => void }
+  dismiss: (toastId?: string) => void
+}>({
+  state: { toasts: [] },
+  toast: () => ({ id: '', dismiss: () => {}, update: () => {} }),
+  dismiss: () => {},
+});
 
-let memoryState: State = { toasts: [] }
+// Define a proper provider component
+export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ 
+  children 
+}) => {
+  const [state, dispatch] = React.useReducer(reducer, { toasts: [] });
+
+  React.useEffect(() => {
+    listeners.forEach((listener) => {
+      listener(state);
+    });
+  }, [state]);
+
+  const toast = (props: Toast) => {
+    const id = genId();
+
+    const update = (props: ToasterToast) =>
+      dispatch({
+        type: "UPDATE_TOAST",
+        toast: { ...props, id },
+      });
+      
+    const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id });
+
+    dispatch({
+      type: "ADD_TOAST",
+      toast: {
+        ...props,
+        id,
+        open: true,
+        onOpenChange: (open) => {
+          if (!open) dismiss();
+        },
+      },
+    });
+
+    return {
+      id,
+      dismiss,
+      update,
+    };
+  };
+
+  const dismiss = (toastId?: string) => {
+    dispatch({ type: "DISMISS_TOAST", toastId });
+  };
+
+  return (
+    <ToastContext.Provider value={{ state, toast, dismiss }}>
+      {children}
+    </ToastContext.Provider>
+  );
+};
+
+// For backwards compatibility with existing code
+const listeners: Array<(state: State) => void> = [];
+let memoryState: State = { toasts: [] };
 
 function dispatch(action: Action) {
-  memoryState = reducer(memoryState, action)
+  memoryState = reducer(memoryState, action);
   listeners.forEach((listener) => {
-    listener(memoryState)
-  })
+    listener(memoryState);
+  });
 }
 
-type Toast = Omit<ToasterToast, "id">
+type Toast = Omit<ToasterToast, "id">;
 
-function toast({ ...props }: Toast) {
-  const id = genId()
+// Function to be used outside of components for showing toasts
+function toast(props: Toast) {
+  const id = genId();
 
   const update = (props: ToasterToast) =>
     dispatch({
       type: "UPDATE_TOAST",
       toast: { ...props, id },
-    })
-  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
+    });
+    
+  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id });
 
   dispatch({
     type: "ADD_TOAST",
@@ -156,36 +222,49 @@ function toast({ ...props }: Toast) {
       id,
       open: true,
       onOpenChange: (open) => {
-        if (!open) dismiss()
+        if (!open) dismiss();
       },
     },
-  })
+  });
 
   return {
-    id: id,
+    id,
     dismiss,
     update,
-  }
+  };
 }
 
+// The hook that components should use to access toast functionality
 function useToast() {
-  const [state, setState] = React.useState<State>(memoryState)
+  const context = React.useContext(ToastContext);
+  
+  // If within the context provider, use that context
+  if (context !== undefined) {
+    return {
+      ...context.state,
+      toast: context.toast,
+      dismiss: context.dismiss,
+    };
+  }
+  
+  // Fallback to the stateful implementation for backwards compatibility
+  const [state, setState] = React.useState<State>(memoryState);
 
   React.useEffect(() => {
-    listeners.push(setState)
+    listeners.push(setState);
     return () => {
-      const index = listeners.indexOf(setState)
+      const index = listeners.indexOf(setState);
       if (index > -1) {
-        listeners.splice(index, 1)
+        listeners.splice(index, 1);
       }
-    }
-  }, [state])
+    };
+  }, [state]);
 
   return {
     ...state,
     toast,
     dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
-  }
+  };
 }
 
-export { useToast, toast }
+export { useToast, toast, ToastProvider };
