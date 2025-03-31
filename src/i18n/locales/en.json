@@ -16,7 +16,8 @@
     "home": "Home",
     "services": "Services",
     "bookings": "Bookings",
-    "providerDashboard": "Provider Dashboard"
+    "providerDashboard": "Provider Dashboard",
+    "about": "About Us"
   },
   "services": {
     "title": "Find Automotive Services",

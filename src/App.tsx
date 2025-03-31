@@ -19,6 +19,7 @@ import NotFound from "./pages/NotFound";
 import Vehicles from "./pages/Vehicles";
 import VehicleInvoices from "./pages/VehicleInvoices";
 import ProviderDashboard from "./pages/ProviderDashboard";
+import About from "./pages/About";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/services" element={<ServiceExplorer />} />
+              <Route path="/about" element={<About />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/provider-profile" element={<ProviderProfile />} />
               <Route 

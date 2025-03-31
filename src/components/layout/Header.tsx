@@ -13,7 +13,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
-import { Menu } from "lucide-react"
+import { Menu, Globe } from "lucide-react"
 import LanguageSwitcher from '../shared/LanguageSwitcher';
 
 const Header = () => {
@@ -61,7 +61,7 @@ const Header = () => {
             <img 
               src="/lovable-uploads/cf04f4b5-7f5b-4af0-9ee6-b8bce2bec514.png" 
               alt="CarCare Logo" 
-              className="h-12 w-auto"
+              className="h-14 w-auto transition-transform hover:scale-105"
             />
           </Link>
           
@@ -71,6 +71,7 @@ const Header = () => {
             {!isProvider && (
               <>
                 <NavLink to="/services" className={getLinkClass}>{t('header.services')}</NavLink>
+                <NavLink to="/about" className={getLinkClass}>{t('header.about')}</NavLink>
                 {isAuthenticated && (
                   <NavLink to="/bookings" className={getLinkClass}>{t('header.bookings')}</NavLink>
                 )}
@@ -81,7 +82,9 @@ const Header = () => {
           {/* User section */}
           <div className="flex items-center space-x-4">
             {/* Language Switcher */}
-            <LanguageSwitcher />
+            <div className="border border-border rounded-md p-1 hover:bg-secondary/30 transition-colors">
+              <LanguageSwitcher />
+            </div>
             
             {isAuthenticated ? (
               <>
@@ -123,7 +126,7 @@ const Header = () => {
                     <img 
                       src="/lovable-uploads/cf04f4b5-7f5b-4af0-9ee6-b8bce2bec514.png" 
                       alt="CarCare Logo" 
-                      className="h-10 w-auto"
+                      className="h-12 w-auto"
                     />
                   </div>
                 </SheetTitle>
@@ -139,6 +142,9 @@ const Header = () => {
                   <>
                     <Link to="/services" className="hover:text-secondary" onClick={closeMobileMenu}>
                       {t('header.services')}
+                    </Link>
+                    <Link to="/about" className="hover:text-secondary" onClick={closeMobileMenu}>
+                      {t('header.about')}
                     </Link>
                     {isAuthenticated && (
                       <Link to="/bookings" className="hover:text-secondary" onClick={closeMobileMenu}>

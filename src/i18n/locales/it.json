@@ -16,7 +16,8 @@
     "home": "Home",
     "services": "Servizi",
     "bookings": "Prenotazioni",
-    "providerDashboard": "Pannello fornitore"
+    "providerDashboard": "Pannello fornitore",
+    "about": "Chi Siamo"
   },
   "services": {
     "title": "Trova servizi automobilistici",
