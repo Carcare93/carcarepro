@@ -31,5 +31,5 @@ if (!rootElement) throw new Error("Root element not found");
 
 const root = createRoot(rootElement);
 
-// Wrap the App component directly, removed StrictMode which might cause double renders
+// Render without React.StrictMode to avoid double rendering and potential hook issues
 root.render(<App />);
