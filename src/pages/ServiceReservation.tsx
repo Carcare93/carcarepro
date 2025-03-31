@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useServices } from '@/hooks/useSupabaseData';
 import { bookAppointment, getServiceDuration } from '@/services/booking-service';
-import { ServiceDuration } from '@/types/booking';
+import { ServiceDuration, BookingStatus } from '@/types/booking';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
@@ -36,10 +35,8 @@ const ServiceReservation = () => {
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Find selected service
   const selectedService = services?.find(service => service.id === serviceId);
 
-  // Times available for booking
   const availableTimes = [
     '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', 
     '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM'
@@ -84,17 +81,17 @@ const ServiceReservation = () => {
     setIsSubmitting(true);
     
     try {
-      // Get the appropriate duration for this service type using the getServiceDuration helper
       const serviceDuration: ServiceDuration = getServiceDuration(selectedService.name);
       
-      // Create booking
+      const bookingStatus: BookingStatus = 'pending';
+      
       const bookingData = {
         serviceType: selectedService.name,
         date: format(selectedDate, 'yyyy-MM-dd'),
         time: selectedTime,
-        status: 'pending',
+        status: bookingStatus,
         provider: {
-          id: selectedService.provider_id || '1', // Default provider ID if none
+          id: selectedService.provider_id || '1',
           name: "Service Provider",
           location: {
             address: "123 Service St",
@@ -117,7 +114,7 @@ const ServiceReservation = () => {
         },
         price: selectedService.price,
         notes: notes,
-        duration: serviceDuration // Use the properly typed duration value
+        duration: serviceDuration
       };
       
       const booking = await bookAppointment(bookingData);
@@ -127,7 +124,6 @@ const ServiceReservation = () => {
         description: "Your appointment has been scheduled",
       });
       
-      // Redirect to bookings page
       navigate('/bookings');
       
     } catch (error) {
@@ -142,7 +138,6 @@ const ServiceReservation = () => {
     }
   };
 
-  // Disable past dates
   const disabledDays = (date: Date) => {
     return isBefore(date, startOfDay(new Date()));
   };
