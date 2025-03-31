@@ -28,7 +28,6 @@ if ('serviceWorker' in navigator && !Capacitor.isNativePlatform()) {
 
 const root = createRoot(document.getElementById("root")!);
 
-// Explicitly wrap the App in React.StrictMode here instead of in App.tsx
 root.render(
   <React.StrictMode>
     <App />

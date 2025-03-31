@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ToastProvider } from "@/hooks/toast/toast-context";
+import React from "react";
 import Index from "./pages/Index";
 import ServiceExplorer from "./pages/ServiceExplorer";
 import Profile from "./pages/Profile";
@@ -18,16 +19,15 @@ import NotFound from "./pages/NotFound";
 import Vehicles from "./pages/Vehicles";
 import VehicleInvoices from "./pages/VehicleInvoices";
 import ProviderDashboard from "./pages/ProviderDashboard";
-import React from "react";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <BrowserRouter>
     <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-        <TooltipProvider>
-          <AuthProvider>
+      <TooltipProvider>
+        <AuthProvider>
+          <ToastProvider>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/services" element={<ServiceExplorer />} />
@@ -47,9 +47,9 @@ const App = () => (
             </Routes>
             <Toaster />
             <Sonner />
-          </AuthProvider>
-        </TooltipProvider>
-      </ToastProvider>
+          </ToastProvider>
+        </AuthProvider>
+      </TooltipProvider>
     </QueryClientProvider>
   </BrowserRouter>
 );
