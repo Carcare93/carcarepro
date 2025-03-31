@@ -61,6 +61,69 @@ export type Database = {
           },
         ]
       }
+      service_providers: {
+        Row: {
+          address: string
+          available_today: boolean | null
+          city: string
+          created_at: string | null
+          description: string | null
+          id: string
+          lat: number | null
+          lng: number | null
+          name: string
+          phone: string | null
+          rating: number | null
+          review_count: number | null
+          services: string[] | null
+          state: string
+          user_id: string
+          verified: boolean | null
+          website: string | null
+          zip_code: string
+        }
+        Insert: {
+          address: string
+          available_today?: boolean | null
+          city: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          name: string
+          phone?: string | null
+          rating?: number | null
+          review_count?: number | null
+          services?: string[] | null
+          state: string
+          user_id: string
+          verified?: boolean | null
+          website?: string | null
+          zip_code: string
+        }
+        Update: {
+          address?: string
+          available_today?: boolean | null
+          city?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          name?: string
+          phone?: string | null
+          rating?: number | null
+          review_count?: number | null
+          services?: string[] | null
+          state?: string
+          user_id?: string
+          verified?: boolean | null
+          website?: string | null
+          zip_code?: string
+        }
+        Relationships: []
+      }
       services: {
         Row: {
           created_at: string | null

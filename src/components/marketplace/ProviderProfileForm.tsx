@@ -140,27 +140,43 @@ const ProviderProfileForm = () => {
         return;
       }
       
-      // Get coordinates for the address
-      const coordinates = await getCoordinates(
-        formData.address || '', 
-        formData.city || '', 
-        formData.state || '', 
-        formData.zip_code || ''
-      );
-      
-      if (!coordinates) {
+      // Validate required fields
+      if (!formData.name || !formData.address || !formData.city || !formData.state || !formData.zip_code) {
+        toast({
+          variant: "destructive",
+          title: "Missing Information",
+          description: "Please fill in all required fields",
+        });
         setIsLoading(false);
         return;
       }
       
+      // Get coordinates for the address
+      const coordinates = await getCoordinates(
+        formData.address, 
+        formData.city, 
+        formData.state, 
+        formData.zip_code
+      );
+      
+      // Create the provider profile
       const providerData: Omit<ServiceProvider, 'id'> = {
-        ...formData,
+        name: formData.name,
+        description: formData.description,
         user_id: session.user.id,
-        lat: coordinates.lat,
-        lng: coordinates.lng,
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        zip_code: formData.zip_code,
+        lat: coordinates?.lat,
+        lng: coordinates?.lng,
+        services: formData.services || [],
         rating: 0,
         review_count: 0,
-        services: formData.services || []
+        phone: formData.phone,
+        website: formData.website,
+        verified: formData.verified || false,
+        available_today: formData.available_today || false
       };
       
       // Save provider profile to Supabase

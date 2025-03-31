@@ -12,9 +12,9 @@ import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Wrench, Map, List, SlidersHorizontal } from 'lucide-react';
-import { ServiceProvider, carService } from '@/services/car-service';
 import { useQuery } from '@tanstack/react-query';
 import { useServiceProviders } from '@/hooks/useServiceProviders';
+import { ServiceProvider } from '@/types/supabase-models';
 
 export default function ServiceExplorer() {
   const { t } = useTranslation();
@@ -42,24 +42,24 @@ export default function ServiceExplorer() {
   };
 
   // Apply filters to providers
-  const filteredProviders = Array.isArray(providers) ? providers.filter((provider: ServiceProvider) => {
+  const filteredProviders = Array.isArray(providers) ? providers.filter((provider) => {
     // Filter by service type
-    if (filters.service && !provider.services.includes(filters.service)) {
+    if (filters.service && provider.services && !provider.services.includes(filters.service)) {
       return false;
     }
     
     // Filter by minimum rating
-    if (filters.rating > 0 && provider.rating < filters.rating) {
+    if (filters.rating > 0 && (provider.rating || 0) < filters.rating) {
       return false;
     }
     
-    // Filter by verified status (check if property exists)
-    if (filters.verified && !(provider as any).verified) {
+    // Filter by verified status
+    if (filters.verified && !provider.verified) {
       return false;
     }
     
-    // Filter by availability (check if property exists)
-    if (filters.open && !(provider as any).availableToday) {
+    // Filter by availability
+    if (filters.open && !provider.available_today) {
       return false;
     }
     
@@ -123,7 +123,7 @@ export default function ServiceExplorer() {
                     <p className="mt-4 text-muted-foreground">{t('serviceExplorer.loading', 'Loading service providers...')}</p>
                   </div>
                 ) : filteredProviders.length > 0 ? (
-                  <ServiceList providers={filteredProviders} isLoading={isLoading} />
+                  <ServiceList providers={filteredProviders as ServiceProvider[]} isLoading={isLoading} />
                 ) : (
                   <EmptyState
                     icon={<Wrench className="h-12 w-12" />}
@@ -135,7 +135,7 @@ export default function ServiceExplorer() {
               
               <TabsContent value="map" className="mt-4">
                 <div className="h-[70vh] rounded-xl overflow-hidden">
-                  <ServiceMap providers={filteredProviders} isLoading={isLoading} />
+                  <ServiceMap providers={filteredProviders as ServiceProvider[]} isLoading={isLoading} />
                 </div>
               </TabsContent>
             </Tabs>
