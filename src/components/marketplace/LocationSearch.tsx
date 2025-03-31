@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { FormEvent } from 'react';
 import { MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 interface LocationSearchProps {
   location: string;
   setLocation: (location: string) => void;
-  handleSearch: (e: React.FormEvent) => void;
+  handleSearch: (e: FormEvent) => void;
 }
 
 const LocationSearch = ({ location, setLocation, handleSearch }: LocationSearchProps) => {

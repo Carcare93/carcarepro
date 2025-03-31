@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import ProviderCard from '@/components/marketplace/ProviderCard';
 import FilterSidebar from '@/components/marketplace/FilterSidebar';
@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Wrench, Map, List, SlidersHorizontal } from 'lucide-react';
 import { ServiceProvider, carService } from '@/services/car-service';
 import { useQuery } from '@tanstack/react-query';
+import { useServiceProviders } from '@/hooks/useServiceProviders';
 
 export default function ServiceExplorer() {
   const { t } = useTranslation();
@@ -28,25 +29,16 @@ export default function ServiceExplorer() {
     verified: false
   });
   
-  const { data: providers = [], isLoading } = useQuery({
-    queryKey: ['serviceProviders'],
-    queryFn: async () => {
-      try {
-        // If you have a specific function to get service providers, use it here
-        return await carService.getServiceProviders();
-      } catch (error) {
-        console.error("Error fetching service providers:", error);
-        return [];
-      }
-    }
-  });
+  // Use the custom hook to fetch providers
+  const { providers, isLoading } = useServiceProviders(location);
 
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
 
-  const handleSearch = (query: string) => {
-    setLocation(query);
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    // Location state is already set by the LocationSearch component
   };
 
   // Apply filters to providers
@@ -61,13 +53,13 @@ export default function ServiceExplorer() {
       return false;
     }
     
-    // Filter by verified status
-    if (filters.verified && !provider.verified) {
+    // Filter by verified status (check if property exists)
+    if (filters.verified && !(provider as any).verified) {
       return false;
     }
     
-    // Filter by availability
-    if (filters.open && !provider.available) {
+    // Filter by availability (check if property exists)
+    if (filters.open && !(provider as any).availableToday) {
       return false;
     }
     
@@ -104,7 +96,10 @@ export default function ServiceExplorer() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {showFilters && (
             <div className="lg:col-span-3">
-              <FilterSidebar filters={filters} setFilters={setFilters} />
+              <FilterSidebar 
+                isFilterOpen={showFilters} 
+                setIsFilterOpen={setShowFilters} 
+              />
             </div>
           )}
           
@@ -128,7 +123,7 @@ export default function ServiceExplorer() {
                     <p className="mt-4 text-muted-foreground">{t('serviceExplorer.loading', 'Loading service providers...')}</p>
                   </div>
                 ) : filteredProviders.length > 0 ? (
-                  <ServiceList providers={filteredProviders} />
+                  <ServiceList providers={filteredProviders} isLoading={isLoading} />
                 ) : (
                   <EmptyState
                     icon={<Wrench className="h-12 w-12" />}
@@ -140,7 +135,7 @@ export default function ServiceExplorer() {
               
               <TabsContent value="map" className="mt-4">
                 <div className="h-[70vh] rounded-xl overflow-hidden">
-                  <ServiceMap providers={filteredProviders} />
+                  <ServiceMap providers={filteredProviders} isLoading={isLoading} />
                 </div>
               </TabsContent>
             </Tabs>
