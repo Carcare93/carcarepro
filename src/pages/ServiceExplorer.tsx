@@ -90,11 +90,27 @@ const ServiceExplorer = () => {
                         {isLoading ? (
                           // Show skeletons when loading
                           <div>{t('services.loading')}</div>
-                        ) : providers.length > 0 ? (
-                          // Show providers list
-                          providers.map((provider) => (
-                            <ProviderCard key={provider.id} provider={provider} />
-                          ))
+                        ) : providers && providers.length > 0 ? (
+                          // Show providers list with type checking
+                          providers.map((provider) => {
+                            // Ensure provider has all required properties before rendering
+                            if (
+                              provider &&
+                              provider.id &&
+                              provider.name &&
+                              provider.image &&
+                              provider.rating !== undefined &&
+                              provider.reviewCount !== undefined &&
+                              provider.distance &&
+                              provider.address &&
+                              provider.available !== undefined &&
+                              provider.verified !== undefined &&
+                              provider.services
+                            ) {
+                              return <ProviderCard key={provider.id} provider={provider} />;
+                            }
+                            return null;
+                          })
                         ) : (
                           // Show empty state
                           <div className="text-center py-12">
@@ -109,7 +125,7 @@ const ServiceExplorer = () => {
                     )}
                   </TabsContent>
                   <TabsContent value="map" className="mt-0">
-                    <ServiceMap providers={providers} isLoading={isLoading} />
+                    <ServiceMap providers={providers || []} isLoading={isLoading} />
                   </TabsContent>
                 </div>
               </div>
