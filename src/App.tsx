@@ -23,35 +23,37 @@ import ProviderDashboard from "./pages/ProviderDashboard";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
-      <AuthProvider>
-        <TooltipProvider>
-          <ToastProvider>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/services" element={<ServiceExplorer />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/provider-profile" element={<ProviderProfile />} />
-              <Route path="/bookings" element={<Bookings />} />
-              <Route path="/vehicles" element={<Vehicles />} />
-              <Route path="/vehicles/:vehicleId/invoices" element={<VehicleInvoices />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/verify-email" element={<VerifyEmail />} />
-              <Route path="/provider" element={<ProviderDashboard />} />
-              {/* Redirects for old routes */}
-              <Route path="/discover" element={<Navigate to="/services" replace />} />
-              <Route path="/marketplace" element={<Navigate to="/services" replace />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <Toaster />
-            <Sonner />
-          </ToastProvider>
-        </TooltipProvider>
-      </AuthProvider>
-    </BrowserRouter>
-  </QueryClientProvider>
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AuthProvider>
+          <TooltipProvider>
+            <ToastProvider>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/services" element={<ServiceExplorer />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/provider-profile" element={<ProviderProfile />} />
+                <Route path="/bookings" element={<Bookings />} />
+                <Route path="/vehicles" element={<Vehicles />} />
+                <Route path="/vehicles/:vehicleId/invoices" element={<VehicleInvoices />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/provider" element={<ProviderDashboard />} />
+                {/* Redirects for old routes */}
+                <Route path="/discover" element={<Navigate to="/services" replace />} />
+                <Route path="/marketplace" element={<Navigate to="/services" replace />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+              <Toaster />
+              <Sonner />
+            </ToastProvider>
+          </TooltipProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
+  </React.StrictMode>
 );
 
 export default App;

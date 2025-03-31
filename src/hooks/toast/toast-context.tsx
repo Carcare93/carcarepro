@@ -4,7 +4,7 @@ import { State, Toast, ToasterToast } from "./types"
 import { reducer } from "./toast-reducer"
 import { genId } from "./utils"
 
-const ToastContext = React.createContext<{
+export const ToastContext = React.createContext<{
   state: State
   toast: (props: Toast) => { id: string; dismiss: () => void; update: (props: ToasterToast) => void }
   dismiss: (toastId?: string) => void
@@ -60,6 +60,3 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
     </ToastContext.Provider>
   )
 }
-
-// Export the context for use in use-toast.ts
-export { ToastContext }
