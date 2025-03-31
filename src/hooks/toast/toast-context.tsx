@@ -12,9 +12,7 @@ export const ToastContext = React.createContext<{
 } | null>(null);
 
 // Define the Provider component
-export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ 
-  children 
-}) => {
+export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatchAction] = React.useReducer(reducer, { toasts: [] })
 
   React.useEffect(() => {

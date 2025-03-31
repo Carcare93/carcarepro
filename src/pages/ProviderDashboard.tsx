@@ -14,6 +14,7 @@ import CalendarView from '@/components/provider/CalendarView';
 import { useQuery } from '@tanstack/react-query';
 import { bookingService } from '@/services/booking-service';
 import { useToast } from '@/hooks/use-toast';
+import { Booking } from '@/types/booking';
 
 const ProviderDashboard = () => {
   const { user } = useAuth();
@@ -30,7 +31,7 @@ const ProviderDashboard = () => {
 
   // Fetch bookings - ensure we initialize with an empty array
   const { 
-    data: bookings = [], 
+    data: bookings = [] as Booking[], 
     isLoading: isLoadingBookings, 
     refetch: refetchBookings 
   } = useQuery({

@@ -22,8 +22,8 @@ import ProviderDashboard from "./pages/ProviderDashboard";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
+  <BrowserRouter>
+    <QueryClientProvider client={queryClient}>
       <ToastProvider>
         <TooltipProvider>
           <AuthProvider>
@@ -49,8 +49,8 @@ const App = () => (
           </AuthProvider>
         </TooltipProvider>
       </ToastProvider>
-    </BrowserRouter>
-  </QueryClientProvider>
+    </QueryClientProvider>
+  </BrowserRouter>
 );
 
 export default App;
