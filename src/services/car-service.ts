@@ -1,4 +1,3 @@
-
 import { v4 as uuidv4 } from 'uuid';
 import { ServiceDuration } from '@/types/booking';
 import { ApiService, apiService } from './api';
@@ -37,6 +36,8 @@ export interface ServiceProvider {
   phone?: string;
   email?: string;
   businessHours?: Record<string, { open: string; close: string }>;
+  verified?: boolean;
+  available_today?: boolean;
 }
 
 export interface ProviderProfile {
