@@ -1,6 +1,6 @@
 
 import * as React from "react"
-import { ToastContext, ToastProvider } from "./toast/toast-context"
+import { ToastContext } from "./toast/toast-context"
 import { dispatch, memoryState } from "./toast/toast-reducer"
 import { Toast, ToasterToast } from "./toast/types"
 import { genId } from "./toast/utils"
@@ -41,7 +41,7 @@ function useToast() {
   const context = React.useContext(ToastContext)
   
   // If within the context provider, use that context
-  if (context !== undefined) {
+  if (context) {
     return {
       ...context.state,
       toast: context.toast,
@@ -50,7 +50,7 @@ function useToast() {
   }
   
   // Fallback to the stateful implementation for backwards compatibility
-  const [state, setState] = React.useState<typeof memoryState>(memoryState)
+  const [state, setState] = React.useState(memoryState)
 
   React.useEffect(() => {
     const listener = (newState: typeof memoryState) => setState(newState)
@@ -73,4 +73,4 @@ function useToast() {
 // We also need to export the listeners array
 import { listeners } from "./toast/toast-reducer"
 
-export { useToast, toast, ToastProvider }
+export { useToast, toast, ToastProvider } from "./toast/toast-context"

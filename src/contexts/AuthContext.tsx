@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService, User, LoginData, RegisterData, ProviderRegisterData, VerificationStatus } from '@/services/auth-service';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/toast/toast-context';
 
 interface AuthContextType {
   user: User | null;
