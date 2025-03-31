@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ToastProvider } from "@/hooks/toast/toast-context";
-import React from "react";
+import * as React from "react";
 import Index from "./pages/Index";
 import ServiceExplorer from "./pages/ServiceExplorer";
 import Profile from "./pages/Profile";
