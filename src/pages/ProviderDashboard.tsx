@@ -1,44 +1,43 @@
 
-import React, { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, Edit, ListCheck, User } from 'lucide-react';
+import React, { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
+import { useQuery } from '@tanstack/react-query';
+import { bookingService } from '@/services/booking-service';
+import { authService } from '@/services/auth-service';
 import BookingsTab from '@/components/provider/BookingsTab';
 import ServicesTab from '@/components/provider/ServicesTab';
 import ProfileTab from '@/components/provider/ProfileTab';
 import CalendarView from '@/components/provider/CalendarView';
-import { useQuery } from '@tanstack/react-query';
-import { bookingService } from '@/services/booking-service';
-import { useToast } from '@/hooks/use-toast';
 import { Booking } from '@/types/booking';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
 
 const ProviderDashboard = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState('bookings');
-  
-  // Redirect non-provider users
-  useEffect(() => {
-    if (!user || user.accountType !== 'provider') {
-      navigate('/');
-    }
-  }, [user, navigate]);
+  const [activeTab, setActiveTab] = useState("bookings");
 
-  // Fetch bookings - ensure we initialize with an empty array
+  // Fetch provider profile
+  const { 
+    data: providerProfile, 
+    isLoading: isLoadingProfile 
+  } = useQuery({
+    queryKey: ['providerProfile'],
+    queryFn: authService.getProviderProfile.bind(authService),
+  });
+
+  // Fetch bookings
   const { 
     data: bookings = [] as Booking[], 
     isLoading: isLoadingBookings, 
     refetch: refetchBookings 
-  } = useQuery({
+  } = useQuery<Booking[]>({
     queryKey: ['providerBookings'],
     queryFn: bookingService.getProviderBookings.bind(bookingService),
   });
-  
+
   const handleAcceptBooking = async (bookingId: string) => {
     try {
       await bookingService.acceptBooking(bookingId);
@@ -80,8 +79,8 @@ const ProviderDashboard = () => {
       await bookingService.completeBooking(bookingId);
       await refetchBookings();
       toast({
-        title: "Booking completed",
-        description: "The service has been marked as completed.",
+        title: "Service completed",
+        description: "The booking has been marked as completed.",
       });
     } catch (error) {
       console.error(error);
@@ -92,74 +91,75 @@ const ProviderDashboard = () => {
       });
     }
   };
-  
-  // Don't render anything if user is not a provider
-  if (!user || user.accountType !== 'provider' || !user.providerProfile) {
-    return null;
-  }
-  
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-grow pt-24 pb-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-5xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-              <div>
-                <h1 className="text-3xl font-bold mb-2">Provider Dashboard</h1>
-                <p className="text-muted-foreground">
-                  Manage your service offerings and bookings
-                </p>
-              </div>
-              <Button variant="outline" onClick={() => navigate('/provider-profile')}>
-                View Public Profile
-              </Button>
-            </div>
-            
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid grid-cols-4 w-full md:w-auto">
-                <TabsTrigger value="bookings" className="flex items-center gap-2">
-                  <ListCheck className="h-4 w-4" />
-                  <span className="hidden md:inline">Bookings</span>
-                </TabsTrigger>
-                <TabsTrigger value="calendar" className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  <span className="hidden md:inline">Calendar</span>
-                </TabsTrigger>
-                <TabsTrigger value="services" className="flex items-center gap-2">
-                  <ListCheck className="h-4 w-4" />
-                  <span className="hidden md:inline">Services</span>
-                </TabsTrigger>
-                <TabsTrigger value="profile" className="flex items-center gap-2">
-                  <Edit className="h-4 w-4" />
-                  <span className="hidden md:inline">Profile</span>
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="bookings" className="mt-6">
-                <BookingsTab />
-              </TabsContent>
-              
-              <TabsContent value="calendar" className="mt-6">
-                <CalendarView 
-                  bookings={bookings}
-                  isLoading={isLoadingBookings}
-                  onAcceptBooking={handleAcceptBooking}
-                  onDeclineBooking={handleDeclineBooking}
-                  onCompleteBooking={handleCompleteBooking}
-                />
-              </TabsContent>
-              
-              <TabsContent value="services" className="mt-6">
-                <ServicesTab providerProfile={user.providerProfile} />
-              </TabsContent>
-              
-              <TabsContent value="profile" className="mt-6">
-                <ProfileTab providerProfile={user.providerProfile} />
-              </TabsContent>
-            </Tabs>
-          </div>
-        </div>
+      <main className="flex-grow container mx-auto py-8 px-4">
+        <h1 className="text-3xl font-bold mb-8">Provider Dashboard</h1>
+        
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="w-full">
+            <TabsTrigger value="bookings" className="flex-1">Bookings</TabsTrigger>
+            <TabsTrigger value="calendar" className="flex-1">Calendar</TabsTrigger>
+            <TabsTrigger value="services" className="flex-1">Services</TabsTrigger>
+            <TabsTrigger value="profile" className="flex-1">Profile</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="bookings" className="space-y-6">
+            <BookingsTab />
+          </TabsContent>
+          
+          <TabsContent value="calendar" className="space-y-6">
+            {isLoadingBookings ? (
+              <Skeleton className="h-[600px] w-full rounded-xl" />
+            ) : (
+              <CalendarView 
+                bookings={bookings}
+                isLoading={isLoadingBookings}
+                onAcceptBooking={handleAcceptBooking}
+                onDeclineBooking={handleDeclineBooking}
+                onCompleteBooking={handleCompleteBooking}
+              />
+            )}
+          </TabsContent>
+          
+          <TabsContent value="services" className="space-y-6">
+            {isLoadingProfile ? (
+              <Card>
+                <CardContent className="p-6">
+                  <Skeleton className="h-[500px] w-full" />
+                </CardContent>
+              </Card>
+            ) : providerProfile ? (
+              <ServicesTab providerProfile={providerProfile} />
+            ) : (
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <p>Unable to load profile data.</p>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+          
+          <TabsContent value="profile" className="space-y-6">
+            {isLoadingProfile ? (
+              <Card>
+                <CardContent className="p-6">
+                  <Skeleton className="h-[500px] w-full" />
+                </CardContent>
+              </Card>
+            ) : providerProfile ? (
+              <ProfileTab providerProfile={providerProfile} />
+            ) : (
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <p>Unable to load profile data.</p>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+        </Tabs>
       </main>
       <Footer />
     </div>
