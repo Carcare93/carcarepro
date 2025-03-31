@@ -47,7 +47,7 @@ export class SupabaseService {
   }
 }
 
-// Re-export the types for convenience, using export type to fix the isolatedModules error
+// Re-export the types for convenience using 'export type' to fix the isolatedModules error
 export type { Booking, Service, User } from '@/types/supabase-models';
 
 // Create and export a singleton instance
