@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ServiceProvider } from '@/services/car-service';
 import { GoogleMap, Marker, InfoWindow, LoadScript } from '@react-google-maps/api';
 import { useToast } from '@/hooks/use-toast';
+import { Input } from '@/components/ui/input';
 
 // Google Maps container styles
 const containerStyle = {
@@ -30,10 +31,11 @@ const ServiceMap = ({ providers, isLoading }: ServiceMapProps) => {
   const [selectedProvider, setSelectedProvider] = useState<ServiceProvider | null>(null);
   const [center, setCenter] = useState(defaultCenter);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [apiKey, setApiKey] = useState(() => {
+    // Try to get from localStorage
+    return localStorage.getItem('googleMapsApiKey') || "";
+  });
   const mapRef = useRef<google.maps.Map | null>(null);
-
-  // Use the provided Google Maps API key
-  const apiKey = "AIzaSyA6HLJkPV64cLa5YE43uk4sY0HaUnb-T8k";
 
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
@@ -83,8 +85,8 @@ const ServiceMap = ({ providers, isLoading }: ServiceMapProps) => {
       // Add all provider locations to bounds
       providers.forEach(provider => {
         bounds.extend(new google.maps.LatLng(
-          provider.location.coordinates.lat,
-          provider.location.coordinates.lng
+          provider.location.coordinates?.lat || defaultCenter.lat,
+          provider.location.coordinates?.lng || defaultCenter.lng
         ));
       });
       
@@ -98,11 +100,24 @@ const ServiceMap = ({ providers, isLoading }: ServiceMapProps) => {
     }
   };
 
+  const saveApiKey = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (apiKey) {
+      localStorage.setItem('googleMapsApiKey', apiKey);
+      toast({
+        title: "API Key Saved",
+        description: "Your Google Maps API key has been saved for this session.",
+      });
+      // Force re-render to load the map
+      setMapLoaded(false);
+    }
+  };
+
   if (isLoading) {
     return <Skeleton className="w-full h-[600px] rounded-xl" />;
   }
 
-  // Show placeholder if no API key is available
+  // Show API key input if no key is available
   if (!apiKey) {
     return (
       <div className="bg-secondary rounded-xl flex items-center justify-center h-[600px] mt-4 relative overflow-hidden">
@@ -110,12 +125,19 @@ const ServiceMap = ({ providers, isLoading }: ServiceMapProps) => {
           <MapIcon className="h-12 w-12 text-muted-foreground mb-4 mx-auto" />
           <h3 className="text-xl font-medium mb-2">Google Maps API Key Required</h3>
           <p className="text-muted-foreground mb-6">
-            To use the interactive map, you need to add a Google Maps API key to your environment variables:
+            To use the interactive map, you need to add your Google Maps API key:
           </p>
-          <div className="bg-muted p-3 rounded-md text-sm font-mono mb-4 text-left">
-            VITE_GOOGLE_MAPS_API_KEY=your_api_key_here
-          </div>
-          <p className="text-sm text-muted-foreground">
+          <form onSubmit={saveApiKey} className="space-y-4">
+            <Input 
+              type="text" 
+              placeholder="Enter your Google Maps API Key" 
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              className="w-full"
+            />
+            <Button type="submit" className="w-full">Save API Key</Button>
+          </form>
+          <p className="text-sm text-muted-foreground mt-4">
             Get your API key from the <a href="https://console.cloud.google.com/google/maps-apis" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">Google Cloud Console</a>.
           </p>
         </div>
@@ -126,7 +148,7 @@ const ServiceMap = ({ providers, isLoading }: ServiceMapProps) => {
   return (
     <div>
       <div className="rounded-xl overflow-hidden mt-4 relative">
-        <LoadScript googleMapsApiKey={apiKey}>
+        <LoadScript googleMapsApiKey={apiKey} loadingElement={<Skeleton className="w-full h-[600px] rounded-xl" />}>
           <GoogleMap
             mapContainerStyle={containerStyle}
             center={center}
@@ -150,8 +172,8 @@ const ServiceMap = ({ providers, isLoading }: ServiceMapProps) => {
               <Marker
                 key={provider.id}
                 position={{
-                  lat: provider.location.coordinates.lat,
-                  lng: provider.location.coordinates.lng
+                  lat: provider.location.coordinates?.lat || defaultCenter.lat,
+                  lng: provider.location.coordinates?.lng || defaultCenter.lng
                 }}
                 onClick={() => handleProviderClick(provider)}
                 icon={{
@@ -164,8 +186,8 @@ const ServiceMap = ({ providers, isLoading }: ServiceMapProps) => {
             {selectedProvider && (
               <InfoWindow
                 position={{
-                  lat: selectedProvider.location.coordinates.lat,
-                  lng: selectedProvider.location.coordinates.lng
+                  lat: selectedProvider.location.coordinates?.lat || defaultCenter.lat,
+                  lng: selectedProvider.location.coordinates?.lng || defaultCenter.lng
                 }}
                 onCloseClick={() => setSelectedProvider(null)}
               >
@@ -209,6 +231,14 @@ const ServiceMap = ({ providers, isLoading }: ServiceMapProps) => {
           >
             View All
           </Button>
+          <Button 
+            variant="secondary" 
+            size="sm" 
+            className="shadow-md"
+            onClick={() => setApiKey("")}
+          >
+            Change API Key
+          </Button>
         </div>
       </div>
       
@@ -225,8 +255,8 @@ const ServiceMap = ({ providers, isLoading }: ServiceMapProps) => {
                 // Center map on this provider
                 if (mapRef.current) {
                   mapRef.current.panTo({
-                    lat: provider.location.coordinates.lat,
-                    lng: provider.location.coordinates.lng
+                    lat: provider.location.coordinates?.lat || defaultCenter.lat,
+                    lng: provider.location.coordinates?.lng || defaultCenter.lng
                   });
                   mapRef.current.setZoom(15);
                 }
