@@ -34,7 +34,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
           if (session?.user) {
             try {
-              const currentUser = await authService.getCurrentUser();
+              const currentUser = await authService.fetchCurrentUser();
               if (currentUser) setUser(currentUser);
             } catch (error) {
               console.error('Error fetching user data:', error);
@@ -49,7 +49,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Check for existing session
     const checkUser = async () => {
       try {
-        const currentUser = await authService.getCurrentUser();
+        const currentUser = await authService.fetchCurrentUser();
         if (currentUser) setUser(currentUser);
       } catch (error) {
         console.error('Error checking current user:', error);
@@ -113,7 +113,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const result = await authService.verifyEmail(email, code);
       
       if (result.verified) {
-        const updatedUser = await authService.getCurrentUser();
+        const updatedUser = await authService.fetchCurrentUser();
         setUser(updatedUser);
       }
       

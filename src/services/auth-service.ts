@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { supabaseService } from './supabase-service';
 
@@ -62,6 +63,7 @@ export interface VerificationStatus {
 
 export class AuthService {
   private storageKey = 'car_care_user';
+  private currentUser: User | null = null;
   
   // Convert Supabase user to our app's user format
   private mapSupabaseUser(supabaseUser: any, additionalData?: any): User {
@@ -127,7 +129,9 @@ export class AuthService {
       // We can continue even if this fails, as the auth user is created
     }
     
-    return this.mapSupabaseUser(authData.user);
+    const user = this.mapSupabaseUser(authData.user);
+    this.currentUser = user;
+    return user;
   }
   
   async verifyEmail(email: string, code: string): Promise<VerificationStatus> {
@@ -181,18 +185,23 @@ export class AuthService {
       console.error('Error fetching user data:', err);
     }
     
-    return this.mapSupabaseUser(authData.user, userData);
+    const user = this.mapSupabaseUser(authData.user, userData);
+    this.currentUser = user;
+    return user;
   }
   
   logout(): void {
     supabase.auth.signOut();
     localStorage.removeItem(this.storageKey);
+    this.currentUser = null;
   }
   
-  async getCurrentUser(): Promise<User | null> {
+  // Async version that fetches fresh user data
+  async fetchCurrentUser(): Promise<User | null> {
     const { data, error } = await supabase.auth.getSession();
     
     if (error || !data.session) {
+      this.currentUser = null;
       return null;
     }
     
@@ -206,16 +215,26 @@ export class AuthService {
     }
     
     const user = this.mapSupabaseUser(data.session.user, userData);
+    this.currentUser = user;
     return user;
+  }
+  
+  // Synchronous version that returns cached user data for quick access
+  getCurrentUser(): User | null {
+    return this.currentUser;
   }
   
   isAuthenticated(): boolean {
     // Use synchronous check to avoid Promise issues
-    return !!localStorage.getItem(this.storageKey);
+    return !!this.currentUser || !!localStorage.getItem(this.storageKey);
   }
   
   isEmailVerified(): boolean {
     // Use synchronous check to avoid Promise issues
+    if (this.currentUser) {
+      return !!this.currentUser.isEmailVerified;
+    }
+    
     const userStr = localStorage.getItem(this.storageKey);
     if (!userStr) return false;
     
@@ -229,6 +248,10 @@ export class AuthService {
   
   isProvider(): boolean {
     // Use synchronous check to avoid Promise issues
+    if (this.currentUser) {
+      return this.currentUser.accountType === 'provider';
+    }
+    
     const userStr = localStorage.getItem(this.storageKey);
     if (!userStr) return false;
     
@@ -249,7 +272,9 @@ export class AuthService {
       throw new Error(error.message);
     }
     
-    return this.mapSupabaseUser(userData.user);
+    const user = this.mapSupabaseUser(userData.user);
+    this.currentUser = user;
+    return user;
   }
 }
 
