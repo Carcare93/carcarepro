@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -17,31 +16,33 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { RegisterData, ProviderRegisterData } from '@/services/auth-service';
 
-// Basic form schema for all users
-const baseSchema = z.object({
+// Customer form schema
+const customerSchema = z.object({
+  accountType: z.literal('customer'),
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  accountType: z.enum(['customer', 'provider'], {
-    required_error: 'Please select an account type',
-  }),
 });
 
-// Extended schema for providers
-const providerSchema = baseSchema.extend({
-  businessName: z.string().min(2, 'Business name is required').optional().or(z.literal('')),
-  serviceType: z.string().min(1, 'Please select at least one service').optional().or(z.literal('')),
-  address: z.string().min(5, 'Address is required').optional().or(z.literal('')),
-  city: z.string().min(2, 'City is required').optional().or(z.literal('')),
-  state: z.string().min(2, 'State is required').optional().or(z.literal('')),
-  zipCode: z.string().min(5, 'Valid zip code is required').optional().or(z.literal('')),
-  phone: z.string().min(10, 'Valid phone number is required').optional().or(z.literal('')),
+// Provider form schema
+const providerSchema = z.object({
+  accountType: z.literal('provider'),
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Please enter a valid email'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  businessName: z.string().min(2, 'Business name is required'),
+  serviceType: z.string().min(1, 'Please select at least one service'),
+  address: z.string().min(5, 'Address is required'),
+  city: z.string().min(2, 'City is required'),
+  state: z.string().min(2, 'State is required'),
+  zipCode: z.string().min(5, 'Valid zip code is required'),
+  phone: z.string().min(10, 'Valid phone number is required'),
 });
 
-// Conditional schema based on account type
+// Combined schema with discriminated union
 const formSchema = z.discriminatedUnion('accountType', [
-  z.object({ accountType: z.literal('customer'), ...baseSchema.shape }),
-  z.object({ accountType: z.literal('provider'), ...providerSchema.shape }),
+  customerSchema,
+  providerSchema
 ]);
 
 type FormData = z.infer<typeof formSchema>;
@@ -58,18 +59,11 @@ const SignUp = () => {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      accountType: 'customer',
       name: '',
       email: '',
       password: '',
-      accountType: 'customer',
-      businessName: '',
-      serviceType: '',
-      address: '',
-      city: '',
-      state: '',
-      zipCode: '',
-      phone: '',
-    },
+    } as FormData,
     mode: 'onChange',
   });
 
@@ -94,25 +88,25 @@ const SignUp = () => {
     setIsLoading(true);
     try {
       if (data.accountType === 'provider') {
-        // Create a proper ProviderRegisterData object
+        // We now have a properly typed providerData object
         const providerData: ProviderRegisterData = {
           email: data.email,
           password: data.password,
           name: data.name,
           accountType: 'provider',
-          businessName: data.businessName || '',
+          businessName: data.businessName,
           services: data.serviceType ? [data.serviceType] : [],
           location: {
-            address: data.address || '',
-            city: data.city || '',
-            state: data.state || '',
-            zipCode: data.zipCode || '',
+            address: data.address,
+            city: data.city,
+            state: data.state,
+            zipCode: data.zipCode,
           },
-          phone: data.phone || ''
+          phone: data.phone
         };
         await register(providerData);
       } else {
-        // Register as customer with appropriate RegisterData
+        // We now have a properly typed customerData object
         const customerData: RegisterData = {
           name: data.name,
           email: data.email,
