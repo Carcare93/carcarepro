@@ -16,12 +16,15 @@ import Login from '@/pages/Login';
 import SignUp from '@/pages/SignUp';
 import VerifyEmail from '@/pages/VerifyEmail';
 import ProviderProfile from '@/pages/ProviderProfile';
+import Profile from '@/pages/Profile';
+import NotFound from '@/pages/NotFound';
 import { Toaster } from '@/components/ui/toaster';
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
+    errorElement: <NotFound />,
   },
   {
     path: "/about",
@@ -74,6 +77,14 @@ const router = createBrowserRouter([
   {
     path: "/provider-profile",
     element: <ProviderProfile />,
+  },
+  {
+    path: "/profile",
+    element: <Profile />,
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ]);
 
