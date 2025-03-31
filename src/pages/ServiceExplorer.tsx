@@ -12,27 +12,14 @@ import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Wrench, Map, List, SlidersHorizontal } from 'lucide-react';
-import { getServiceProviders } from '@/services/car-service';
+import { ServiceProvider, carService } from '@/services/car-service';
 import { useQuery } from '@tanstack/react-query';
-
-// Define a separate interface for the component instead of reusing the imported type
-interface ServiceProvider {
-  id: string;
-  name: string;
-  services: string[];
-  rating: number;
-  reviewCount: number;
-  image: string;
-  distance: string;
-  address: string;
-  available: boolean;
-  verified: boolean;
-}
 
 export default function ServiceExplorer() {
   const { t } = useTranslation();
   const [showFilters, setShowFilters] = useState(false);
   const [view, setView] = useState<'list' | 'map'>('list');
+  const [location, setLocation] = useState('');
   const [filters, setFilters] = useState({
     service: '',
     rating: 0,
@@ -43,15 +30,27 @@ export default function ServiceExplorer() {
   
   const { data: providers = [], isLoading } = useQuery({
     queryKey: ['serviceProviders'],
-    queryFn: getServiceProviders
+    queryFn: async () => {
+      try {
+        // If you have a specific function to get service providers, use it here
+        return await carService.getServiceProviders();
+      } catch (error) {
+        console.error("Error fetching service providers:", error);
+        return [];
+      }
+    }
   });
 
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
 
+  const handleSearch = (query: string) => {
+    setLocation(query);
+  };
+
   // Apply filters to providers
-  const filteredProviders = providers.filter((provider: any) => {
+  const filteredProviders = Array.isArray(providers) ? providers.filter((provider: ServiceProvider) => {
     // Filter by service type
     if (filters.service && !provider.services.includes(filters.service)) {
       return false;
@@ -73,21 +72,7 @@ export default function ServiceExplorer() {
     }
     
     return true;
-  });
-  
-  // Map the providers to match our component's expected ServiceProvider interface
-  const mappedProviders: ServiceProvider[] = filteredProviders.map((provider: any) => ({
-    id: provider.id,
-    name: provider.name,
-    services: provider.services,
-    rating: provider.rating,
-    reviewCount: provider.reviewCount,
-    image: provider.image || '/placeholder.svg',
-    distance: provider.distance || '5 miles',
-    address: provider.location?.address || 'Unknown location',
-    available: provider.available || true,
-    verified: provider.verified || false
-  }));
+  }) : [];
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -109,7 +94,11 @@ export default function ServiceExplorer() {
         </div>
         
         <div className="mb-6">
-          <LocationSearch />
+          <LocationSearch 
+            location={location} 
+            setLocation={setLocation} 
+            handleSearch={handleSearch} 
+          />
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -138,8 +127,8 @@ export default function ServiceExplorer() {
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
                     <p className="mt-4 text-muted-foreground">{t('serviceExplorer.loading', 'Loading service providers...')}</p>
                   </div>
-                ) : mappedProviders.length > 0 ? (
-                  <ServiceList providers={mappedProviders} />
+                ) : filteredProviders.length > 0 ? (
+                  <ServiceList providers={filteredProviders} />
                 ) : (
                   <EmptyState
                     icon={<Wrench className="h-12 w-12" />}
@@ -151,7 +140,7 @@ export default function ServiceExplorer() {
               
               <TabsContent value="map" className="mt-4">
                 <div className="h-[70vh] rounded-xl overflow-hidden">
-                  <ServiceMap providers={mappedProviders} />
+                  <ServiceMap providers={filteredProviders} />
                 </div>
               </TabsContent>
             </Tabs>
