@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { supabaseService } from './supabase-service';
 
@@ -166,7 +167,14 @@ export class AuthService {
             rating: 0,
             review_count: 0,
             verified: false,
-            available_today: false
+            available_today: false,
+            // Add the location property that's missing from the original code
+            location: {
+              address: (data as ProviderRegisterData).location.address,
+              city: (data as ProviderRegisterData).location.city,
+              state: (data as ProviderRegisterData).location.state,
+              zipCode: (data as ProviderRegisterData).location.zipCode
+            }
           };
           
           console.log("Provider data to save:", providerData);
