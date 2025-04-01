@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AuthProvider } from '@/contexts/AuthContext';
 import Home from '@/pages/Home';
 import Index from '@/pages/Index';
@@ -25,112 +25,102 @@ import Bookings from '@/pages/Bookings';
 import NotFound from '@/pages/NotFound';
 import { Toaster } from '@/components/ui/toaster';
 
-// Layout component that provides the AuthProvider context to all routes
-const AppLayout = () => {
-  return (
-    <AuthProvider>
-      <Outlet />
-      <Toaster />
-    </AuthProvider>
-  );
-};
-
-// Create router with all routes wrapped in AppLayout
+// Create router with all routes
 const router = createBrowserRouter([
   {
-    element: <AppLayout />,
+    path: "/",
+    element: <Index />,
     errorElement: <NotFound />,
-    children: [
-      {
-        path: "/",
-        element: <Index />,
-      },
-      {
-        path: "/home",
-        element: <Home />,
-      },
-      {
-        path: "/about",
-        element: <About />,
-      },
-      {
-        path: "/contact",
-        element: <Contact />,
-      },
-      {
-        path: "/services",
-        element: <Services />,
-      },
-      {
-        path: "/service-details/:serviceId",
-        element: <ServiceDetails />,
-      },
-      {
-        path: "/service-reservation/:serviceId",
-        element: <ServiceReservation />,
-      },
-      {
-        path: "/blog",
-        element: <Blog />,
-      },
-      {
-        path: "/blog/:articleId",
-        element: <BlogArticle />,
-      },
-      {
-        path: "/dashboard",
-        element: <Dashboard />,
-      },
-      {
-        path: "/service-explorer",
-        element: <ServiceExplorer />,
-      },
-      {
-        path: "/discover",
-        element: <Discover />,
-      },
-      {
-        path: "/provider",
-        element: <ProviderDashboard />,
-      },
-      {
-        path: "/provider-registration",
-        element: <ProviderRegistration />,
-      },
-      {
-        path: "/login",
-        element: <Login />,
-      },
-      {
-        path: "/signup",
-        element: <SignUp />,
-      },
-      {
-        path: "/verify-email",
-        element: <VerifyEmail />,
-      },
-      {
-        path: "/provider-profile",
-        element: <ProviderProfile />,
-      },
-      {
-        path: "/profile",
-        element: <Profile />,
-      },
-      {
-        path: "/bookings",
-        element: <Bookings />,
-      },
-      {
-        path: "*",
-        element: <NotFound />,
-      }
-    ]
+  },
+  {
+    path: "/home",
+    element: <Home />,
+  },
+  {
+    path: "/about",
+    element: <About />,
+  },
+  {
+    path: "/contact",
+    element: <Contact />,
+  },
+  {
+    path: "/services",
+    element: <Services />,
+  },
+  {
+    path: "/service-details/:serviceId",
+    element: <ServiceDetails />,
+  },
+  {
+    path: "/service-reservation/:serviceId",
+    element: <ServiceReservation />,
+  },
+  {
+    path: "/blog",
+    element: <Blog />,
+  },
+  {
+    path: "/blog/:articleId",
+    element: <BlogArticle />,
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
+  },
+  {
+    path: "/service-explorer",
+    element: <ServiceExplorer />,
+  },
+  {
+    path: "/discover",
+    element: <Discover />,
+  },
+  {
+    path: "/provider",
+    element: <ProviderDashboard />,
+  },
+  {
+    path: "/provider-registration",
+    element: <ProviderRegistration />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/signup",
+    element: <SignUp />,
+  },
+  {
+    path: "/verify-email",
+    element: <VerifyEmail />,
+  },
+  {
+    path: "/provider-profile",
+    element: <ProviderProfile />,
+  },
+  {
+    path: "/profile",
+    element: <Profile />,
+  },
+  {
+    path: "/bookings",
+    element: <Bookings />,
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   }
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <AuthProvider>
+      <RouterProvider router={router} />
+      <Toaster />
+    </AuthProvider>
+  );
 }
 
 export default App;
