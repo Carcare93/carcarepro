@@ -7,7 +7,13 @@ export const providers = [
     image: "https://images.unsplash.com/photo-1632823469850-2f77dd9c7c93?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600",
     rating: 4.8,
     reviewCount: 324,
-    location: "Downtown, 2.3 miles away",
+    location: {
+      address: "123 Main Street",
+      city: "Downtown",
+      state: "CA",
+      zipCode: "90001",
+      coordinates: { lat: 34.0522, lng: -118.2437 }
+    },
     specialties: ["Oil Change", "Brakes", "Tires"],
     services: ["Oil Change", "Brake Repair", "Tire Replacement", "Wheel Alignment"],
     availability: ["Today", "Tomorrow", "Wednesday"],
@@ -18,7 +24,7 @@ export const providers = [
       "Tire Rotation": "$25.00"
     },
     verified: true,
-    availableToday: true,
+    available_today: true,
   },
   {
     id: "2",
@@ -26,7 +32,13 @@ export const providers = [
     image: "https://images.unsplash.com/photo-1629384997254-86acaa07dbaa?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600",
     rating: 4.9,
     reviewCount: 187,
-    location: "West End, 3.1 miles away",
+    location: {
+      address: "456 West Avenue",
+      city: "West End",
+      state: "CA",
+      zipCode: "90002",
+      coordinates: { lat: 34.0548, lng: -118.3552 }
+    },
     specialties: ["Diagnostics", "Engine Repair", "Electrical"],
     services: ["Engine Diagnostics", "Engine Repair", "Electrical System Repair", "Battery Replacement"],
     availability: ["Tomorrow", "Thursday", "Friday"],
@@ -37,7 +49,7 @@ export const providers = [
       "Starter Replacement": "$275.00"
     },
     verified: true,
-    availableToday: false,
+    available_today: false,
   },
   {
     id: "3",
@@ -45,7 +57,13 @@ export const providers = [
     image: "https://images.unsplash.com/photo-1486127635871-6aa255f6de7d?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600",
     rating: 4.7,
     reviewCount: 256,
-    location: "South Side, 1.8 miles away",
+    location: {
+      address: "789 South Boulevard",
+      city: "South Side",
+      state: "CA",
+      zipCode: "90003",
+      coordinates: { lat: 34.0185, lng: -118.2695 }
+    },
     specialties: ["Tire Replacement", "Alignment", "Rotation"],
     services: ["Tire Sales", "Tire Installation", "Wheel Alignment", "Tire Pressure Monitoring"],
     availability: ["Today", "Tomorrow", "Friday"],
@@ -56,7 +74,7 @@ export const providers = [
       "Tire Pressure Monitoring System Service": "$49.99"
     },
     verified: false,
-    availableToday: true,
+    available_today: true,
   },
   {
     id: "4",
@@ -64,7 +82,13 @@ export const providers = [
     image: "https://images.unsplash.com/photo-1542282811-943ef1a977c3?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600",
     rating: 4.6,
     reviewCount: 142,
-    location: "East Village, 4.2 miles away",
+    location: {
+      address: "101 East Street",
+      city: "East Village",
+      state: "CA",
+      zipCode: "90004",
+      coordinates: { lat: 34.0611, lng: -118.1968 }
+    },
     specialties: ["Full Service", "Inspection", "AC Repair"],
     services: ["AC Repair", "State Inspection", "Full Service", "Suspension Repair"],
     availability: ["Today", "Thursday", "Friday"],
@@ -75,7 +99,7 @@ export const providers = [
       "Suspension Inspection": "$49.99"
     },
     verified: true,
-    availableToday: true,
+    available_today: true,
   },
   {
     id: "5",
@@ -83,7 +107,13 @@ export const providers = [
     image: "https://images.unsplash.com/photo-1518295751675-2d9e4b583597?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600",
     rating: 4.5,
     reviewCount: 98,
-    location: "North District, 5.7 miles away",
+    location: {
+      address: "222 North Road",
+      city: "North District",
+      state: "CA",
+      zipCode: "90005",
+      coordinates: { lat: 34.0937, lng: -118.2378 }
+    },
     specialties: ["Oil Change", "Transmission", "Cooling System"],
     services: ["Oil Change", "Transmission Service", "Cooling System Flush", "Radiator Replacement"],
     availability: ["Tomorrow", "Wednesday", "Thursday"],
@@ -94,7 +124,7 @@ export const providers = [
       "Radiator Inspection": "$29.99"
     },
     verified: true,
-    availableToday: false,
+    available_today: false,
   },
   {
     id: "6",
@@ -102,7 +132,13 @@ export const providers = [
     image: "https://images.unsplash.com/photo-1507171945151-491b640082a7?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600",
     rating: 4.4,
     reviewCount: 211,
-    location: "City Center, 1.5 miles away",
+    location: {
+      address: "333 Center Plaza",
+      city: "City Center",
+      state: "CA",
+      zipCode: "90006",
+      coordinates: { lat: 34.0407, lng: -118.2468 }
+    },
     specialties: ["Brakes", "Suspension", "Steering"],
     services: ["Brake Service", "Suspension Repair", "Steering System", "Wheel Balancing"],
     availability: ["Today", "Wednesday", "Friday"],
@@ -113,6 +149,6 @@ export const providers = [
       "Wheel Balancing": "$49.99"
     },
     verified: false,
-    availableToday: true,
+    available_today: true,
   }
 ];

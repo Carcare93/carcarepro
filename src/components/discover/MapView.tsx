@@ -7,14 +7,34 @@ import GoogleMapComponent from '@/components/marketplace/map/GoogleMapComponent'
 import { defaultCenter } from '@/components/marketplace/map/mapUtils';
 import { providers } from '@/components/discover/ProvidersData';
 import { useToast } from '@/hooks/use-toast';
+import { ServiceProvider } from '@/services/car-service';
 
 const MapView = () => {
   const { toast } = useToast();
-  const [selectedProvider, setSelectedProvider] = useState(null);
+  const [selectedProvider, setSelectedProvider] = useState<ServiceProvider | null>(null);
   const [center, setCenter] = useState(defaultCenter);
   const [apiKey, setApiKey] = useState(() => {
     return localStorage.getItem('googleMapsApiKey') || "";
   });
+
+  // Convert the discover provider format to ServiceProvider format
+  const mapProviders: ServiceProvider[] = providers.map(provider => ({
+    id: provider.id,
+    name: provider.name,
+    location: {
+      address: provider.location.address,
+      city: provider.location.city,
+      state: provider.location.state,
+      zipCode: provider.location.zipCode,
+      coordinates: provider.location.coordinates
+    },
+    services: provider.services,
+    rating: provider.rating,
+    reviewCount: provider.reviewCount,
+    phone: "",  // Not available in the original data
+    verified: provider.verified,
+    available_today: provider.available_today
+  }));
 
   // If we don't have an API key, show the form to enter one
   if (!apiKey) {
@@ -72,7 +92,7 @@ const MapView = () => {
     <GoogleMapComponent 
       apiKey={apiKey}
       center={center}
-      providers={providers}
+      providers={mapProviders}
       selectedProvider={selectedProvider}
       setSelectedProvider={setSelectedProvider}
       handleUseCurrentLocation={handleUseCurrentLocation}

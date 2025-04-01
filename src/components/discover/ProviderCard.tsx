@@ -9,11 +9,17 @@ interface Provider {
   image: string;
   rating: number;
   reviewCount: number;
-  location: string;
+  location: {
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    coordinates?: { lat: number; lng: number };
+  };
   services: string[];
   availability: string[];
   verified: boolean;
-  availableToday: boolean;
+  available_today: boolean;
 }
 
 interface ProviderCardProps {
@@ -35,7 +41,7 @@ const ProviderCard = ({ provider }: ProviderCardProps) => (
             Verified
           </div>
         )}
-        {provider.availableToday && (
+        {provider.available_today && (
           <div className="absolute top-3 right-3 bg-green-500 text-white text-xs font-medium px-2 py-1 rounded-full flex items-center">
             <Clock className="h-3 w-3 mr-1" />
             Available Today
@@ -55,7 +61,7 @@ const ProviderCard = ({ provider }: ProviderCardProps) => (
         
         <div className="flex items-center text-sm text-muted-foreground mb-4">
           <MapPin className="h-4 w-4 mr-1" />
-          {provider.location}
+          {provider.location.address}, {provider.location.city}, {provider.location.state} {provider.location.zipCode}
         </div>
         
         <div className="mb-4">
