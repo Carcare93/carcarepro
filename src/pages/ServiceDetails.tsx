@@ -11,12 +11,14 @@ import { providerService } from '@/services/supabase/provider-service';
 import { ServiceProvider } from '@/types/supabase-models';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { supabaseService } from '@/services/supabase-service';
 
 const ServiceDetails = () => {
   const { serviceId } = useParams<{ serviceId: string }>();
   const [provider, setProvider] = useState<ServiceProvider | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [servicesPricing, setServicesPricing] = useState<Array<{name: string, price: number, duration: number}>>([]);
   const { toast } = useToast();
   
   useEffect(() => {
@@ -33,6 +35,21 @@ const ServiceDetails = () => {
         
         if (providerData) {
           setProvider(providerData);
+          
+          // Fetch services pricing from the services table
+          const services = await supabaseService.getServices();
+          if (services) {
+            // Filter services for this provider
+            const providerServices = services.filter(
+              service => service.provider_id === providerData.user_id
+            );
+            
+            setServicesPricing(providerServices.map(service => ({
+              name: service.name,
+              price: Number(service.price),
+              duration: service.duration
+            })));
+          }
         } else {
           throw new Error('Provider not found');
         }
@@ -125,6 +142,37 @@ const ServiceDetails = () => {
                       )}
                     </div>
                   </div>
+                  
+                  {servicesPricing.length > 0 && (
+                    <div className="mt-6">
+                      <h3 className="text-lg font-medium mb-4">Pricing & Duration</h3>
+                      <div className="bg-muted/50 rounded-lg overflow-hidden">
+                        <table className="w-full">
+                          <thead className="bg-muted">
+                            <tr>
+                              <th className="p-3 text-left font-medium">Service</th>
+                              <th className="p-3 text-left font-medium">Duration</th>
+                              <th className="p-3 text-left font-medium">Price</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {servicesPricing.map((service, idx) => (
+                              <tr key={idx} className="border-t border-border">
+                                <td className="p-3">{service.name}</td>
+                                <td className="p-3">{service.duration} min</td>
+                                <td className="p-3">
+                                  {service.price === 0 
+                                    ? <span className="text-green-600 font-medium">Free</span> 
+                                    : `$${service.price.toFixed(2)}`
+                                  }
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
                 </Card>
                 
                 <div className="mt-6">
