@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Calendar, Clock, MapPin, Car, ChevronRight, Filter } from 'lucide-react';
@@ -19,6 +18,7 @@ import BookingStatusBadge from '@/components/bookings/BookingStatusBadge';
 import EmptyState from '@/components/shared/EmptyState';
 import BookingFilters from '@/components/bookings/BookingFilters';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 const Bookings = () => {
   const { toast } = useToast();
@@ -36,7 +36,6 @@ const Bookings = () => {
   );
 
   const handleCancelBooking = (bookingId: string) => {
-    // In a real app, this would call an API to update the booking status
     toast({
       title: "Booking Cancelled",
       description: `Booking #${bookingId.substring(0, 8)} has been cancelled.`,
@@ -73,10 +72,10 @@ const Bookings = () => {
             </div>
             <div className="mt-4 md:mt-0">
               <Button asChild>
-                <a href="/discover" className="flex items-center gap-2">
+                <Link to="/services" className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
                   {t('bookings.bookNew')}
-                </a>
+                </Link>
               </Button>
             </div>
           </div>
@@ -124,7 +123,7 @@ const Bookings = () => {
                       description={t('bookings.noUpcomingDesc')}
                       action={
                         <Button asChild>
-                          <a href="/discover">{t('bookings.bookNew')}</a>
+                          <Link to="/services">{t('bookings.bookNew')}</Link>
                         </Button>
                       }
                     />
@@ -225,7 +224,6 @@ const Bookings = () => {
   );
 };
 
-// BookingCard component
 interface BookingCardProps {
   booking: Booking;
   onClick: () => void;

@@ -12,6 +12,7 @@ import Blog from '@/pages/Blog';
 import BlogArticle from '@/pages/BlogArticle';
 import Dashboard from '@/pages/Dashboard';
 import ServiceExplorer from '@/pages/ServiceExplorer';
+import Discover from '@/pages/Discover';
 import ProviderRegistration from '@/pages/ProviderRegistration';
 import Login from '@/pages/Login';
 import SignUp from '@/pages/SignUp';
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
   {
     path: "/service-explorer",
     element: <ServiceExplorer />,
+  },
+  {
+    path: "/discover",
+    element: <Discover />,
   },
   {
     path: "/provider-registration",
