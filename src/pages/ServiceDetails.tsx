@@ -12,8 +12,9 @@ import { ServiceProvider } from '@/types/supabase-models';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { supabaseService } from '@/services/supabase-service';
+import { AuthProvider } from '@/contexts/AuthContext';
 
-const ServiceDetails = () => {
+const ServiceDetailsContent = () => {
   const { serviceId } = useParams<{ serviceId: string }>();
   const [provider, setProvider] = useState<ServiceProvider | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -240,6 +241,15 @@ const ServiceDetails = () => {
       </main>
       <Footer />
     </div>
+  );
+};
+
+// Wrapper component that provides AuthProvider
+const ServiceDetails = () => {
+  return (
+    <AuthProvider>
+      <ServiceDetailsContent />
+    </AuthProvider>
   );
 };
 
