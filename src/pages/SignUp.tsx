@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -17,7 +16,6 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { RegisterData, ProviderRegisterData } from '@/services/auth-service';
 
-// Customer form schema
 const customerSchema = z.object({
   accountType: z.literal('customer'),
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -25,7 +23,6 @@ const customerSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
-// Provider form schema
 const providerSchema = z.object({
   accountType: z.literal('provider'),
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -40,13 +37,11 @@ const providerSchema = z.object({
   phone: z.string().min(10, 'Valid phone number is required'),
 });
 
-// Combined schema with discriminated union
 const formSchema = z.discriminatedUnion('accountType', [
   customerSchema,
   providerSchema
 ]);
 
-// Define explicit types based on the schemas for better type inference
 type CustomerFormData = z.infer<typeof customerSchema>;
 type ProviderFormData = z.infer<typeof providerSchema>;
 type FormData = z.infer<typeof formSchema>;
@@ -71,7 +66,6 @@ const SignUp = () => {
     mode: 'onChange',
   });
 
-  // Watch for account type changes
   React.useEffect(() => {
     const subscription = form.watch((value, { name }) => {
       if (name === 'accountType') {
@@ -93,19 +87,17 @@ const SignUp = () => {
     setIsLoading(true);
     try {
       if (data.accountType === 'provider') {
-        // Type assertion to help TypeScript understand the discriminated union
         const providerData = data as ProviderFormData;
         
         console.log("Registering provider with data:", { ...providerData, password: "REDACTED" });
         
-        // Create a properly typed ProviderRegisterData object
         const registerData: ProviderRegisterData = {
           email: providerData.email,
           password: providerData.password,
           name: providerData.name,
           accountType: 'provider',
           businessName: providerData.businessName,
-          services: [providerData.serviceType], // Convert to array since we expect an array of services
+          services: [providerData.serviceType],
           location: {
             address: providerData.address,
             city: providerData.city,
@@ -120,17 +112,22 @@ const SignUp = () => {
         try {
           await registerUser(registerData);
           console.log("Provider registration successful");
+          
+          toast({
+            title: 'Provider account created',
+            description: 'Please verify your email to continue.',
+          });
+          
+          navigate('/verify-email', { state: { email: data.email } });
         } catch (error) {
           console.error("Provider registration failed:", error);
           throw error;
         }
       } else {
-        // Type assertion for customer data
         const customerData = data as CustomerFormData;
         
         console.log("Registering customer with data:", { ...customerData, password: "REDACTED" });
         
-        // Create a properly typed RegisterData object
         const registerData: RegisterData = {
           name: customerData.name,
           email: customerData.email,
@@ -141,19 +138,18 @@ const SignUp = () => {
         try {
           await registerUser(registerData);
           console.log("Customer registration successful");
+          
+          toast({
+            title: 'Account created',
+            description: 'Please verify your email to continue.',
+          });
+          
+          navigate('/verify-email', { state: { email: data.email } });
         } catch (error) {
           console.error("Customer registration failed:", error);
           throw error;
         }
       }
-      
-      toast({
-        title: 'Account created',
-        description: 'Please verify your email to continue.',
-      });
-      
-      // Navigate to verification page with email
-      navigate('/verify-email', { state: { email: data.email } });
     } catch (error) {
       console.error("Registration error:", error);
       toast({
@@ -269,7 +265,6 @@ const SignUp = () => {
                     )}
                   />
 
-                  {/* Common fields for both account types */}
                   <div className={selectedAccountType === 'provider' ? 'bg-secondary/20 p-5 rounded-lg' : ''}>
                     {selectedAccountType === 'provider' && (
                       <div className="flex items-center mb-4 gap-2 text-primary">
@@ -293,7 +288,6 @@ const SignUp = () => {
                         )}
                       />
 
-                      {/* Provider-specific fields */}
                       {selectedAccountType === 'provider' && (
                         <>
                           <FormField
@@ -373,7 +367,6 @@ const SignUp = () => {
                     </div>
                   </div>
 
-                  {/* Provider-specific location fields */}
                   {selectedAccountType === 'provider' && (
                     <div className="bg-secondary/20 p-5 rounded-lg space-y-4">
                       <div className="flex items-center mb-4 gap-2 text-primary">

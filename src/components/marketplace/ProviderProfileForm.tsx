@@ -183,14 +183,17 @@ const ProviderProfileForm = () => {
         }
       };
       
+      console.log("Sending provider data to create:", providerData);
+      
       const newProvider = await supabaseService.createProvider(providerData);
+      console.log("Provider creation response:", newProvider);
       
       toast({
         title: "Profile Created",
         description: "Your provider profile has been created successfully",
       });
       
-      navigate('/service-explorer');
+      navigate('/provider');
       
     } catch (error) {
       console.error("Error creating provider profile:", error);

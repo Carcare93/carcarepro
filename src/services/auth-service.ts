@@ -163,7 +163,10 @@ export class AuthService {
             state: (data as ProviderRegisterData).location.state,
             zip_code: (data as ProviderRegisterData).location.zipCode,
             phone: (data as ProviderRegisterData).phone,
-            location: (data as ProviderRegisterData).location
+            rating: 0,
+            review_count: 0,
+            verified: false,
+            available_today: false
           };
           
           console.log("Provider data to save:", providerData);
