@@ -18,6 +18,7 @@ import Login from '@/pages/Login';
 import SignUp from '@/pages/SignUp';
 import VerifyEmail from '@/pages/VerifyEmail';
 import ProviderProfile from '@/pages/ProviderProfile';
+import ProviderDashboard from '@/pages/ProviderDashboard';
 import Profile from '@/pages/Profile';
 import Bookings from '@/pages/Bookings';
 import NotFound from '@/pages/NotFound';
@@ -68,6 +69,10 @@ const router = createBrowserRouter([
   {
     path: "/discover",
     element: <Discover />,
+  },
+  {
+    path: "/provider",
+    element: <ProviderDashboard />,
   },
   {
     path: "/provider-registration",
