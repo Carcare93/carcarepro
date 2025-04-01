@@ -10,19 +10,16 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const Home = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    // Only redirect if user is authenticated and this is not a direct navigation to /home
-    if (isAuthenticated && user && location.pathname === '/home') {
-      console.log("User authenticated on home page:", user.accountType);
-      if (user.accountType === 'provider') {
-        console.log("Redirecting provider to provider dashboard");
-        navigate('/provider', { replace: true });
-        return;
-      }
+    // Only handle redirects after auth is loaded and for provider users
+    if (!isLoading && isAuthenticated && user && user.accountType === 'provider') {
+      console.log("Provider detected, redirecting to provider dashboard");
+      navigate('/provider', { replace: true });
+      return;
     }
 
     // Handle hash navigation
@@ -35,8 +32,9 @@ const Home = () => {
     } else {
       window.scrollTo(0, 0);
     }
-  }, [isAuthenticated, user, navigate, location.pathname]);
+  }, [isAuthenticated, user, navigate, isLoading]);
 
+  // Render the home page content regardless of auth state
   return (
     <div className="min-h-screen flex flex-col">
       <Header />

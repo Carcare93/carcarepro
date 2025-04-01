@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService, User, LoginData, RegisterData, ProviderRegisterData, VerificationStatus } from '@/services/auth-service';
 import { useToast } from '@/hooks/use-toast';
@@ -29,24 +30,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Check path and redirect if needed based on authentication and user type
-  useEffect(() => {
-    // Skip redirects during initial loading
-    if (isLoading) return;
-    
-    // Skip redirects for certain paths that should be accessible regardless
-    const publicPaths = ['/login', '/signup', '/about', '/contact', '/verify-email'];
-    if (publicPaths.includes(location.pathname)) return;
-    
-    // Handle redirects for authenticated users
-    if (user) {
-      // Redirect providers to their dashboard if they're on the home page
-      if ((location.pathname === '/' || location.pathname === '/home') && user.accountType === 'provider') {
-        navigate('/provider', { replace: true });
-      }
-    }
-  }, [user, isLoading, navigate, location.pathname]);
-
   // Set up auth state listener
   useEffect(() => {
     console.log("Setting up auth state listener");
@@ -67,12 +50,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 }
               } catch (error) {
                 console.error('Error fetching user data:', error);
+              } finally {
+                setIsLoading(false);
               }
             }, 0);
           }
         } else if (event === 'SIGNED_OUT') {
           console.log("User signed out, clearing user state");
           setUser(null);
+          setIsLoading(false);
         }
       }
     );
@@ -97,6 +83,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       subscription.unsubscribe();
     };
   }, []);
+  
+  // Handle navigation based on auth state
+  useEffect(() => {
+    if (isLoading) return;
+    
+    // Skip redirects for routes that should be accessible regardless of auth state
+    const publicPaths = ['/login', '/signup', '/about', '/contact', '/verify-email', '/home'];
+    if (publicPaths.includes(location.pathname)) return;
+    
+    // Only perform redirects when auth state is settled
+    if (!isLoading) {
+      if (user && user.accountType === 'provider' && location.pathname === '/') {
+        navigate('/provider', { replace: true });
+      }
+    }
+  }, [user, isLoading, navigate, location.pathname]);
 
   const login = async (data: LoginData) => {
     try {
@@ -110,9 +112,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       // Redirect based on account type after login
       if (user.accountType === 'provider') {
-        navigate('/provider');
+        navigate('/provider', { replace: true });
       } else {
-        navigate('/dashboard');
+        navigate('/dashboard', { replace: true });
       }
     } catch (error) {
       console.error("Login error:", error);
