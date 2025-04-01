@@ -115,11 +115,14 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  // Ensure the AuthProvider is the outermost wrapper
   return (
-    <AuthProvider>
-      <RouterProvider router={router} />
-      <Toaster />
-    </AuthProvider>
+    <React.StrictMode>
+      <AuthProvider>
+        <RouterProvider router={router} />
+        <Toaster />
+      </AuthProvider>
+    </React.StrictMode>
   );
 }
 
