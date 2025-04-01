@@ -6,7 +6,7 @@ import AddVehicleDialog from '@/components/vehicles/AddVehicleDialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { Helmet } from 'react-helmet';
 import { useToast } from '@/hooks/use-toast';
-import { useVehicles, useCreateVehicle } from '@/hooks/useSupabaseData';
+import { useVehicles, useCreateVehicle } from '@/hooks/api/useVehicles';
 import type { Vehicle } from '@/types/supabase-models';
 
 const Vehicles = () => {

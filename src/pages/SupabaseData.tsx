@@ -2,7 +2,9 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useBookings, useServices, useUsers, useDeleteBooking } from '@/hooks/useSupabaseData';
+import { useBookings, useDeleteBooking } from '@/hooks/api/useBookings';
+import { useServices } from '@/hooks/api/useServices';
+import { useUsers } from '@/hooks/api/useUsers';
 import DataTable from '@/components/supabase/DataTable';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
