@@ -27,7 +27,7 @@ const Vehicles = () => {
     error,
   } = useVehicles();
 
-  const addVehicleMutation = useCreateVehicle();
+  const createVehicleMutation = useCreateVehicle();
   const updateVehicleMutation = useUpdateVehicle();
   const deleteVehicleMutation = useDeleteVehicle();
 
@@ -41,12 +41,26 @@ const Vehicles = () => {
       return;
     }
     
-    await addVehicleMutation.mutateAsync({
-      ...vehicle,
-      user_id: user.id,
-    });
-    
-    setIsAddVehicleOpen(false);
+    try {
+      await createVehicleMutation.mutateAsync({
+        ...vehicle,
+        user_id: user.id,
+      });
+      
+      toast({
+        title: 'Success',
+        description: 'Vehicle successfully added.'
+      });
+      
+      setIsAddVehicleOpen(false);
+    } catch (error) {
+      console.error('Error adding vehicle:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to add vehicle. Please try again.',
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleEditVehicle = (vehicle: Vehicle) => {
@@ -55,9 +69,24 @@ const Vehicles = () => {
   };
 
   const handleUpdateVehicle = async (vehicleId: string, vehicleData: Partial<Vehicle>) => {
-    await updateVehicleMutation.mutateAsync({ vehicleId, vehicleData });
-    setIsEditVehicleOpen(false);
-    setSelectedVehicle(null);
+    try {
+      await updateVehicleMutation.mutateAsync({ vehicleId, vehicleData });
+      
+      toast({
+        title: 'Success',
+        description: 'Vehicle successfully updated.'
+      });
+      
+      setIsEditVehicleOpen(false);
+      setSelectedVehicle(null);
+    } catch (error) {
+      console.error('Error updating vehicle:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update vehicle. Please try again.',
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleDeleteVehicle = async (vehicleId: string) => {

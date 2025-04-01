@@ -58,6 +58,7 @@ const EditVehicleDialog = ({ open, onClose, onUpdateVehicle, vehicle }: EditVehi
     }
 
     try {
+      console.log('Submitting updated vehicle data:', data);
       // Transform form data to match the Vehicle type
       const vehicleData = {
         make: data.make,
@@ -68,7 +69,6 @@ const EditVehicleDialog = ({ open, onClose, onUpdateVehicle, vehicle }: EditVehi
       };
       
       await onUpdateVehicle(vehicle.id, vehicleData);
-      onClose();
     } catch (error) {
       console.error('Error updating vehicle:', error);
       toast({

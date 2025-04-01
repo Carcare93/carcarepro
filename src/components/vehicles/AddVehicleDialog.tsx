@@ -35,6 +35,7 @@ const AddVehicleDialog = ({ open, onClose, onAddVehicle }: AddVehicleDialogProps
 
   const onSubmit = async (data: AddVehicleFormData) => {
     try {
+      console.log('Submitting form data:', data);
       // Transform form data to match the Vehicle type
       const vehicleData = {
         make: data.make,
@@ -46,11 +47,6 @@ const AddVehicleDialog = ({ open, onClose, onAddVehicle }: AddVehicleDialogProps
       
       await onAddVehicle(vehicleData);
       reset();
-      toast({
-        title: "Vehicle added",
-        description: "Your vehicle has been added successfully.",
-      });
-      onClose();
     } catch (error) {
       console.error('Error adding vehicle:', error);
       toast({
@@ -60,6 +56,13 @@ const AddVehicleDialog = ({ open, onClose, onAddVehicle }: AddVehicleDialogProps
       });
     }
   };
+
+  // Reset form when dialog is closed
+  React.useEffect(() => {
+    if (!open) {
+      reset();
+    }
+  }, [open, reset]);
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
