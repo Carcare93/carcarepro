@@ -25,16 +25,7 @@ import Bookings from '@/pages/Bookings';
 import NotFound from '@/pages/NotFound';
 import { Toaster } from '@/components/ui/toaster';
 
-// Create a wrapper component for AuthProvider to be inside Router context
-const AuthenticatedApp = () => {
-  return (
-    <AuthProvider>
-      <Toaster />
-    </AuthProvider>
-  );
-};
-
-// Define routes with the element property containing AuthProvider where necessary
+// Create router with all routes
 const router = createBrowserRouter([
   {
     path: "/",
@@ -125,10 +116,10 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <>
+    <AuthProvider>
       <RouterProvider router={router} />
-      <AuthenticatedApp />
-    </>
+      <Toaster />
+    </AuthProvider>
   );
 }
 

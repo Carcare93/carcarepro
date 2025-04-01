@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService, User, LoginData, RegisterData, ProviderRegisterData, VerificationStatus } from '@/services/auth-service';
 import { useToast } from '@/hooks/use-toast';
@@ -82,17 +81,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
   }, []);
 
-  const login = async (data: LoginData) => {
+  const login = async (data: LoginData): Promise<void> => {
     try {
       setIsLoading(true);
-      const user = await authService.login(data);
-      setUser(user);
+      const loggedInUser = await authService.login(data);
+      setUser(loggedInUser);
       toast({
         title: "Welcome back!",
         description: "You've successfully logged in.",
       });
-      
-      return user;
     } catch (error) {
       console.error("Login error:", error);
       toast({
