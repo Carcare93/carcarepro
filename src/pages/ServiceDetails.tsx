@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Calendar, Clock, MapPin, DollarSign, Star, Phone, Car } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { providerService } from '@/services/supabase/provider-service';
 import { ServiceProvider } from '@/types/supabase-models';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -24,34 +24,17 @@ const ServiceDetails = () => {
       try {
         setIsLoading(true);
         
-        // Try to get the provider from Supabase
-        const { data, error } = await supabase
-          .from('service_providers')
-          .select('*')
-          .eq('id', serviceId)
-          .single();
-        
-        if (error) {
-          throw error;
+        if (!serviceId) {
+          throw new Error('Provider ID is required');
         }
         
-        if (data) {
-          // Transform the data to match the ServiceProvider type
-          const providerData: ServiceProvider = {
-            ...data,
-            location: {
-              address: data.address,
-              city: data.city,
-              state: data.state,
-              zipCode: data.zip_code,
-              coordinates: data.lat && data.lng ? { 
-                lat: data.lat, 
-                lng: data.lng 
-              } : undefined
-            }
-          };
-          
+        // Get the provider from our service
+        const providerData = await providerService.getProvider(serviceId);
+        
+        if (providerData) {
           setProvider(providerData);
+        } else {
+          throw new Error('Provider not found');
         }
       } catch (err) {
         console.error('Error fetching provider details:', err);
