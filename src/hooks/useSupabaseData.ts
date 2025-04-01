@@ -195,7 +195,7 @@ export const useVehicles = () => {
       try {
         const vehicles = await vehicleService.getUserVehicles();
         console.log('Fetched vehicles:', vehicles);
-        return vehicles;
+        return vehicles as Vehicle[];
       } catch (error) {
         console.error('Error fetching vehicles:', error);
         toast({
@@ -220,7 +220,7 @@ export const useVehicle = (vehicleId: string) => {
     queryFn: async () => {
       if (!vehicleId) return null;
       try {
-        return await vehicleService.getVehicleById(vehicleId);
+        return await vehicleService.getVehicleById(vehicleId) as Vehicle | null;
       } catch (error) {
         toast({
           title: 'Error fetching vehicle',

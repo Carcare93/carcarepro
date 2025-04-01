@@ -1,6 +1,5 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { v4 as uuidv4 } from 'uuid';
 import type { Vehicle } from "@/types/supabase-models";
 
 /**
@@ -24,7 +23,7 @@ export class VehicleService {
       }
       
       console.log('Fetched vehicles:', data);
-      return data || [];
+      return data as Vehicle[] || [];
     } catch (error) {
       console.error('Error in getUserVehicles:', error);
       throw error;
@@ -48,7 +47,7 @@ export class VehicleService {
         throw error;
       }
       
-      return data;
+      return data as Vehicle | null;
     } catch (error) {
       console.error(`Error in getVehicleById for ${vehicleId}:`, error);
       throw error;
@@ -63,7 +62,15 @@ export class VehicleService {
       console.log('Adding new vehicle:', vehicleData);
       const { data, error } = await supabase
         .from('vehicles')
-        .insert(vehicleData)
+        .insert({
+          user_id: vehicleData.user_id,
+          make: vehicleData.make,
+          model: vehicleData.model,
+          year: vehicleData.year,
+          license_plate: vehicleData.license_plate,
+          vin: vehicleData.vin,
+          color: vehicleData.color
+        })
         .select();
       
       if (error) {
@@ -72,7 +79,7 @@ export class VehicleService {
       }
       
       console.log('Added vehicle:', data);
-      return data[0];
+      return data[0] as Vehicle;
     } catch (error) {
       console.error('Error in addVehicle:', error);
       throw error;
@@ -97,7 +104,7 @@ export class VehicleService {
       }
       
       console.log('Updated vehicle:', data);
-      return data[0];
+      return data[0] as Vehicle;
     } catch (error) {
       console.error(`Error in updateVehicle for ${vehicleId}:`, error);
       throw error;
