@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabaseService } from '@/services/supabase-service';
 import { useToast } from '@/hooks/use-toast';
@@ -27,7 +26,7 @@ export const useBookings = () => {
 };
 
 /**
- * Hook for fetching services from Supabase
+ * Hook for fetching services from Supabase using the service-service
  */
 export const useServices = () => {
   const { toast } = useToast();
@@ -36,8 +35,11 @@ export const useServices = () => {
     queryKey: ['services'],
     queryFn: async () => {
       try {
-        return await supabaseService.getServices();
+        const services = await serviceService.getServices();
+        console.log('Fetched services:', services);
+        return services;
       } catch (error) {
+        console.error('Error fetching services:', error);
         toast({
           title: 'Error fetching services',
           description: 'Could not load service data',

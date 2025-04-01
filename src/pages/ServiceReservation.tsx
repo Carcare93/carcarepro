@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import { useServices } from '@/hooks/useSupabaseData';
 import { bookAppointment, getServiceDuration } from '@/services/booking-service';
 import { ServiceDuration, BookingStatus } from '@/types/booking';
 import Header from '@/components/layout/Header';
@@ -16,14 +15,17 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { format, addDays, isBefore, startOfDay } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContext';
 import { CalendarIcon, ClockIcon } from 'lucide-react';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { serviceService } from '@/services/supabase/service-service';
 
-const ServiceReservation = () => {
+const ServiceReservationContent = () => {
   const { serviceId } = useParams<{ serviceId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAuthenticated, user } = useAuth();
-  const { data: services, isLoading } = useServices();
   
+  const [selectedService, setSelectedService] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(addDays(new Date(), 1));
   const [selectedTime, setSelectedTime] = useState<string>('10:00 AM');
   const [vehicleInfo, setVehicleInfo] = useState({
@@ -35,7 +37,40 @@ const ServiceReservation = () => {
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const selectedService = services?.find(service => service.id === serviceId);
+  useEffect(() => {
+    const fetchServiceDetails = async () => {
+      if (!serviceId) return;
+      
+      setIsLoading(true);
+      try {
+        const services = await serviceService.getServices();
+        
+        const service = services?.find(s => s.id === serviceId);
+        
+        if (service) {
+          setSelectedService(service);
+        } else {
+          console.error(`Service with ID ${serviceId} not found`);
+          toast({
+            title: "Service Not Found",
+            description: "The requested service could not be found.",
+            variant: "destructive"
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching service details:", error);
+        toast({
+          title: "Error Loading Service",
+          description: "There was a problem loading the service details.",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchServiceDetails();
+  }, [serviceId, toast]);
 
   const availableTimes = [
     '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', 
@@ -382,6 +417,14 @@ const ServiceReservation = () => {
       </main>
       <Footer />
     </div>
+  );
+};
+
+const ServiceReservation = () => {
+  return (
+    <AuthProvider>
+      <ServiceReservationContent />
+    </AuthProvider>
   );
 };
 
