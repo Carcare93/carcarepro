@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService, User, LoginData, RegisterData, ProviderRegisterData, VerificationStatus } from '@/services/auth-service';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface AuthContextType {
   user: User | null;
@@ -28,17 +28,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Redirect user based on account type
+  // Only redirect if on specific pages that should be protected or redirected
   useEffect(() => {
-    if (user && window.location.pathname === '/') {
+    if (user && location.pathname === '/') {
+      // Only redirect if explicitly on the root path
       if (user.accountType === 'provider') {
+        console.log("Provider on home page, redirecting to provider dashboard");
         navigate('/provider');
-      } else {
-        navigate('/dashboard');
       }
     }
-  }, [user, navigate]);
+  }, [user, navigate, location.pathname]);
 
   useEffect(() => {
     // Set up auth state listener
@@ -57,10 +58,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                   setUser(currentUser);
                   
                   // Redirect based on user type after login
-                  if (currentUser.accountType === 'provider') {
-                    navigate('/provider');
-                  } else {
-                    navigate('/dashboard');
+                  // Only redirect if on specific paths that should be protected
+                  const currentPath = window.location.pathname;
+                  if (currentPath === '/' || currentPath === '/login' || currentPath === '/signup') {
+                    if (currentUser.accountType === 'provider') {
+                      navigate('/provider');
+                    } else if (currentPath === '/login' || currentPath === '/signup') {
+                      navigate('/dashboard');
+                    }
                   }
                 }
               }, 0);
@@ -85,10 +90,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUser(currentUser);
           
           // If user lands directly on the home page, redirect based on account type
-          if (window.location.pathname === '/') {
+          const currentPath = window.location.pathname;
+          if (currentPath === '/' || currentPath === '/login' || currentPath === '/signup') {
             if (currentUser.accountType === 'provider') {
               navigate('/provider');
-            } else {
+            } else if (currentPath === '/login' || currentPath === '/signup') {
               navigate('/dashboard');
             }
           }
