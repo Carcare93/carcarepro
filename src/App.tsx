@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AuthProvider } from '@/contexts/AuthContext';
 import Home from '@/pages/Home';
+import Index from '@/pages/Index';
 import About from '@/pages/About';
 import Contact from '@/pages/Contact';
 import Services from '@/pages/Services';
@@ -27,8 +27,12 @@ import { Toaster } from '@/components/ui/toaster';
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home />,
+    element: <Index />,
     errorElement: <NotFound />,
+  },
+  {
+    path: "/home",
+    element: <Home />,
   },
   {
     path: "/about",

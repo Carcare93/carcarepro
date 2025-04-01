@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService, User, LoginData, RegisterData, ProviderRegisterData, VerificationStatus } from '@/services/auth-service';
 import { useToast } from '@/hooks/use-toast';
@@ -30,48 +29,46 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Only redirect if on specific pages that should be protected or redirected
+  // Check path and redirect if needed based on authentication and user type
   useEffect(() => {
-    if (user && location.pathname === '/') {
-      // Only redirect if explicitly on the root path
-      if (user.accountType === 'provider') {
-        console.log("Provider on home page, redirecting to provider dashboard");
-        navigate('/provider');
+    // Skip redirects during initial loading
+    if (isLoading) return;
+    
+    // Skip redirects for certain paths that should be accessible regardless
+    const publicPaths = ['/login', '/signup', '/about', '/contact', '/verify-email'];
+    if (publicPaths.includes(location.pathname)) return;
+    
+    // Handle redirects for authenticated users
+    if (user) {
+      // Redirect providers to their dashboard if they're on the home page
+      if ((location.pathname === '/' || location.pathname === '/home') && user.accountType === 'provider') {
+        navigate('/provider', { replace: true });
       }
     }
-  }, [user, navigate, location.pathname]);
+  }, [user, isLoading, navigate, location.pathname]);
 
+  // Set up auth state listener
   useEffect(() => {
-    // Set up auth state listener
+    console.log("Setting up auth state listener");
+    
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log("Auth state change event:", event);
         if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
           if (session?.user) {
-            try {
-              // Use setTimeout to prevent potential deadlocks with Supabase auth
-              setTimeout(async () => {
+            // Use setTimeout to prevent potential deadlocks with Supabase auth
+            setTimeout(async () => {
+              try {
                 console.log("Fetching user after auth state change");
                 const currentUser = await authService.fetchCurrentUser();
                 console.log("Current user from fetchCurrentUser:", currentUser);
                 if (currentUser) {
                   setUser(currentUser);
-                  
-                  // Redirect based on user type after login
-                  // Only redirect if on specific paths that should be protected
-                  const currentPath = window.location.pathname;
-                  if (currentPath === '/' || currentPath === '/login' || currentPath === '/signup') {
-                    if (currentUser.accountType === 'provider') {
-                      navigate('/provider');
-                    } else if (currentPath === '/login' || currentPath === '/signup') {
-                      navigate('/dashboard');
-                    }
-                  }
                 }
-              }, 0);
-            } catch (error) {
-              console.error('Error fetching user data:', error);
-            }
+              } catch (error) {
+                console.error('Error fetching user data:', error);
+              }
+            }, 0);
           }
         } else if (event === 'SIGNED_OUT') {
           console.log("User signed out, clearing user state");
@@ -86,19 +83,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log("Checking for existing user session");
         const currentUser = await authService.fetchCurrentUser();
         console.log("Current user from initial check:", currentUser);
-        if (currentUser) {
-          setUser(currentUser);
-          
-          // If user lands directly on the home page, redirect based on account type
-          const currentPath = window.location.pathname;
-          if (currentPath === '/' || currentPath === '/login' || currentPath === '/signup') {
-            if (currentUser.accountType === 'provider') {
-              navigate('/provider');
-            } else if (currentPath === '/login' || currentPath === '/signup') {
-              navigate('/dashboard');
-            }
-          }
-        }
+        setUser(currentUser);
       } catch (error) {
         console.error('Error checking current user:', error);
       } finally {
@@ -111,7 +96,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, []);
 
   const login = async (data: LoginData) => {
     try {
