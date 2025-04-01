@@ -35,11 +35,10 @@ if (!rootElement) throw new Error("Root element not found");
 
 const root = createRoot(rootElement);
 
-// Render with React.StrictMode and wrap App with QueryClientProvider
+// Render with QueryClientProvider but without another StrictMode
+// since App.tsx already includes StrictMode
 root.render(
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <App />
-    </QueryClientProvider>
-  </React.StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <App />
+  </QueryClientProvider>
 );
