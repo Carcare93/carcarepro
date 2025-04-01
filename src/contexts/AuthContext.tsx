@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService, User, LoginData, RegisterData, ProviderRegisterData, VerificationStatus } from '@/services/auth-service';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthContextType {
   user: User | null;
@@ -26,6 +27,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
+
+  // Redirect user based on account type
+  useEffect(() => {
+    if (user && window.location.pathname === '/') {
+      if (user.accountType === 'provider') {
+        navigate('/provider');
+      } else {
+        navigate('/dashboard');
+      }
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     // Set up auth state listener
@@ -40,7 +53,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 console.log("Fetching user after auth state change");
                 const currentUser = await authService.fetchCurrentUser();
                 console.log("Current user from fetchCurrentUser:", currentUser);
-                if (currentUser) setUser(currentUser);
+                if (currentUser) {
+                  setUser(currentUser);
+                  
+                  // Redirect based on user type after login
+                  if (currentUser.accountType === 'provider') {
+                    navigate('/provider');
+                  } else {
+                    navigate('/dashboard');
+                  }
+                }
               }, 0);
             } catch (error) {
               console.error('Error fetching user data:', error);
@@ -59,7 +81,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log("Checking for existing user session");
         const currentUser = await authService.fetchCurrentUser();
         console.log("Current user from initial check:", currentUser);
-        if (currentUser) setUser(currentUser);
+        if (currentUser) {
+          setUser(currentUser);
+          
+          // If user lands directly on the home page, redirect based on account type
+          if (window.location.pathname === '/') {
+            if (currentUser.accountType === 'provider') {
+              navigate('/provider');
+            } else {
+              navigate('/dashboard');
+            }
+          }
+        }
       } catch (error) {
         console.error('Error checking current user:', error);
       } finally {
@@ -72,7 +105,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [navigate]);
 
   const login = async (data: LoginData) => {
     try {
@@ -83,6 +116,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         title: "Welcome back!",
         description: "You've successfully logged in.",
       });
+      
+      // Redirect based on account type after login
+      if (user.accountType === 'provider') {
+        navigate('/provider');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (error) {
       console.error("Login error:", error);
       toast({

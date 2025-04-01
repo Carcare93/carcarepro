@@ -36,7 +36,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 const Login = () => {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   
@@ -54,7 +54,7 @@ const Login = () => {
         email: values.email,
         password: values.password,
       });
-      navigate('/');
+      // The redirect will be handled in the login function in AuthContext
     } catch (error) {
       console.error('Login failed:', error);
     }

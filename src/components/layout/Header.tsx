@@ -52,12 +52,27 @@ const Header = () => {
       isActive ? 'bg-secondary text-foreground' : 'hover:bg-secondary/50'
     }`;
   };
+
+  // Handle home click based on user type
+  const handleHomeClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (isAuthenticated) {
+      e.preventDefault();
+      if (isProvider) {
+        navigate('/provider');
+      } else {
+        navigate('/dashboard');
+      }
+    }
+  };
   
   return (
     <header className="fixed top-0 left-0 right-0 bg-background/95 backdrop-blur-md z-50 border-b border-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center">
+          <Link 
+            to={isAuthenticated ? (isProvider ? "/provider" : "/dashboard") : "/"} 
+            className="flex items-center"
+          >
             <img 
               src="/lovable-uploads/cf04f4b5-7f5b-4af0-9ee6-b8bce2bec514.png" 
               alt="CarCare Logo" 
@@ -66,7 +81,18 @@ const Header = () => {
           </Link>
           
           <nav className="hidden md:flex space-x-8">
-            <NavLink to="/" className={getLinkClass}>{t('header.home')}</NavLink>
+            {isAuthenticated ? (
+              <>
+                {isProvider ? (
+                  <NavLink to="/provider" className={getLinkClass}>{t('header.home')}</NavLink>
+                ) : (
+                  <NavLink to="/dashboard" className={getLinkClass}>{t('header.home')}</NavLink>
+                )}
+              </>
+            ) : (
+              <NavLink to="/" className={getLinkClass}>{t('header.home')}</NavLink>
+            )}
+            
             {!isProvider && (
               <>
                 <NavLink to="/services" className={getLinkClass}>{t('header.services')}</NavLink>
@@ -76,9 +102,12 @@ const Header = () => {
                 )}
               </>
             )}
-            <NavLink to="/provider-registration" className={getLinkClass}>
-              {t('header.becomeProvider')}
-            </NavLink>
+            
+            {!isAuthenticated && (
+              <NavLink to="/provider-registration" className={getLinkClass}>
+                {t('header.becomeProvider')}
+              </NavLink>
+            )}
           </nav>
           
           <div className="flex items-center space-x-4">
