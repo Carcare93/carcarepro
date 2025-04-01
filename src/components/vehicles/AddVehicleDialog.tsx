@@ -19,7 +19,7 @@ interface AddVehicleFormData {
   make: string;
   model: string;
   year: number;
-  licensePlate?: string;
+  license_plate?: string;
   color?: string;
 }
 
@@ -40,7 +40,7 @@ const AddVehicleDialog = ({ open, onClose, onAddVehicle }: AddVehicleDialogProps
         make: data.make,
         model: data.model,
         year: Number(data.year),
-        license_plate: data.licensePlate,
+        license_plate: data.license_plate,
         color: data.color,
       };
       
@@ -121,11 +121,11 @@ const AddVehicleDialog = ({ open, onClose, onAddVehicle }: AddVehicleDialogProps
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="licensePlate">License Plate (Optional)</Label>
+                <Label htmlFor="license_plate">License Plate (Optional)</Label>
                 <Input
-                  id="licensePlate"
+                  id="license_plate"
                   placeholder="e.g. ABC123"
-                  {...register("licensePlate")}
+                  {...register("license_plate")}
                 />
               </div>
             </div>

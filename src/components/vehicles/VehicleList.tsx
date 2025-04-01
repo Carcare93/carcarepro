@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Vehicle } from '@/services/car-service';
+import type { Vehicle } from '@/types/supabase-models';
 
 interface VehicleListProps {
   vehicles: Vehicle[];
@@ -58,7 +58,7 @@ const VehicleList = ({ vehicles, isLoading, onAddVehicle }: VehicleListProps) =>
                   <div>
                     <CardTitle>{vehicle.year} {vehicle.make} {vehicle.model}</CardTitle>
                     <CardDescription>
-                      {vehicle.licensePlate && `License Plate: ${vehicle.licensePlate}`}
+                      {vehicle.license_plate && `License Plate: ${vehicle.license_plate}`}
                     </CardDescription>
                   </div>
                   <Badge variant="outline">{vehicle.year}</Badge>

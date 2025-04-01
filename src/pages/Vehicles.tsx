@@ -57,7 +57,7 @@ const Vehicles = () => {
       </Helmet>
       <div className="container mx-auto py-8 px-4">
         <VehicleList
-          vehicles={vehicles as Vehicle[]}
+          vehicles={vehicles}
           isLoading={isLoading}
           onAddVehicle={() => setIsAddVehicleOpen(true)}
         />
