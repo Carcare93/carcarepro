@@ -3,7 +3,6 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService, User, LoginData, RegisterData, ProviderRegisterData, VerificationStatus } from '@/services/auth-service';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate, useLocation } from 'react-router-dom';
 
 interface AuthContextType {
   user: User | null;
@@ -23,12 +22,11 @@ interface AuthProviderProps {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// The core AuthProvider without navigation dependencies
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-  const navigate = useNavigate();
-  const location = useLocation();
 
   // Set up auth state listener
   useEffect(() => {
@@ -83,22 +81,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       subscription.unsubscribe();
     };
   }, []);
-  
-  // Handle navigation based on auth state
-  useEffect(() => {
-    if (isLoading) return;
-    
-    // Skip redirects for routes that should be accessible regardless of auth state
-    const publicPaths = ['/login', '/signup', '/about', '/contact', '/verify-email', '/home'];
-    if (publicPaths.includes(location.pathname)) return;
-    
-    // Only perform redirects when auth state is settled
-    if (!isLoading) {
-      if (user && user.accountType === 'provider' && location.pathname === '/') {
-        navigate('/provider', { replace: true });
-      }
-    }
-  }, [user, isLoading, navigate, location.pathname]);
 
   const login = async (data: LoginData) => {
     try {
@@ -110,12 +92,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         description: "You've successfully logged in.",
       });
       
-      // Redirect based on account type after login
-      if (user.accountType === 'provider') {
-        navigate('/provider', { replace: true });
-      } else {
-        navigate('/dashboard', { replace: true });
-      }
+      return user;
     } catch (error) {
       console.error("Login error:", error);
       toast({
