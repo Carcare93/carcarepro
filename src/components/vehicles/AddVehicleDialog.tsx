@@ -13,18 +13,20 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useForm } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
+import type { Vehicle } from '@/types/supabase-models';
 
 interface AddVehicleFormData {
   make: string;
   model: string;
   year: number;
   licensePlate?: string;
+  color?: string;
 }
 
 interface AddVehicleDialogProps {
   open: boolean;
   onClose: () => void;
-  onAddVehicle: (data: AddVehicleFormData) => Promise<void>;
+  onAddVehicle: (data: Omit<Vehicle, 'id' | 'user_id'>) => Promise<void>;
 }
 
 const AddVehicleDialog = ({ open, onClose, onAddVehicle }: AddVehicleDialogProps) => {
@@ -33,7 +35,16 @@ const AddVehicleDialog = ({ open, onClose, onAddVehicle }: AddVehicleDialogProps
 
   const onSubmit = async (data: AddVehicleFormData) => {
     try {
-      await onAddVehicle(data);
+      // Transform form data to match the Vehicle type
+      const vehicleData = {
+        make: data.make,
+        model: data.model,
+        year: Number(data.year),
+        license_plate: data.licensePlate,
+        color: data.color,
+      };
+      
+      await onAddVehicle(vehicleData);
       reset();
       toast({
         title: "Vehicle added",
@@ -41,6 +52,7 @@ const AddVehicleDialog = ({ open, onClose, onAddVehicle }: AddVehicleDialogProps
       });
       onClose();
     } catch (error) {
+      console.error('Error adding vehicle:', error);
       toast({
         title: "Error",
         description: "There was a problem adding your vehicle.",
@@ -116,6 +128,14 @@ const AddVehicleDialog = ({ open, onClose, onAddVehicle }: AddVehicleDialogProps
                   {...register("licensePlate")}
                 />
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="color">Color (Optional)</Label>
+              <Input
+                id="color"
+                placeholder="e.g. Blue"
+                {...register("color")}
+              />
             </div>
           </div>
           <DialogFooter>

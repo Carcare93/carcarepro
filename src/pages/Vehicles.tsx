@@ -1,12 +1,13 @@
 
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Vehicle, carService } from '@/services/car-service';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import VehicleList from '@/components/vehicles/VehicleList';
 import AddVehicleDialog from '@/components/vehicles/AddVehicleDialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { Helmet } from 'react-helmet';
 import { useToast } from '@/hooks/use-toast';
+import { useVehicles, useCreateVehicle } from '@/hooks/useSupabaseData';
+import type { Vehicle } from '@/types/supabase-models';
 
 const Vehicles = () => {
   const [isAddVehicleOpen, setIsAddVehicleOpen] = useState(false);
@@ -18,34 +19,26 @@ const Vehicles = () => {
     data: vehicles = [],
     isLoading,
     error,
-  } = useQuery({
-    queryKey: ['vehicles', user?.id],
-    queryFn: () => carService.getUserVehicles(),
-    enabled: !!user,
-  });
+  } = useVehicles();
 
-  const addVehicleMutation = useMutation({
-    mutationFn: (newVehicle: Omit<Vehicle, 'id'>) => {
-      return carService.addVehicle({
-        ...newVehicle,
-        userId: user?.id,
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['vehicles'] });
-    },
-    onError: (error) => {
+  const addVehicleMutation = useCreateVehicle();
+
+  const handleAddVehicle = async (vehicle: Omit<Vehicle, 'id' | 'user_id'>) => {
+    if (!user?.id) {
       toast({
         title: 'Error',
-        description: 'Failed to add vehicle. Please try again.',
+        description: 'You must be logged in to add a vehicle.',
         variant: 'destructive',
       });
-      console.error('Add vehicle error:', error);
-    },
-  });
-
-  const handleAddVehicle = async (vehicle: Omit<Vehicle, 'id'>) => {
-    await addVehicleMutation.mutateAsync(vehicle);
+      return;
+    }
+    
+    await addVehicleMutation.mutateAsync({
+      ...vehicle,
+      user_id: user.id,
+    });
+    
+    setIsAddVehicleOpen(false);
   };
 
   if (error) {

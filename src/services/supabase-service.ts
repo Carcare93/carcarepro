@@ -3,6 +3,7 @@ import { bookingService } from './supabase/booking-service';
 import { serviceService } from './supabase/service-service';
 import { userService } from './supabase/user-service';
 import { providerService } from './supabase/provider-service';
+import { vehicleService } from './supabase/vehicle-service';
 
 /**
  * Service for interacting with Supabase tables
@@ -67,10 +68,31 @@ export class SupabaseService {
   async deleteProvider(providerId: string) {
     return providerService.deleteProvider(providerId);
   }
+  
+  // Vehicle methods
+  async getVehicles() {
+    return vehicleService.getUserVehicles();
+  }
+  
+  async getVehicleById(vehicleId: string) {
+    return vehicleService.getVehicleById(vehicleId);
+  }
+  
+  async createVehicle(vehicleData: Omit<import('@/types/supabase-models').Vehicle, 'id'>) {
+    return vehicleService.addVehicle(vehicleData);
+  }
+  
+  async updateVehicle(vehicleId: string, vehicleData: Partial<import('@/types/supabase-models').Vehicle>) {
+    return vehicleService.updateVehicle(vehicleId, vehicleData);
+  }
+  
+  async deleteVehicle(vehicleId: string) {
+    return vehicleService.deleteVehicle(vehicleId);
+  }
 }
 
 // Re-export the types for convenience
-export type { Booking, Service, User, ServiceProvider } from '@/types/supabase-models';
+export type { Booking, Service, User, ServiceProvider, Vehicle } from '@/types/supabase-models';
 
 // Create and export a singleton instance
 export const supabaseService = new SupabaseService();

@@ -59,3 +59,15 @@ export interface ServiceProvider {
     coordinates?: { lat: number; lng: number };
   };
 }
+
+export interface Vehicle {
+  id: string;
+  user_id: string;
+  make: string;
+  model: string;
+  year: number;
+  license_plate?: string;
+  vin?: string;
+  color?: string;
+  created_at?: string;
+}
