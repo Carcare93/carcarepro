@@ -1,6 +1,8 @@
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabaseService } from '@/services/supabase-service';
 import { useToast } from '@/hooks/use-toast';
+import { serviceService } from '@/services/supabase/service-service';
 
 /**
  * Hook for fetching bookings from Supabase
