@@ -1,5 +1,6 @@
 
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import Hero from '@/components/home/Hero';
@@ -7,12 +8,10 @@ import Features from '@/components/home/Features';
 import ServiceProviders from '@/components/home/ServiceProviders';
 import CallToAction from '@/components/home/CallToAction';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate, useLocation } from 'react-router-dom';
 
 const Home = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     // Only handle redirects after auth is loaded and for provider users
