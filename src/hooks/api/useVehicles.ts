@@ -1,97 +1,76 @@
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { vehicleService } from '@/services/supabase/vehicle-service';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabaseService } from '@/services/supabase-service';
+import { useAuth } from '@/contexts/AuthContext';
 import type { Vehicle } from '@/types/supabase-models';
 
 /**
- * Hook to fetch all vehicles for the current user
+ * Hook for fetching vehicles from Supabase
  */
 export const useVehicles = () => {
+  const { user } = useAuth();
+  
   return useQuery({
     queryKey: ['vehicles'],
     queryFn: async () => {
-      console.log('Fetching vehicles...');
-      const vehicles = await vehicleService.getUserVehicles();
-      console.log('Fetched vehicles:', vehicles);
-      return vehicles;
+      try {
+        return await supabaseService.getVehicles();
+      } catch (error) {
+        console.error('Error fetching vehicles:', error);
+        throw error;
+      }
     },
+    enabled: !!user, // Only run query if user is logged in
   });
 };
 
 /**
- * Hook to fetch a single vehicle by ID
- */
-export const useVehicle = (vehicleId: string) => {
-  return useQuery({
-    queryKey: ['vehicles', vehicleId],
-    queryFn: async () => {
-      console.log(`Fetching vehicle with ID: ${vehicleId}`);
-      return vehicleService.getVehicleById(vehicleId);
-    },
-    enabled: !!vehicleId,
-  });
-};
-
-/**
- * Hook to create a new vehicle
+ * Hook for creating a new vehicle
  */
 export const useCreateVehicle = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
     mutationFn: async (vehicleData: Omit<Vehicle, 'id'>) => {
-      console.log('Creating new vehicle:', vehicleData);
-      return vehicleService.addVehicle(vehicleData);
+      return await supabaseService.createVehicle(vehicleData);
     },
     onSuccess: () => {
-      console.log('Vehicle created successfully, invalidating queries');
+      // Invalidate the vehicles query to refetch the updated list
       queryClient.invalidateQueries({ queryKey: ['vehicles'] });
-    },
-    onError: (error) => {
-      console.error('Error creating vehicle:', error);
     },
   });
 };
 
 /**
- * Hook to update an existing vehicle
+ * Hook for updating an existing vehicle
  */
 export const useUpdateVehicle = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
     mutationFn: async ({ vehicleId, vehicleData }: { vehicleId: string, vehicleData: Partial<Vehicle> }) => {
-      console.log(`Updating vehicle ${vehicleId}:`, vehicleData);
-      return vehicleService.updateVehicle(vehicleId, vehicleData);
+      return await supabaseService.updateVehicle(vehicleId, vehicleData);
     },
-    onSuccess: (_, variables) => {
-      console.log('Vehicle updated successfully, invalidating queries');
+    onSuccess: () => {
+      // Invalidate the vehicles query to refetch the updated list
       queryClient.invalidateQueries({ queryKey: ['vehicles'] });
-      queryClient.invalidateQueries({ queryKey: ['vehicles', variables.vehicleId] });
-    },
-    onError: (error) => {
-      console.error('Error updating vehicle:', error);
     },
   });
 };
 
 /**
- * Hook to delete a vehicle
+ * Hook for deleting a vehicle
  */
 export const useDeleteVehicle = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
     mutationFn: async (vehicleId: string) => {
-      console.log(`Deleting vehicle with ID: ${vehicleId}`);
-      return vehicleService.deleteVehicle(vehicleId);
+      return await supabaseService.deleteVehicle(vehicleId);
     },
     onSuccess: () => {
-      console.log('Vehicle deleted successfully, invalidating queries');
+      // Invalidate the vehicles query to refetch the updated list
       queryClient.invalidateQueries({ queryKey: ['vehicles'] });
-    },
-    onError: (error) => {
-      console.error('Error deleting vehicle:', error);
     },
   });
 };

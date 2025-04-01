@@ -46,7 +46,7 @@ const AddVehicleDialog = ({ open, onClose, onAddVehicle }: AddVehicleDialogProps
       };
       
       await onAddVehicle(vehicleData);
-      reset();
+      reset(); // Reset form after successful submission
     } catch (error) {
       console.error('Error adding vehicle:', error);
       toast({

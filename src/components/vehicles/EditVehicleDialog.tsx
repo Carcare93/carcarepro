@@ -37,6 +37,7 @@ const EditVehicleDialog = ({ open, onClose, onUpdateVehicle, vehicle }: EditVehi
   // Reset the form when the vehicle changes
   React.useEffect(() => {
     if (vehicle && open) {
+      console.log('Resetting form with vehicle data:', vehicle);
       reset({
         make: vehicle.make,
         model: vehicle.model,

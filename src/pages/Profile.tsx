@@ -5,11 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User, Mail, Calendar, LogOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import ProfileForm from '@/components/profile/ProfileForm';
 
 const Profile = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -79,17 +80,19 @@ const Profile = () => {
             </div>
             
             <div className="md:col-span-2">
-              <Card>
+              <ProfileForm />
+              
+              <Card className="mt-6">
                 <CardHeader>
                   <CardTitle>Account Information</CardTitle>
-                  <CardDescription>Your personal details and preferences</CardDescription>
+                  <CardDescription>Your account details and membership information</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center gap-3">
                     <User className="h-5 w-5 text-muted-foreground" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Full Name</p>
-                      <p className="font-medium">{user.name}</p>
+                      <p className="text-sm text-muted-foreground">Account Type</p>
+                      <p className="font-medium">{user.accountType === 'customer' ? 'Customer' : 'Service Provider'}</p>
                     </div>
                   </div>
                   
@@ -109,11 +112,6 @@ const Profile = () => {
                     </div>
                   </div>
                 </CardContent>
-                <CardFooter>
-                  <Button variant="outline" className="w-full">
-                    Edit Profile
-                  </Button>
-                </CardFooter>
               </Card>
               
               {user.accountType === 'provider' && (
@@ -150,11 +148,6 @@ const Profile = () => {
                       <p className="text-muted-foreground">No business information available.</p>
                     )}
                   </CardContent>
-                  <CardFooter>
-                    <Button variant="outline" className="w-full">
-                      Edit Business Information
-                    </Button>
-                  </CardFooter>
                 </Card>
               )}
             </div>

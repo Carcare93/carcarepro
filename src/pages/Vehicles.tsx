@@ -25,6 +25,7 @@ const Vehicles = () => {
     data: vehicles = [],
     isLoading,
     error,
+    refetch
   } = useVehicles();
 
   const createVehicleMutation = useCreateVehicle();
@@ -42,6 +43,7 @@ const Vehicles = () => {
     }
     
     try {
+      console.log('Adding vehicle with user_id:', user.id);
       await createVehicleMutation.mutateAsync({
         ...vehicle,
         user_id: user.id,
@@ -53,6 +55,7 @@ const Vehicles = () => {
       });
       
       setIsAddVehicleOpen(false);
+      refetch(); // Explicitly refetch after mutation
     } catch (error) {
       console.error('Error adding vehicle:', error);
       toast({
@@ -70,6 +73,7 @@ const Vehicles = () => {
 
   const handleUpdateVehicle = async (vehicleId: string, vehicleData: Partial<Vehicle>) => {
     try {
+      console.log('Updating vehicle:', vehicleId, vehicleData);
       await updateVehicleMutation.mutateAsync({ vehicleId, vehicleData });
       
       toast({
@@ -79,6 +83,7 @@ const Vehicles = () => {
       
       setIsEditVehicleOpen(false);
       setSelectedVehicle(null);
+      refetch(); // Explicitly refetch after mutation
     } catch (error) {
       console.error('Error updating vehicle:', error);
       toast({
@@ -91,11 +96,13 @@ const Vehicles = () => {
 
   const handleDeleteVehicle = async (vehicleId: string) => {
     try {
+      console.log('Deleting vehicle:', vehicleId);
       await deleteVehicleMutation.mutateAsync(vehicleId);
       toast({
         title: 'Success',
         description: 'Vehicle successfully deleted.'
       });
+      refetch(); // Explicitly refetch after mutation
     } catch (error) {
       console.error('Error deleting vehicle:', error);
       toast({
